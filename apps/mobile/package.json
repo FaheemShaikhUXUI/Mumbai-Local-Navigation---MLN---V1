@@ -1,0 +1,17 @@
+{
+  "name": "@mumbai-timetable/mobile",
+  "version": "1.0.0",
+  "main": "src/App.tsx",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "build:android": "eas build --platform android"
+  },
+  "dependencies": {
+    "@mumbai-timetable/types": "workspace:*",
+    "@mumbai-timetable/database": "workspace:*",
+    "@mumbai-timetable/search": "workspace:*",
+    "@mumbai-timetable/shared": "workspace:*",
+    "@mumbai-timetable/validation": "workspace:*"
+  }
+}

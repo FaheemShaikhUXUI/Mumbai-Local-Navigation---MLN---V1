@@ -1,0 +1,13 @@
+{
+  "name": "@mumbai-timetable/timetable-parser",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@mumbai-timetable/types": "workspace:*",
+    "@mumbai-timetable/data-sources": "workspace:*"
+  }
+}

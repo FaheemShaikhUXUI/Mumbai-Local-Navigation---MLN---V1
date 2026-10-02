@@ -1,0 +1,67 @@
+{
+  "fromVersion": "2026.10.02.007",
+  "toVersion": "2026.10.02.008",
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-10-02T00:26:42.597Z",
+  "checksum": "1ff9ec42fd5a771ff790a023edeb776b03a3990d4eec65e0070ad16a7679f13a",
+  "diff": {
+    "fromVersion": "2026.10.02.007",
+    "toVersion": "2026.10.02.008",
+    "generatedAt": "2026-10-02T00:26:42.597Z",
+    "schemaVersion": "1.0.0",
+    "tables": {
+      "railways": {
+        "created": [],
+        "updated": [],
+        "deleted": []
+      },
+      "divisions": {
+        "created": [],
+        "updated": [],
+        "deleted": []
+      },
+      "lines": {
+        "created": [],
+        "updated": [],
+        "deleted": []
+      },
+      "routes": {
+        "created": [],
+        "updated": [],
+        "deleted": []
+      },
+      "stations": {
+        "created": [],
+        "updated": [],
+        "deleted": []
+      },
+      "trains": {
+        "created": [],
+        "updated": [],
+        "deleted": []
+      },
+      "train_stops": {
+        "created": [],
+        "updated": [
+          {
+            "id": "stop_97001_8",
+            "train_id": "train_cr_97001",
+            "station_id": "stn_kyn",
+            "sequence": 8,
+            "arrival_time": "07:23:00",
+            "departure_time": "07:23:00",
+            "day_pattern": "DAILY",
+            "platform": "2"
+          }
+        ],
+        "deleted": []
+      }
+    },
+    "summary": {
+      "totalAdded": 0,
+      "totalUpdated": 1,
+      "totalDeleted": 0
+    }
+  },
+  "sizeBytes": 735
+}

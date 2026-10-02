@@ -1,0 +1,92 @@
+[
+  {
+    "id": "route_wr_ccg_vr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "Churchgate to Virar Down",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_vr",
+    "description": "Churchgate to Virar Down Suburban Services"
+  },
+  {
+    "id": "route_wr_vr_ccg_up",
+    "line_id": "line_wr_suburban",
+    "name": "Virar to Churchgate Up",
+    "direction": "UP",
+    "origin_station_id": "stn_vr",
+    "destination_station_id": "stn_ccg",
+    "description": "Virar to Churchgate Up Suburban Services"
+  },
+  {
+    "id": "route_wr_ccg_bvi_dn",
+    "line_id": "line_wr_suburban",
+    "name": "Churchgate to Borivali Down",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_bvi",
+    "description": "Churchgate to Borivali Down Services"
+  },
+  {
+    "id": "route_wr_bvi_ccg_up",
+    "line_id": "line_wr_suburban",
+    "name": "Borivali to Churchgate Up",
+    "direction": "UP",
+    "origin_station_id": "stn_bvi",
+    "destination_station_id": "stn_ccg",
+    "description": "Borivali to Churchgate Up Services"
+  },
+  {
+    "id": "route_wr_vr_drd_dn",
+    "line_id": "line_wr_suburban",
+    "name": "Virar to Dahanu Road Down",
+    "direction": "DN",
+    "origin_station_id": "stn_vr",
+    "destination_station_id": "stn_drd",
+    "description": "Virar to Dahanu Road Shuttle Services"
+  },
+  {
+    "id": "route_cr_csmt_kyn_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to Kalyan Down",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_kyn",
+    "description": "CSMT to Kalyan Down Suburban Mainline"
+  },
+  {
+    "id": "route_cr_kyn_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "Kalyan to CSMT Up",
+    "direction": "UP",
+    "origin_station_id": "stn_kyn",
+    "destination_station_id": "stn_csmt",
+    "description": "Kalyan to CSMT Up Suburban Mainline"
+  },
+  {
+    "id": "route_cr_csmt_ksra_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to Kasara Down",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_ksra",
+    "description": "CSMT to Kasara Down Fast Service"
+  },
+  {
+    "id": "route_cr_csmt_pnvl_dn",
+    "line_id": "line_cr_harbour",
+    "name": "CSMT to Panvel Down",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_pnvl",
+    "description": "CSMT to Panvel Harbour Line Services"
+  },
+  {
+    "id": "route_cr_tna_pnvl_dn",
+    "line_id": "line_cr_trans_harbour",
+    "name": "Thane to Panvel Down",
+    "direction": "DN",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_pnvl",
+    "description": "Trans-Harbour Corridor Services"
+  }
+]

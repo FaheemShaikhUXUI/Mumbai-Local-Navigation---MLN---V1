@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "DOM"],
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@mumbai-timetable/types": ["packages/types/src/index.ts"],
+      "@mumbai-timetable/database": ["packages/database/src/index.ts"],
+      "@mumbai-timetable/validation": ["packages/validation/src/index.ts"],
+      "@mumbai-timetable/search": ["packages/search/src/index.ts"],
+      "@mumbai-timetable/shared": ["packages/shared/src/index.ts"],
+      "@mumbai-timetable/data-sources": ["services/data-sources/src/index.ts"],
+      "@mumbai-timetable/timetable-parser": ["services/timetable-parser/src/index.ts"],
+      "@mumbai-timetable/diff-engine": ["services/diff-engine/src/index.ts"],
+      "@mumbai-timetable/sync-engine": ["services/sync-engine/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "build", ".next", ".expo"]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@mumbai-timetable/web-admin",
+  "version": "1.0.0",
+  "main": "./src/server.ts",
+  "scripts": {
+    "dev": "node ../../dist/apps/web-admin/src/server.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@mumbai-timetable/types": "workspace:*",
+    "@mumbai-timetable/shared": "workspace:*",
+    "@mumbai-timetable/database": "workspace:*",
+    "@mumbai-timetable/search": "workspace:*",
+    "@mumbai-timetable/sync-engine": "workspace:*"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "latestVersion": "2026.10.02.010",
+  "previousVersion": "2026.10.02.009",
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-10-02T00:27:16.495Z",
+  "effectiveDate": "01-09-2026",
+  "datasetHash": "5ab8e310a9411c6566e30a7837bbc0cffc8af8a6d31b57893169d3b088713c0d",
+  "datasetFile": "dataset.json",
+  "datasetUrl": "",
+  "updateType": "INCREMENTAL",
+  "incrementalUpdateAvailable": true,
+  "availablePatches": [
+    {
+      "fromVersion": "2026.10.02.009",
+      "toVersion": "2026.10.02.010",
+      "patchFile": "patch-2026.10.02.009-to-2026.10.02.010.json",
+      "patchUrl": "file://G:\\My Drive\\6 - Antigravity All Projects\\4 - Mumbai Local Navigation Application\\storage\\google-drive-mock\\updates\\version-2026.10.02.010\\patch-2026.10.02.009-to-2026.10.02.010.json",
+      "patchChecksum": "658988b6daeed787295f3ed4d9be442cfb49d620a1463991b99e78d4258d751c",
+      "patchSizeBytes": 735
+    }
+  ],
+  "metadata": {
+    "source": "Simulated Timetable Update (Section 35: Kalyan 07:20 -> 07:23)",
+    "recordCounts": {
+      "train_stops_modified": 1
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "mumbai-local-timetable",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-grade offline-first Mumbai Local Railway timetable application",
+  "workspaces": [
+    "packages/*",
+    "services/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "node --test packages/**/__tests__/*.test.js services/**/__tests__/*.test.js",
+    "dev:admin": "npm run dev --workspace=apps/web-admin",
+    "dev:mobile": "npm run start --workspace=apps/mobile",
+    "typecheck": "tsc --noEmit",
+    "sync:check": "npx tsx services/sync-engine/src/cli.ts check",
+    "sync:run": "npx tsx services/sync-engine/src/cli.ts sync",
+    "sync:simulate": "npx tsx services/sync-engine/src/cli.ts simulate",
+    "demo:e2e": "npx tsx services/sync-engine/src/e2e-demo.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "tsx": "^4.7.1",
+    "typescript": "^5.9.3"
+  }
+}

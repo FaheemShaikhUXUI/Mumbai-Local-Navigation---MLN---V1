@@ -1,0 +1,14 @@
+{
+  "name": "@mumbai-timetable/data-sources",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@mumbai-timetable/types": "workspace:*",
+    "@mumbai-timetable/shared": "workspace:*",
+    "@mumbai-timetable/validation": "workspace:*"
+  }
+}

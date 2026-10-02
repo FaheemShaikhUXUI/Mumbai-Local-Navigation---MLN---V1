@@ -1,0 +1,2532 @@
+[
+  {
+    "id": "stop_90001_1",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_ccg",
+    "sequence": 1,
+    "arrival_time": "05:00:00",
+    "departure_time": "05:00:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90001_2",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_mel",
+    "sequence": 2,
+    "arrival_time": "05:02:30",
+    "departure_time": "05:03:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90001_3",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_cyr",
+    "sequence": 3,
+    "arrival_time": "05:05:30",
+    "departure_time": "05:06:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90001_4",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_gtr",
+    "sequence": 4,
+    "arrival_time": "05:08:30",
+    "departure_time": "05:09:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90001_5",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_mmct",
+    "sequence": 5,
+    "arrival_time": "05:11:30",
+    "departure_time": "05:12:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90001_6",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_mx",
+    "sequence": 6,
+    "arrival_time": "05:14:30",
+    "departure_time": "05:15:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90001_7",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_pl",
+    "sequence": 7,
+    "arrival_time": "05:17:30",
+    "departure_time": "05:18:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90001_8",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_pbhd",
+    "sequence": 8,
+    "arrival_time": "05:20:30",
+    "departure_time": "05:21:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90001_9",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_dr",
+    "sequence": 9,
+    "arrival_time": "05:23:30",
+    "departure_time": "05:24:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90001_10",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_mru",
+    "sequence": 10,
+    "arrival_time": "05:26:30",
+    "departure_time": "05:27:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90001_11",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_mm",
+    "sequence": 11,
+    "arrival_time": "05:29:30",
+    "departure_time": "05:30:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90001_12",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_ba",
+    "sequence": 12,
+    "arrival_time": "05:32:30",
+    "departure_time": "05:33:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90001_13",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_khar",
+    "sequence": 13,
+    "arrival_time": "05:35:30",
+    "departure_time": "05:36:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90001_14",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_stc",
+    "sequence": 14,
+    "arrival_time": "05:38:30",
+    "departure_time": "05:39:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90001_15",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_vlp",
+    "sequence": 15,
+    "arrival_time": "05:41:30",
+    "departure_time": "05:42:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90001_16",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_adh",
+    "sequence": 16,
+    "arrival_time": "05:44:30",
+    "departure_time": "05:45:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90001_17",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_jos",
+    "sequence": 17,
+    "arrival_time": "05:47:30",
+    "departure_time": "05:48:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90001_18",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_rmar",
+    "sequence": 18,
+    "arrival_time": "05:50:30",
+    "departure_time": "05:51:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90001_19",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_gmn",
+    "sequence": 19,
+    "arrival_time": "05:53:30",
+    "departure_time": "05:54:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90001_20",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_mdd",
+    "sequence": 20,
+    "arrival_time": "05:56:30",
+    "departure_time": "05:57:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90001_21",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_kile",
+    "sequence": 21,
+    "arrival_time": "05:59:30",
+    "departure_time": "06:00:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90001_22",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_bvi",
+    "sequence": 22,
+    "arrival_time": "06:02:30",
+    "departure_time": "06:03:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90001_23",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_dic",
+    "sequence": 23,
+    "arrival_time": "06:05:30",
+    "departure_time": "06:06:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90001_24",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_mira",
+    "sequence": 24,
+    "arrival_time": "06:08:30",
+    "departure_time": "06:09:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90001_25",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_byr",
+    "sequence": 25,
+    "arrival_time": "06:11:30",
+    "departure_time": "06:12:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90001_26",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_nig",
+    "sequence": 26,
+    "arrival_time": "06:14:30",
+    "departure_time": "06:15:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90001_27",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_bsr",
+    "sequence": 27,
+    "arrival_time": "06:17:30",
+    "departure_time": "06:18:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90001_28",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_nsp",
+    "sequence": 28,
+    "arrival_time": "06:20:30",
+    "departure_time": "06:21:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90001_29",
+    "train_id": "train_wr_90001",
+    "station_id": "stn_vr",
+    "sequence": 29,
+    "arrival_time": "06:23:30",
+    "departure_time": "06:23:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90003_1",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_ccg",
+    "sequence": 1,
+    "arrival_time": "05:15:00",
+    "departure_time": "05:15:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90003_2",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_mel",
+    "sequence": 2,
+    "arrival_time": "05:17:30",
+    "departure_time": "05:18:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90003_3",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_cyr",
+    "sequence": 3,
+    "arrival_time": "05:20:30",
+    "departure_time": "05:21:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90003_4",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_gtr",
+    "sequence": 4,
+    "arrival_time": "05:23:30",
+    "departure_time": "05:24:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90003_5",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_mmct",
+    "sequence": 5,
+    "arrival_time": "05:26:30",
+    "departure_time": "05:27:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90003_6",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_mx",
+    "sequence": 6,
+    "arrival_time": "05:29:30",
+    "departure_time": "05:30:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90003_7",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_pl",
+    "sequence": 7,
+    "arrival_time": "05:32:30",
+    "departure_time": "05:33:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90003_8",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_pbhd",
+    "sequence": 8,
+    "arrival_time": "05:35:30",
+    "departure_time": "05:36:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90003_9",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_dr",
+    "sequence": 9,
+    "arrival_time": "05:38:30",
+    "departure_time": "05:39:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90003_10",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_mru",
+    "sequence": 10,
+    "arrival_time": "05:41:30",
+    "departure_time": "05:42:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90003_11",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_mm",
+    "sequence": 11,
+    "arrival_time": "05:44:30",
+    "departure_time": "05:45:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90003_12",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_ba",
+    "sequence": 12,
+    "arrival_time": "05:47:30",
+    "departure_time": "05:48:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90003_13",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_khar",
+    "sequence": 13,
+    "arrival_time": "05:50:30",
+    "departure_time": "05:51:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90003_14",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_stc",
+    "sequence": 14,
+    "arrival_time": "05:53:30",
+    "departure_time": "05:54:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90003_15",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_vlp",
+    "sequence": 15,
+    "arrival_time": "05:56:30",
+    "departure_time": "05:57:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90003_16",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_adh",
+    "sequence": 16,
+    "arrival_time": "05:59:30",
+    "departure_time": "06:00:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90003_17",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_jos",
+    "sequence": 17,
+    "arrival_time": "06:02:30",
+    "departure_time": "06:03:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90003_18",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_rmar",
+    "sequence": 18,
+    "arrival_time": "06:05:30",
+    "departure_time": "06:06:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90003_19",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_gmn",
+    "sequence": 19,
+    "arrival_time": "06:08:30",
+    "departure_time": "06:09:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90003_20",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_mdd",
+    "sequence": 20,
+    "arrival_time": "06:11:30",
+    "departure_time": "06:12:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90003_21",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_kile",
+    "sequence": 21,
+    "arrival_time": "06:14:30",
+    "departure_time": "06:15:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90003_22",
+    "train_id": "train_wr_90003",
+    "station_id": "stn_bvi",
+    "sequence": 22,
+    "arrival_time": "06:17:30",
+    "departure_time": "06:17:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90005_1",
+    "train_id": "train_wr_90005",
+    "station_id": "stn_ccg",
+    "sequence": 1,
+    "arrival_time": "05:30:00",
+    "departure_time": "05:30:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90005_2",
+    "train_id": "train_wr_90005",
+    "station_id": "stn_mmct",
+    "sequence": 2,
+    "arrival_time": "05:34:00",
+    "departure_time": "05:34:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90005_3",
+    "train_id": "train_wr_90005",
+    "station_id": "stn_dr",
+    "sequence": 3,
+    "arrival_time": "05:38:30",
+    "departure_time": "05:39:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90005_4",
+    "train_id": "train_wr_90005",
+    "station_id": "stn_ba",
+    "sequence": 4,
+    "arrival_time": "05:43:00",
+    "departure_time": "05:43:30",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90005_5",
+    "train_id": "train_wr_90005",
+    "station_id": "stn_adh",
+    "sequence": 5,
+    "arrival_time": "05:47:30",
+    "departure_time": "05:48:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90005_6",
+    "train_id": "train_wr_90005",
+    "station_id": "stn_bvi",
+    "sequence": 6,
+    "arrival_time": "05:52:00",
+    "departure_time": "05:52:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90005_7",
+    "train_id": "train_wr_90005",
+    "station_id": "stn_byr",
+    "sequence": 7,
+    "arrival_time": "05:56:30",
+    "departure_time": "05:57:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90005_8",
+    "train_id": "train_wr_90005",
+    "station_id": "stn_bsr",
+    "sequence": 8,
+    "arrival_time": "06:01:00",
+    "departure_time": "06:01:30",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90005_9",
+    "train_id": "train_wr_90005",
+    "station_id": "stn_vr",
+    "sequence": 9,
+    "arrival_time": "06:05:30",
+    "departure_time": "06:05:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90007_1",
+    "train_id": "train_wr_90007",
+    "station_id": "stn_ccg",
+    "sequence": 1,
+    "arrival_time": "06:00:00",
+    "departure_time": "06:00:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90007_2",
+    "train_id": "train_wr_90007",
+    "station_id": "stn_mmct",
+    "sequence": 2,
+    "arrival_time": "06:04:00",
+    "departure_time": "06:04:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90007_3",
+    "train_id": "train_wr_90007",
+    "station_id": "stn_dr",
+    "sequence": 3,
+    "arrival_time": "06:08:30",
+    "departure_time": "06:09:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90007_4",
+    "train_id": "train_wr_90007",
+    "station_id": "stn_ba",
+    "sequence": 4,
+    "arrival_time": "06:13:00",
+    "departure_time": "06:13:30",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90007_5",
+    "train_id": "train_wr_90007",
+    "station_id": "stn_adh",
+    "sequence": 5,
+    "arrival_time": "06:17:30",
+    "departure_time": "06:18:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90007_6",
+    "train_id": "train_wr_90007",
+    "station_id": "stn_bvi",
+    "sequence": 6,
+    "arrival_time": "06:22:00",
+    "departure_time": "06:22:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90007_7",
+    "train_id": "train_wr_90007",
+    "station_id": "stn_byr",
+    "sequence": 7,
+    "arrival_time": "06:26:30",
+    "departure_time": "06:27:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90007_8",
+    "train_id": "train_wr_90007",
+    "station_id": "stn_bsr",
+    "sequence": 8,
+    "arrival_time": "06:31:00",
+    "departure_time": "06:31:30",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90007_9",
+    "train_id": "train_wr_90007",
+    "station_id": "stn_vr",
+    "sequence": 9,
+    "arrival_time": "06:35:30",
+    "departure_time": "06:35:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90009_1",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_ccg",
+    "sequence": 1,
+    "arrival_time": "06:30:00",
+    "departure_time": "06:30:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90009_2",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_mel",
+    "sequence": 2,
+    "arrival_time": "06:32:30",
+    "departure_time": "06:33:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90009_3",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_cyr",
+    "sequence": 3,
+    "arrival_time": "06:35:30",
+    "departure_time": "06:36:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90009_4",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_gtr",
+    "sequence": 4,
+    "arrival_time": "06:38:30",
+    "departure_time": "06:39:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90009_5",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_mmct",
+    "sequence": 5,
+    "arrival_time": "06:41:30",
+    "departure_time": "06:42:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90009_6",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_mx",
+    "sequence": 6,
+    "arrival_time": "06:44:30",
+    "departure_time": "06:45:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90009_7",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_pl",
+    "sequence": 7,
+    "arrival_time": "06:47:30",
+    "departure_time": "06:48:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90009_8",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_pbhd",
+    "sequence": 8,
+    "arrival_time": "06:50:30",
+    "departure_time": "06:51:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90009_9",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_dr",
+    "sequence": 9,
+    "arrival_time": "06:53:30",
+    "departure_time": "06:54:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90009_10",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_mru",
+    "sequence": 10,
+    "arrival_time": "06:56:30",
+    "departure_time": "06:57:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90009_11",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_mm",
+    "sequence": 11,
+    "arrival_time": "06:59:30",
+    "departure_time": "07:00:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90009_12",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_ba",
+    "sequence": 12,
+    "arrival_time": "07:02:30",
+    "departure_time": "07:03:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90009_13",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_khar",
+    "sequence": 13,
+    "arrival_time": "07:05:30",
+    "departure_time": "07:06:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90009_14",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_stc",
+    "sequence": 14,
+    "arrival_time": "07:08:30",
+    "departure_time": "07:09:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90009_15",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_vlp",
+    "sequence": 15,
+    "arrival_time": "07:11:30",
+    "departure_time": "07:12:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90009_16",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_adh",
+    "sequence": 16,
+    "arrival_time": "07:14:30",
+    "departure_time": "07:15:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90009_17",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_jos",
+    "sequence": 17,
+    "arrival_time": "07:17:30",
+    "departure_time": "07:18:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90009_18",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_rmar",
+    "sequence": 18,
+    "arrival_time": "07:20:30",
+    "departure_time": "07:21:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90009_19",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_gmn",
+    "sequence": 19,
+    "arrival_time": "07:23:30",
+    "departure_time": "07:24:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90009_20",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_mdd",
+    "sequence": 20,
+    "arrival_time": "07:26:30",
+    "departure_time": "07:27:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90009_21",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_kile",
+    "sequence": 21,
+    "arrival_time": "07:29:30",
+    "departure_time": "07:30:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90009_22",
+    "train_id": "train_wr_90009",
+    "station_id": "stn_bvi",
+    "sequence": 22,
+    "arrival_time": "07:32:30",
+    "departure_time": "07:32:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90011_1",
+    "train_id": "train_wr_90011",
+    "station_id": "stn_ccg",
+    "sequence": 1,
+    "arrival_time": "07:00:00",
+    "departure_time": "07:00:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90011_2",
+    "train_id": "train_wr_90011",
+    "station_id": "stn_mmct",
+    "sequence": 2,
+    "arrival_time": "07:04:00",
+    "departure_time": "07:04:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90011_3",
+    "train_id": "train_wr_90011",
+    "station_id": "stn_dr",
+    "sequence": 3,
+    "arrival_time": "07:08:30",
+    "departure_time": "07:09:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90011_4",
+    "train_id": "train_wr_90011",
+    "station_id": "stn_ba",
+    "sequence": 4,
+    "arrival_time": "07:13:00",
+    "departure_time": "07:13:30",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90011_5",
+    "train_id": "train_wr_90011",
+    "station_id": "stn_adh",
+    "sequence": 5,
+    "arrival_time": "07:17:30",
+    "departure_time": "07:18:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90011_6",
+    "train_id": "train_wr_90011",
+    "station_id": "stn_bvi",
+    "sequence": 6,
+    "arrival_time": "07:22:00",
+    "departure_time": "07:22:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90011_7",
+    "train_id": "train_wr_90011",
+    "station_id": "stn_byr",
+    "sequence": 7,
+    "arrival_time": "07:26:30",
+    "departure_time": "07:27:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90011_8",
+    "train_id": "train_wr_90011",
+    "station_id": "stn_bsr",
+    "sequence": 8,
+    "arrival_time": "07:31:00",
+    "departure_time": "07:31:30",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90011_9",
+    "train_id": "train_wr_90011",
+    "station_id": "stn_vr",
+    "sequence": 9,
+    "arrival_time": "07:35:30",
+    "departure_time": "07:35:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90013_1",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_ccg",
+    "sequence": 1,
+    "arrival_time": "07:20:00",
+    "departure_time": "07:20:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90013_2",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_mel",
+    "sequence": 2,
+    "arrival_time": "07:22:30",
+    "departure_time": "07:23:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90013_3",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_cyr",
+    "sequence": 3,
+    "arrival_time": "07:25:30",
+    "departure_time": "07:26:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90013_4",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_gtr",
+    "sequence": 4,
+    "arrival_time": "07:28:30",
+    "departure_time": "07:29:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90013_5",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_mmct",
+    "sequence": 5,
+    "arrival_time": "07:31:30",
+    "departure_time": "07:32:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90013_6",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_mx",
+    "sequence": 6,
+    "arrival_time": "07:34:30",
+    "departure_time": "07:35:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90013_7",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_pl",
+    "sequence": 7,
+    "arrival_time": "07:37:30",
+    "departure_time": "07:38:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90013_8",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_pbhd",
+    "sequence": 8,
+    "arrival_time": "07:40:30",
+    "departure_time": "07:41:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90013_9",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_dr",
+    "sequence": 9,
+    "arrival_time": "07:43:30",
+    "departure_time": "07:44:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90013_10",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_mru",
+    "sequence": 10,
+    "arrival_time": "07:46:30",
+    "departure_time": "07:47:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90013_11",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_mm",
+    "sequence": 11,
+    "arrival_time": "07:49:30",
+    "departure_time": "07:50:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90013_12",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_ba",
+    "sequence": 12,
+    "arrival_time": "07:52:30",
+    "departure_time": "07:53:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90013_13",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_khar",
+    "sequence": 13,
+    "arrival_time": "07:55:30",
+    "departure_time": "07:56:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90013_14",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_stc",
+    "sequence": 14,
+    "arrival_time": "07:58:30",
+    "departure_time": "07:59:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90013_15",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_vlp",
+    "sequence": 15,
+    "arrival_time": "08:01:30",
+    "departure_time": "08:02:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90013_16",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_adh",
+    "sequence": 16,
+    "arrival_time": "08:04:30",
+    "departure_time": "08:05:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90013_17",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_jos",
+    "sequence": 17,
+    "arrival_time": "08:07:30",
+    "departure_time": "08:08:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90013_18",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_rmar",
+    "sequence": 18,
+    "arrival_time": "08:10:30",
+    "departure_time": "08:11:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90013_19",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_gmn",
+    "sequence": 19,
+    "arrival_time": "08:13:30",
+    "departure_time": "08:14:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90013_20",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_mdd",
+    "sequence": 20,
+    "arrival_time": "08:16:30",
+    "departure_time": "08:17:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90013_21",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_kile",
+    "sequence": 21,
+    "arrival_time": "08:19:30",
+    "departure_time": "08:20:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90013_22",
+    "train_id": "train_wr_90013",
+    "station_id": "stn_bvi",
+    "sequence": 22,
+    "arrival_time": "08:22:30",
+    "departure_time": "08:22:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90015_1",
+    "train_id": "train_wr_90015",
+    "station_id": "stn_ccg",
+    "sequence": 1,
+    "arrival_time": "07:40:00",
+    "departure_time": "07:40:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90015_2",
+    "train_id": "train_wr_90015",
+    "station_id": "stn_mmct",
+    "sequence": 2,
+    "arrival_time": "07:44:00",
+    "departure_time": "07:44:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90015_3",
+    "train_id": "train_wr_90015",
+    "station_id": "stn_dr",
+    "sequence": 3,
+    "arrival_time": "07:48:30",
+    "departure_time": "07:49:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90015_4",
+    "train_id": "train_wr_90015",
+    "station_id": "stn_ba",
+    "sequence": 4,
+    "arrival_time": "07:53:00",
+    "departure_time": "07:53:30",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90015_5",
+    "train_id": "train_wr_90015",
+    "station_id": "stn_adh",
+    "sequence": 5,
+    "arrival_time": "07:57:30",
+    "departure_time": "07:58:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90015_6",
+    "train_id": "train_wr_90015",
+    "station_id": "stn_bvi",
+    "sequence": 6,
+    "arrival_time": "08:02:00",
+    "departure_time": "08:02:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90015_7",
+    "train_id": "train_wr_90015",
+    "station_id": "stn_byr",
+    "sequence": 7,
+    "arrival_time": "08:06:30",
+    "departure_time": "08:07:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90015_8",
+    "train_id": "train_wr_90015",
+    "station_id": "stn_bsr",
+    "sequence": 8,
+    "arrival_time": "08:11:00",
+    "departure_time": "08:11:30",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90015_9",
+    "train_id": "train_wr_90015",
+    "station_id": "stn_vr",
+    "sequence": 9,
+    "arrival_time": "08:15:30",
+    "departure_time": "08:15:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90017_1",
+    "train_id": "train_wr_90017",
+    "station_id": "stn_ccg",
+    "sequence": 1,
+    "arrival_time": "08:00:00",
+    "departure_time": "08:00:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90017_2",
+    "train_id": "train_wr_90017",
+    "station_id": "stn_mmct",
+    "sequence": 2,
+    "arrival_time": "08:04:00",
+    "departure_time": "08:04:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90017_3",
+    "train_id": "train_wr_90017",
+    "station_id": "stn_dr",
+    "sequence": 3,
+    "arrival_time": "08:08:30",
+    "departure_time": "08:09:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90017_4",
+    "train_id": "train_wr_90017",
+    "station_id": "stn_ba",
+    "sequence": 4,
+    "arrival_time": "08:13:00",
+    "departure_time": "08:13:30",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90017_5",
+    "train_id": "train_wr_90017",
+    "station_id": "stn_adh",
+    "sequence": 5,
+    "arrival_time": "08:17:30",
+    "departure_time": "08:18:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90017_6",
+    "train_id": "train_wr_90017",
+    "station_id": "stn_bvi",
+    "sequence": 6,
+    "arrival_time": "08:22:00",
+    "departure_time": "08:22:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90017_7",
+    "train_id": "train_wr_90017",
+    "station_id": "stn_byr",
+    "sequence": 7,
+    "arrival_time": "08:26:30",
+    "departure_time": "08:27:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90017_8",
+    "train_id": "train_wr_90017",
+    "station_id": "stn_bsr",
+    "sequence": 8,
+    "arrival_time": "08:31:00",
+    "departure_time": "08:31:30",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90017_9",
+    "train_id": "train_wr_90017",
+    "station_id": "stn_vr",
+    "sequence": 9,
+    "arrival_time": "08:35:30",
+    "departure_time": "08:35:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90019_1",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_ccg",
+    "sequence": 1,
+    "arrival_time": "08:30:00",
+    "departure_time": "08:30:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90019_2",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_mel",
+    "sequence": 2,
+    "arrival_time": "08:32:30",
+    "departure_time": "08:33:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90019_3",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_cyr",
+    "sequence": 3,
+    "arrival_time": "08:35:30",
+    "departure_time": "08:36:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90019_4",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_gtr",
+    "sequence": 4,
+    "arrival_time": "08:38:30",
+    "departure_time": "08:39:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90019_5",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_mmct",
+    "sequence": 5,
+    "arrival_time": "08:41:30",
+    "departure_time": "08:42:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90019_6",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_mx",
+    "sequence": 6,
+    "arrival_time": "08:44:30",
+    "departure_time": "08:45:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90019_7",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_pl",
+    "sequence": 7,
+    "arrival_time": "08:47:30",
+    "departure_time": "08:48:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90019_8",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_pbhd",
+    "sequence": 8,
+    "arrival_time": "08:50:30",
+    "departure_time": "08:51:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90019_9",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_dr",
+    "sequence": 9,
+    "arrival_time": "08:53:30",
+    "departure_time": "08:54:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90019_10",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_mru",
+    "sequence": 10,
+    "arrival_time": "08:56:30",
+    "departure_time": "08:57:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90019_11",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_mm",
+    "sequence": 11,
+    "arrival_time": "08:59:30",
+    "departure_time": "09:00:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90019_12",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_ba",
+    "sequence": 12,
+    "arrival_time": "09:02:30",
+    "departure_time": "09:03:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90019_13",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_khar",
+    "sequence": 13,
+    "arrival_time": "09:05:30",
+    "departure_time": "09:06:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90019_14",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_stc",
+    "sequence": 14,
+    "arrival_time": "09:08:30",
+    "departure_time": "09:09:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90019_15",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_vlp",
+    "sequence": 15,
+    "arrival_time": "09:11:30",
+    "departure_time": "09:12:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90019_16",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_adh",
+    "sequence": 16,
+    "arrival_time": "09:14:30",
+    "departure_time": "09:15:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90019_17",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_jos",
+    "sequence": 17,
+    "arrival_time": "09:17:30",
+    "departure_time": "09:18:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90019_18",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_rmar",
+    "sequence": 18,
+    "arrival_time": "09:20:30",
+    "departure_time": "09:21:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90019_19",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_gmn",
+    "sequence": 19,
+    "arrival_time": "09:23:30",
+    "departure_time": "09:24:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90019_20",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_mdd",
+    "sequence": 20,
+    "arrival_time": "09:26:30",
+    "departure_time": "09:27:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90019_21",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_kile",
+    "sequence": 21,
+    "arrival_time": "09:29:30",
+    "departure_time": "09:30:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90019_22",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_bvi",
+    "sequence": 22,
+    "arrival_time": "09:32:30",
+    "departure_time": "09:33:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90019_23",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_dic",
+    "sequence": 23,
+    "arrival_time": "09:35:30",
+    "departure_time": "09:36:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90019_24",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_mira",
+    "sequence": 24,
+    "arrival_time": "09:38:30",
+    "departure_time": "09:39:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90019_25",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_byr",
+    "sequence": 25,
+    "arrival_time": "09:41:30",
+    "departure_time": "09:42:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_90019_26",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_nig",
+    "sequence": 26,
+    "arrival_time": "09:44:30",
+    "departure_time": "09:45:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_90019_27",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_bsr",
+    "sequence": 27,
+    "arrival_time": "09:47:30",
+    "departure_time": "09:48:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_90019_28",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_nsp",
+    "sequence": 28,
+    "arrival_time": "09:50:30",
+    "departure_time": "09:51:00",
+    "day_pattern": "DAILY",
+    "platform": "4"
+  },
+  {
+    "id": "stop_90019_29",
+    "train_id": "train_wr_90019",
+    "station_id": "stn_vr",
+    "sequence": 29,
+    "arrival_time": "09:53:30",
+    "departure_time": "09:53:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97001_1",
+    "train_id": "train_cr_97001",
+    "station_id": "stn_csmt",
+    "sequence": 1,
+    "arrival_time": "06:15:00",
+    "departure_time": "06:15:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97001_2",
+    "train_id": "train_cr_97001",
+    "station_id": "stn_by",
+    "sequence": 2,
+    "arrival_time": "06:21:00",
+    "departure_time": "06:21:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97001_3",
+    "train_id": "train_cr_97001",
+    "station_id": "stn_dr",
+    "sequence": 3,
+    "arrival_time": "06:27:30",
+    "departure_time": "06:28:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97001_4",
+    "train_id": "train_cr_97001",
+    "station_id": "stn_cla",
+    "sequence": 4,
+    "arrival_time": "06:34:00",
+    "departure_time": "06:34:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97001_5",
+    "train_id": "train_cr_97001",
+    "station_id": "stn_gc",
+    "sequence": 5,
+    "arrival_time": "06:40:30",
+    "departure_time": "06:41:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97001_6",
+    "train_id": "train_cr_97001",
+    "station_id": "stn_tna",
+    "sequence": 6,
+    "arrival_time": "06:47:00",
+    "departure_time": "06:47:30",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97001_7",
+    "train_id": "train_cr_97001",
+    "station_id": "stn_di",
+    "sequence": 7,
+    "arrival_time": "06:53:30",
+    "departure_time": "06:54:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97001_8",
+    "train_id": "train_cr_97001",
+    "station_id": "stn_kyn",
+    "sequence": 8,
+    "arrival_time": "07:23:00",
+    "departure_time": "07:23:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97003_1",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_csmt",
+    "sequence": 1,
+    "arrival_time": "06:30:00",
+    "departure_time": "06:30:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97003_2",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_msd",
+    "sequence": 2,
+    "arrival_time": "06:32:40",
+    "departure_time": "06:33:10",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97003_3",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_snrd",
+    "sequence": 3,
+    "arrival_time": "06:35:50",
+    "departure_time": "06:36:20",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97003_4",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_by",
+    "sequence": 4,
+    "arrival_time": "06:39:00",
+    "departure_time": "06:39:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97003_5",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_chg",
+    "sequence": 5,
+    "arrival_time": "06:42:10",
+    "departure_time": "06:42:40",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97003_6",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_crd",
+    "sequence": 6,
+    "arrival_time": "06:45:20",
+    "departure_time": "06:45:50",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97003_7",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_pr",
+    "sequence": 7,
+    "arrival_time": "06:48:30",
+    "departure_time": "06:49:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97003_8",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_dr",
+    "sequence": 8,
+    "arrival_time": "06:51:40",
+    "departure_time": "06:52:10",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97003_9",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_mtn",
+    "sequence": 9,
+    "arrival_time": "06:54:50",
+    "departure_time": "06:55:20",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97003_10",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_sin",
+    "sequence": 10,
+    "arrival_time": "06:58:00",
+    "departure_time": "06:58:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97003_11",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_cla",
+    "sequence": 11,
+    "arrival_time": "07:01:10",
+    "departure_time": "07:01:40",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97003_12",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_vvh",
+    "sequence": 12,
+    "arrival_time": "07:04:20",
+    "departure_time": "07:04:50",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97003_13",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_gc",
+    "sequence": 13,
+    "arrival_time": "07:07:30",
+    "departure_time": "07:08:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97003_14",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_vk",
+    "sequence": 14,
+    "arrival_time": "07:10:40",
+    "departure_time": "07:11:10",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97003_15",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_kjrd",
+    "sequence": 15,
+    "arrival_time": "07:13:50",
+    "departure_time": "07:14:20",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97003_16",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_bnd",
+    "sequence": 16,
+    "arrival_time": "07:17:00",
+    "departure_time": "07:17:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97003_17",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_nhu",
+    "sequence": 17,
+    "arrival_time": "07:20:10",
+    "departure_time": "07:20:40",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97003_18",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_mlnd",
+    "sequence": 18,
+    "arrival_time": "07:23:20",
+    "departure_time": "07:23:50",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97003_19",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_tna",
+    "sequence": 19,
+    "arrival_time": "07:26:30",
+    "departure_time": "07:27:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97003_20",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_klva",
+    "sequence": 20,
+    "arrival_time": "07:29:40",
+    "departure_time": "07:30:10",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97003_21",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_mbq",
+    "sequence": 21,
+    "arrival_time": "07:32:50",
+    "departure_time": "07:33:20",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97003_22",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_diva",
+    "sequence": 22,
+    "arrival_time": "07:36:00",
+    "departure_time": "07:36:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97003_23",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_kopr",
+    "sequence": 23,
+    "arrival_time": "07:39:10",
+    "departure_time": "07:39:40",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97003_24",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_di",
+    "sequence": 24,
+    "arrival_time": "07:42:20",
+    "departure_time": "07:42:50",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97003_25",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_thk",
+    "sequence": 25,
+    "arrival_time": "07:45:30",
+    "departure_time": "07:46:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97003_26",
+    "train_id": "train_cr_97003",
+    "station_id": "stn_kyn",
+    "sequence": 26,
+    "arrival_time": "07:48:40",
+    "departure_time": "07:48:40",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97005_1",
+    "train_id": "train_cr_97005",
+    "station_id": "stn_csmt",
+    "sequence": 1,
+    "arrival_time": "06:50:00",
+    "departure_time": "06:50:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97005_2",
+    "train_id": "train_cr_97005",
+    "station_id": "stn_by",
+    "sequence": 2,
+    "arrival_time": "06:56:00",
+    "departure_time": "06:56:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97005_3",
+    "train_id": "train_cr_97005",
+    "station_id": "stn_dr",
+    "sequence": 3,
+    "arrival_time": "07:02:30",
+    "departure_time": "07:03:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97005_4",
+    "train_id": "train_cr_97005",
+    "station_id": "stn_cla",
+    "sequence": 4,
+    "arrival_time": "07:09:00",
+    "departure_time": "07:09:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97005_5",
+    "train_id": "train_cr_97005",
+    "station_id": "stn_gc",
+    "sequence": 5,
+    "arrival_time": "07:15:30",
+    "departure_time": "07:16:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97005_6",
+    "train_id": "train_cr_97005",
+    "station_id": "stn_tna",
+    "sequence": 6,
+    "arrival_time": "07:22:00",
+    "departure_time": "07:22:30",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97005_7",
+    "train_id": "train_cr_97005",
+    "station_id": "stn_di",
+    "sequence": 7,
+    "arrival_time": "07:28:30",
+    "departure_time": "07:29:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97005_8",
+    "train_id": "train_cr_97005",
+    "station_id": "stn_kyn",
+    "sequence": 8,
+    "arrival_time": "07:35:00",
+    "departure_time": "07:35:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97007_1",
+    "train_id": "train_cr_97007",
+    "station_id": "stn_csmt",
+    "sequence": 1,
+    "arrival_time": "07:15:00",
+    "departure_time": "07:15:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97007_2",
+    "train_id": "train_cr_97007",
+    "station_id": "stn_by",
+    "sequence": 2,
+    "arrival_time": "07:21:00",
+    "departure_time": "07:21:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97007_3",
+    "train_id": "train_cr_97007",
+    "station_id": "stn_dr",
+    "sequence": 3,
+    "arrival_time": "07:27:30",
+    "departure_time": "07:28:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97007_4",
+    "train_id": "train_cr_97007",
+    "station_id": "stn_cla",
+    "sequence": 4,
+    "arrival_time": "07:34:00",
+    "departure_time": "07:34:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97007_5",
+    "train_id": "train_cr_97007",
+    "station_id": "stn_gc",
+    "sequence": 5,
+    "arrival_time": "07:40:30",
+    "departure_time": "07:41:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97007_6",
+    "train_id": "train_cr_97007",
+    "station_id": "stn_tna",
+    "sequence": 6,
+    "arrival_time": "07:47:00",
+    "departure_time": "07:47:30",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97007_7",
+    "train_id": "train_cr_97007",
+    "station_id": "stn_di",
+    "sequence": 7,
+    "arrival_time": "07:53:30",
+    "departure_time": "07:54:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97007_8",
+    "train_id": "train_cr_97007",
+    "station_id": "stn_kyn",
+    "sequence": 8,
+    "arrival_time": "08:00:00",
+    "departure_time": "08:00:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97009_1",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_csmt",
+    "sequence": 1,
+    "arrival_time": "07:30:00",
+    "departure_time": "07:30:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97009_2",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_msd",
+    "sequence": 2,
+    "arrival_time": "07:32:40",
+    "departure_time": "07:33:10",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97009_3",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_snrd",
+    "sequence": 3,
+    "arrival_time": "07:35:50",
+    "departure_time": "07:36:20",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97009_4",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_by",
+    "sequence": 4,
+    "arrival_time": "07:39:00",
+    "departure_time": "07:39:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97009_5",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_chg",
+    "sequence": 5,
+    "arrival_time": "07:42:10",
+    "departure_time": "07:42:40",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97009_6",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_crd",
+    "sequence": 6,
+    "arrival_time": "07:45:20",
+    "departure_time": "07:45:50",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97009_7",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_pr",
+    "sequence": 7,
+    "arrival_time": "07:48:30",
+    "departure_time": "07:49:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97009_8",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_dr",
+    "sequence": 8,
+    "arrival_time": "07:51:40",
+    "departure_time": "07:52:10",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97009_9",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_mtn",
+    "sequence": 9,
+    "arrival_time": "07:54:50",
+    "departure_time": "07:55:20",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97009_10",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_sin",
+    "sequence": 10,
+    "arrival_time": "07:58:00",
+    "departure_time": "07:58:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97009_11",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_cla",
+    "sequence": 11,
+    "arrival_time": "08:01:10",
+    "departure_time": "08:01:40",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97009_12",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_vvh",
+    "sequence": 12,
+    "arrival_time": "08:04:20",
+    "departure_time": "08:04:50",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97009_13",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_gc",
+    "sequence": 13,
+    "arrival_time": "08:07:30",
+    "departure_time": "08:08:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97009_14",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_vk",
+    "sequence": 14,
+    "arrival_time": "08:10:40",
+    "departure_time": "08:11:10",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97009_15",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_kjrd",
+    "sequence": 15,
+    "arrival_time": "08:13:50",
+    "departure_time": "08:14:20",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97009_16",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_bnd",
+    "sequence": 16,
+    "arrival_time": "08:17:00",
+    "departure_time": "08:17:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97009_17",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_nhu",
+    "sequence": 17,
+    "arrival_time": "08:20:10",
+    "departure_time": "08:20:40",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97009_18",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_mlnd",
+    "sequence": 18,
+    "arrival_time": "08:23:20",
+    "departure_time": "08:23:50",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97009_19",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_tna",
+    "sequence": 19,
+    "arrival_time": "08:26:30",
+    "departure_time": "08:27:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97009_20",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_klva",
+    "sequence": 20,
+    "arrival_time": "08:29:40",
+    "departure_time": "08:30:10",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97009_21",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_mbq",
+    "sequence": 21,
+    "arrival_time": "08:32:50",
+    "departure_time": "08:33:20",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97009_22",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_diva",
+    "sequence": 22,
+    "arrival_time": "08:36:00",
+    "departure_time": "08:36:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97009_23",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_kopr",
+    "sequence": 23,
+    "arrival_time": "08:39:10",
+    "departure_time": "08:39:40",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97009_24",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_di",
+    "sequence": 24,
+    "arrival_time": "08:42:20",
+    "departure_time": "08:42:50",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97009_25",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_thk",
+    "sequence": 25,
+    "arrival_time": "08:45:30",
+    "departure_time": "08:46:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97009_26",
+    "train_id": "train_cr_97009",
+    "station_id": "stn_kyn",
+    "sequence": 26,
+    "arrival_time": "08:48:40",
+    "departure_time": "08:48:40",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97011_1",
+    "train_id": "train_cr_97011",
+    "station_id": "stn_csmt",
+    "sequence": 1,
+    "arrival_time": "07:50:00",
+    "departure_time": "07:50:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97011_2",
+    "train_id": "train_cr_97011",
+    "station_id": "stn_by",
+    "sequence": 2,
+    "arrival_time": "07:56:00",
+    "departure_time": "07:56:30",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97011_3",
+    "train_id": "train_cr_97011",
+    "station_id": "stn_dr",
+    "sequence": 3,
+    "arrival_time": "08:02:30",
+    "departure_time": "08:03:00",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97011_4",
+    "train_id": "train_cr_97011",
+    "station_id": "stn_cla",
+    "sequence": 4,
+    "arrival_time": "08:09:00",
+    "departure_time": "08:09:30",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97011_5",
+    "train_id": "train_cr_97011",
+    "station_id": "stn_gc",
+    "sequence": 5,
+    "arrival_time": "08:15:30",
+    "departure_time": "08:16:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  },
+  {
+    "id": "stop_97011_6",
+    "train_id": "train_cr_97011",
+    "station_id": "stn_tna",
+    "sequence": 6,
+    "arrival_time": "08:22:00",
+    "departure_time": "08:22:30",
+    "day_pattern": "DAILY",
+    "platform": "3"
+  },
+  {
+    "id": "stop_97011_7",
+    "train_id": "train_cr_97011",
+    "station_id": "stn_di",
+    "sequence": 7,
+    "arrival_time": "08:28:30",
+    "departure_time": "08:29:00",
+    "day_pattern": "DAILY",
+    "platform": "1"
+  },
+  {
+    "id": "stop_97011_8",
+    "train_id": "train_cr_97011",
+    "station_id": "stn_kyn",
+    "sequence": 8,
+    "arrival_time": "08:35:00",
+    "departure_time": "08:35:00",
+    "day_pattern": "DAILY",
+    "platform": "2"
+  }
+]

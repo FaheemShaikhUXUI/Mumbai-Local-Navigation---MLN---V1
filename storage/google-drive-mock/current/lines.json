@@ -1,0 +1,34 @@
+[
+  {
+    "id": "line_wr_suburban",
+    "railway_id": "railway_wr",
+    "code": "WR_SUBURBAN",
+    "name": "Western Line",
+    "color": "#DC2626",
+    "order_seq": 1
+  },
+  {
+    "id": "line_cr_main",
+    "railway_id": "railway_cr",
+    "code": "CR_MAIN",
+    "name": "Central Main Line",
+    "color": "#B91C1C",
+    "order_seq": 2
+  },
+  {
+    "id": "line_cr_harbour",
+    "railway_id": "railway_cr",
+    "code": "HARBOUR",
+    "name": "Harbour Line",
+    "color": "#0284C7",
+    "order_seq": 3
+  },
+  {
+    "id": "line_cr_trans_harbour",
+    "railway_id": "railway_cr",
+    "code": "TRANS_HARBOUR",
+    "name": "Trans-Harbour Line",
+    "color": "#16A34A",
+    "order_seq": 4
+  }
+]

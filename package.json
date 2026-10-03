@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Production-grade offline-first Mumbai Local Railway timetable application",
+  "packageManager": "pnpm@9.15.9",
   "workspaces": [
     "packages/*",
     "services/*",

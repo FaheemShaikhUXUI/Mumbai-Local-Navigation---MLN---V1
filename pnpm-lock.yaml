@@ -18,6 +18,42 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  apps/mobile:
+    dependencies:
+      '@mumbai-timetable/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      '@mumbai-timetable/search':
+        specifier: workspace:*
+        version: link:../../packages/search
+      '@mumbai-timetable/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@mumbai-timetable/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@mumbai-timetable/validation':
+        specifier: workspace:*
+        version: link:../../packages/validation
+
+  apps/web-admin:
+    dependencies:
+      '@mumbai-timetable/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      '@mumbai-timetable/search':
+        specifier: workspace:*
+        version: link:../../packages/search
+      '@mumbai-timetable/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@mumbai-timetable/sync-engine':
+        specifier: workspace:*
+        version: link:../../services/sync-engine
+      '@mumbai-timetable/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+
   packages/database:
     dependencies:
       '@mumbai-timetable/shared':
@@ -55,6 +91,60 @@ importers:
       '@mumbai-timetable/types':
         specifier: workspace:*
         version: link:../types
+
+  services/data-sources:
+    dependencies:
+      '@mumbai-timetable/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@mumbai-timetable/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@mumbai-timetable/validation':
+        specifier: workspace:*
+        version: link:../../packages/validation
+
+  services/diff-engine:
+    dependencies:
+      '@mumbai-timetable/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@mumbai-timetable/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+
+  services/sync-engine:
+    dependencies:
+      '@mumbai-timetable/data-sources':
+        specifier: workspace:*
+        version: link:../data-sources
+      '@mumbai-timetable/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      '@mumbai-timetable/diff-engine':
+        specifier: workspace:*
+        version: link:../diff-engine
+      '@mumbai-timetable/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@mumbai-timetable/timetable-parser':
+        specifier: workspace:*
+        version: link:../timetable-parser
+      '@mumbai-timetable/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@mumbai-timetable/validation':
+        specifier: workspace:*
+        version: link:../../packages/validation
+
+  services/timetable-parser:
+    dependencies:
+      '@mumbai-timetable/data-sources':
+        specifier: workspace:*
+        version: link:../data-sources
+      '@mumbai-timetable/types':
+        specifier: workspace:*
+        version: link:../../packages/types
 
 packages:
 

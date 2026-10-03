@@ -1,92 +1,1613 @@
 [
   {
-    "id": "route_wr_ccg_vr_dn",
+    "id": "route_wr_adh_ccg_up",
     "line_id": "line_wr_suburban",
-    "name": "Churchgate to Virar Down",
-    "direction": "DN",
-    "origin_station_id": "stn_ccg",
-    "destination_station_id": "stn_vr",
-    "description": "Churchgate to Virar Down Suburban Services"
-  },
-  {
-    "id": "route_wr_vr_ccg_up",
-    "line_id": "line_wr_suburban",
-    "name": "Virar to Churchgate Up",
+    "name": "ADH to CCG (UP)",
     "direction": "UP",
-    "origin_station_id": "stn_vr",
+    "origin_station_id": "stn_adh",
     "destination_station_id": "stn_ccg",
-    "description": "Virar to Churchgate Up Suburban Services"
-  },
-  {
-    "id": "route_wr_ccg_bvi_dn",
-    "line_id": "line_wr_suburban",
-    "name": "Churchgate to Borivali Down",
-    "direction": "DN",
-    "origin_station_id": "stn_ccg",
-    "destination_station_id": "stn_bvi",
-    "description": "Churchgate to Borivali Down Services"
+    "description": "Western Suburban Line ADH to CCG"
   },
   {
     "id": "route_wr_bvi_ccg_up",
     "line_id": "line_wr_suburban",
-    "name": "Borivali to Churchgate Up",
+    "name": "BVI to CCG (UP)",
     "direction": "UP",
     "origin_station_id": "stn_bvi",
     "destination_station_id": "stn_ccg",
-    "description": "Borivali to Churchgate Up Services"
+    "description": "Western Suburban Line BVI to CCG"
   },
   {
-    "id": "route_wr_vr_drd_dn",
+    "id": "route_wr_vr_ccg_up",
     "line_id": "line_wr_suburban",
-    "name": "Virar to Dahanu Road Down",
-    "direction": "DN",
-    "origin_station_id": "stn_vr",
-    "destination_station_id": "stn_drd",
-    "description": "Virar to Dahanu Road Shuttle Services"
-  },
-  {
-    "id": "route_cr_csmt_kyn_dn",
-    "line_id": "line_cr_main",
-    "name": "CSMT to Kalyan Down",
-    "direction": "DN",
-    "origin_station_id": "stn_csmt",
-    "destination_station_id": "stn_kyn",
-    "description": "CSMT to Kalyan Down Suburban Mainline"
-  },
-  {
-    "id": "route_cr_kyn_csmt_up",
-    "line_id": "line_cr_main",
-    "name": "Kalyan to CSMT Up",
+    "name": "VR to CCG (UP)",
     "direction": "UP",
-    "origin_station_id": "stn_kyn",
-    "destination_station_id": "stn_csmt",
-    "description": "Kalyan to CSMT Up Suburban Mainline"
+    "origin_station_id": "stn_vr",
+    "destination_station_id": "stn_ccg",
+    "description": "Western Suburban Line VR to CCG"
   },
   {
-    "id": "route_cr_csmt_ksra_dn",
-    "line_id": "line_cr_main",
-    "name": "CSMT to Kasara Down",
+    "id": "route_wr_nsp_bvi_up",
+    "line_id": "line_wr_suburban",
+    "name": "NSP to BVI (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_nsp",
+    "destination_station_id": "stn_bvi",
+    "description": "Western Suburban Line NSP to BVI"
+  },
+  {
+    "id": "route_wr_mdd_ccg_up",
+    "line_id": "line_wr_suburban",
+    "name": "MDD to CCG (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_mdd",
+    "destination_station_id": "stn_ccg",
+    "description": "Western Suburban Line MDD to CCG"
+  },
+  {
+    "id": "route_wr_byr_ccg_up",
+    "line_id": "line_wr_suburban",
+    "name": "BYR to CCG (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_byr",
+    "destination_station_id": "stn_ccg",
+    "description": "Western Suburban Line BYR to CCG"
+  },
+  {
+    "id": "route_wr_vr_bvi_up",
+    "line_id": "line_wr_suburban",
+    "name": "VR to BVI (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_vr",
+    "destination_station_id": "stn_bvi",
+    "description": "Western Suburban Line VR to BVI"
+  },
+  {
+    "id": "route_wr_vr_dr_up",
+    "line_id": "line_wr_suburban",
+    "name": "VR to DR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_vr",
+    "destination_station_id": "stn_dr",
+    "description": "Western Suburban Line VR to DR"
+  },
+  {
+    "id": "route_wr_gmn_mmct_up",
+    "line_id": "line_wr_suburban",
+    "name": "GMN to MMCT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_gmn",
+    "destination_station_id": "stn_mmct",
+    "description": "Western Suburban Line GMN to MMCT"
+  },
+  {
+    "id": "route_wr_gmn_ccg_up",
+    "line_id": "line_wr_suburban",
+    "name": "GMN to CCG (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_gmn",
+    "destination_station_id": "stn_ccg",
+    "description": "Western Suburban Line GMN to CCG"
+  },
+  {
+    "id": "route_wr_nsp_ccg_up",
+    "line_id": "line_wr_suburban",
+    "name": "NSP to CCG (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_nsp",
+    "destination_station_id": "stn_ccg",
+    "description": "Western Suburban Line NSP to CCG"
+  },
+  {
+    "id": "route_wr_nsp_adh_up",
+    "line_id": "line_wr_suburban",
+    "name": "NSP to ADH (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_nsp",
+    "destination_station_id": "stn_adh",
+    "description": "Western Suburban Line NSP to ADH"
+  },
+  {
+    "id": "route_wr_vr_adh_up",
+    "line_id": "line_wr_suburban",
+    "name": "VR to ADH (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_vr",
+    "destination_station_id": "stn_adh",
+    "description": "Western Suburban Line VR to ADH"
+  },
+  {
+    "id": "route_wr_bsr_ccg_up",
+    "line_id": "line_wr_suburban",
+    "name": "BSR to CCG (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_bsr",
+    "destination_station_id": "stn_ccg",
+    "description": "Western Suburban Line BSR to CCG"
+  },
+  {
+    "id": "route_wr_ba_ccg_up",
+    "line_id": "line_wr_suburban",
+    "name": "BA to CCG (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_ba",
+    "destination_station_id": "stn_ccg",
+    "description": "Western Suburban Line BA to CCG"
+  },
+  {
+    "id": "route_wr_vr_ba_up",
+    "line_id": "line_wr_suburban",
+    "name": "VR to BA (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_vr",
+    "destination_station_id": "stn_ba",
+    "description": "Western Suburban Line VR to BA"
+  },
+  {
+    "id": "route_wr_bsr_adh_up",
+    "line_id": "line_wr_suburban",
+    "name": "BSR to ADH (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_bsr",
+    "destination_station_id": "stn_adh",
+    "description": "Western Suburban Line BSR to ADH"
+  },
+  {
+    "id": "route_wr_byr_adh_up",
+    "line_id": "line_wr_suburban",
+    "name": "BYR to ADH (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_byr",
+    "destination_station_id": "stn_adh",
+    "description": "Western Suburban Line BYR to ADH"
+  },
+  {
+    "id": "route_wr_byr_ba_up",
+    "line_id": "line_wr_suburban",
+    "name": "BYR to BA (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_byr",
+    "destination_station_id": "stn_ba",
+    "description": "Western Suburban Line BYR to BA"
+  },
+  {
+    "id": "route_wr_byr_dr_up",
+    "line_id": "line_wr_suburban",
+    "name": "BYR to DR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_byr",
+    "destination_station_id": "stn_dr",
+    "description": "Western Suburban Line BYR to DR"
+  },
+  {
+    "id": "route_wr_vr_jos_up",
+    "line_id": "line_wr_suburban",
+    "name": "VR to JOS (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_vr",
+    "destination_station_id": "stn_jos",
+    "description": "Western Suburban Line VR to JOS"
+  },
+  {
+    "id": "route_wr_vr_dic_up",
+    "line_id": "line_wr_suburban",
+    "name": "VR to DIC (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_vr",
+    "destination_station_id": "stn_dic",
+    "description": "Western Suburban Line VR to DIC"
+  },
+  {
+    "id": "route_wr_nig_ba_up",
+    "line_id": "line_wr_suburban",
+    "name": "NIG to BA (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_nig",
+    "destination_station_id": "stn_ba",
+    "description": "Western Suburban Line NIG to BA"
+  },
+  {
+    "id": "route_wr_nsp_ba_up",
+    "line_id": "line_wr_suburban",
+    "name": "NSP to BA (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_nsp",
+    "destination_station_id": "stn_ba",
+    "description": "Western Suburban Line NSP to BA"
+  },
+  {
+    "id": "route_wr_nsp_dic_up",
+    "line_id": "line_wr_suburban",
+    "name": "NSP to DIC (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_nsp",
+    "destination_station_id": "stn_dic",
+    "description": "Western Suburban Line NSP to DIC"
+  },
+  {
+    "id": "route_wr_bsr_dic_up",
+    "line_id": "line_wr_suburban",
+    "name": "BSR to DIC (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_bsr",
+    "destination_station_id": "stn_dic",
+    "description": "Western Suburban Line BSR to DIC"
+  },
+  {
+    "id": "route_wr_byr_dic_up",
+    "line_id": "line_wr_suburban",
+    "name": "BYR to DIC (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_byr",
+    "destination_station_id": "stn_dic",
+    "description": "Western Suburban Line BYR to DIC"
+  },
+  {
+    "id": "route_wr_ba_bvi_dn",
+    "line_id": "line_wr_suburban",
+    "name": "BA to BVI (DN)",
     "direction": "DN",
-    "origin_station_id": "stn_csmt",
-    "destination_station_id": "stn_ksra",
-    "description": "CSMT to Kasara Down Fast Service"
+    "origin_station_id": "stn_ba",
+    "destination_station_id": "stn_bvi",
+    "description": "Western Suburban Line BA to BVI"
   },
   {
-    "id": "route_cr_csmt_pnvl_dn",
-    "line_id": "line_cr_harbour",
-    "name": "CSMT to Panvel Down",
+    "id": "route_wr_bvi_vr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "BVI to VR (DN)",
     "direction": "DN",
-    "origin_station_id": "stn_csmt",
-    "destination_station_id": "stn_pnvl",
-    "description": "CSMT to Panvel Harbour Line Services"
+    "origin_station_id": "stn_bvi",
+    "destination_station_id": "stn_vr",
+    "description": "Western Suburban Line BVI to VR"
   },
   {
-    "id": "route_cr_tna_pnvl_dn",
+    "id": "route_wr_adh_vr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "ADH to VR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_adh",
+    "destination_station_id": "stn_vr",
+    "description": "Western Suburban Line ADH to VR"
+  },
+  {
+    "id": "route_wr_byr_vr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "BYR to VR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_byr",
+    "destination_station_id": "stn_vr",
+    "description": "Western Suburban Line BYR to VR"
+  },
+  {
+    "id": "route_wr_ba_byr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "BA to BYR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ba",
+    "destination_station_id": "stn_byr",
+    "description": "Western Suburban Line BA to BYR"
+  },
+  {
+    "id": "route_wr_ccg_vr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to VR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_vr",
+    "description": "Western Suburban Line CCG to VR"
+  },
+  {
+    "id": "route_wr_bvi_bsr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "BVI to BSR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_bvi",
+    "destination_station_id": "stn_bsr",
+    "description": "Western Suburban Line BVI to BSR"
+  },
+  {
+    "id": "route_wr_ccg_bvi_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to BVI (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_bvi",
+    "description": "Western Suburban Line CCG to BVI"
+  },
+  {
+    "id": "route_wr_pbhd_gmn_dn",
+    "line_id": "line_wr_suburban",
+    "name": "PBHD to GMN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_pbhd",
+    "destination_station_id": "stn_gmn",
+    "description": "Western Suburban Line PBHD to GMN"
+  },
+  {
+    "id": "route_wr_dr_vr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "DR to VR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_dr",
+    "destination_station_id": "stn_vr",
+    "description": "Western Suburban Line DR to VR"
+  },
+  {
+    "id": "route_wr_mx_bvi_dn",
+    "line_id": "line_wr_suburban",
+    "name": "MX to BVI (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_mx",
+    "destination_station_id": "stn_bvi",
+    "description": "Western Suburban Line MX to BVI"
+  },
+  {
+    "id": "route_wr_ccg_gmn_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to GMN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_gmn",
+    "description": "Western Suburban Line CCG to GMN"
+  },
+  {
+    "id": "route_wr_ccg_bsr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to BSR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_bsr",
+    "description": "Western Suburban Line CCG to BSR"
+  },
+  {
+    "id": "route_wr_adh_byr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "ADH to BYR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_adh",
+    "destination_station_id": "stn_byr",
+    "description": "Western Suburban Line ADH to BYR"
+  },
+  {
+    "id": "route_wr_mx_gmn_dn",
+    "line_id": "line_wr_suburban",
+    "name": "MX to GMN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_mx",
+    "destination_station_id": "stn_gmn",
+    "description": "Western Suburban Line MX to GMN"
+  },
+  {
+    "id": "route_wr_bvi_byr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "BVI to BYR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_bvi",
+    "destination_station_id": "stn_byr",
+    "description": "Western Suburban Line BVI to BYR"
+  },
+  {
+    "id": "route_wr_mx_vr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "MX to VR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_mx",
+    "destination_station_id": "stn_vr",
+    "description": "Western Suburban Line MX to VR"
+  },
+  {
+    "id": "route_wr_ccg_adh_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to ADH (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_adh",
+    "description": "Western Suburban Line CCG to ADH"
+  },
+  {
+    "id": "route_wr_ccg_ba_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to BA (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_ba",
+    "description": "Western Suburban Line CCG to BA"
+  },
+  {
+    "id": "route_wr_ccg_vlp_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to VLP (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_vlp",
+    "description": "Western Suburban Line CCG to VLP"
+  },
+  {
+    "id": "route_wr_ccg_byr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to BYR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_byr",
+    "description": "Western Suburban Line CCG to BYR"
+  },
+  {
+    "id": "route_wr_bvi_nsp_dn",
+    "line_id": "line_wr_suburban",
+    "name": "BVI to NSP (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_bvi",
+    "destination_station_id": "stn_nsp",
+    "description": "Western Suburban Line BVI to NSP"
+  },
+  {
+    "id": "route_wr_ccg_nsp_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to NSP (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_nsp",
+    "description": "Western Suburban Line CCG to NSP"
+  },
+  {
+    "id": "route_wr_ccg_mdd_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to MDD (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_mdd",
+    "description": "Western Suburban Line CCG to MDD"
+  },
+  {
+    "id": "route_wr_adh_bsr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "ADH to BSR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_adh",
+    "destination_station_id": "stn_bsr",
+    "description": "Western Suburban Line ADH to BSR"
+  },
+  {
+    "id": "route_wr_ccg_mmct_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to MMCT (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_mmct",
+    "description": "Western Suburban Line CCG to MMCT"
+  },
+  {
+    "id": "route_wr_ba_vr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "BA to VR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ba",
+    "destination_station_id": "stn_vr",
+    "description": "Western Suburban Line BA to VR"
+  },
+  {
+    "id": "route_wr_pl_vr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "PL to VR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_pl",
+    "destination_station_id": "stn_vr",
+    "description": "Western Suburban Line PL to VR"
+  },
+  {
+    "id": "route_wr_dr_bvi_dn",
+    "line_id": "line_wr_suburban",
+    "name": "DR to BVI (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_dr",
+    "destination_station_id": "stn_bvi",
+    "description": "Western Suburban Line DR to BVI"
+  },
+  {
+    "id": "route_wr_dr_byr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "DR to BYR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_dr",
+    "destination_station_id": "stn_byr",
+    "description": "Western Suburban Line DR to BYR"
+  },
+  {
+    "id": "route_wr_ccg_kile_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to KILE (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_kile",
+    "description": "Western Suburban Line CCG to KILE"
+  },
+  {
+    "id": "route_wr_pbhd_bvi_dn",
+    "line_id": "line_wr_suburban",
+    "name": "PBHD to BVI (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_pbhd",
+    "destination_station_id": "stn_bvi",
+    "description": "Western Suburban Line PBHD to BVI"
+  },
+  {
+    "id": "route_wr_adh_nsp_dn",
+    "line_id": "line_wr_suburban",
+    "name": "ADH to NSP (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_adh",
+    "destination_station_id": "stn_nsp",
+    "description": "Western Suburban Line ADH to NSP"
+  },
+  {
+    "id": "route_cr_thb_tna_pnvl_dn",
     "line_id": "line_cr_trans_harbour",
-    "name": "Thane to Panvel Down",
+    "name": "TNA to PNVL (DN)",
     "direction": "DN",
     "origin_station_id": "stn_tna",
     "destination_station_id": "stn_pnvl",
-    "description": "Trans-Harbour Corridor Services"
+    "description": "TNA to PNVL (DN)"
+  },
+  {
+    "id": "route_cr_thb_tna_vsh_dn",
+    "line_id": "line_cr_trans_harbour",
+    "name": "TNA to VSH (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_vsh",
+    "description": "TNA to VSH (DN)"
+  },
+  {
+    "id": "route_cr_thb_tna_neu_dn",
+    "line_id": "line_cr_trans_harbour",
+    "name": "TNA to NEU (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_neu",
+    "description": "TNA to NEU (DN)"
+  },
+  {
+    "id": "route_cr_uran_bepr_uran_dn",
+    "line_id": "line_cr_uran",
+    "name": "BEPR to URAN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_bepr",
+    "destination_station_id": "stn_uran",
+    "description": "BEPR to URAN (DN)"
+  },
+  {
+    "id": "route_cr_uran_neu_uran_dn",
+    "line_id": "line_cr_uran",
+    "name": "NEU to URAN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_neu",
+    "destination_station_id": "stn_uran",
+    "description": "NEU to URAN (DN)"
+  },
+  {
+    "id": "route_cr_uran_uran_bepr_up",
+    "line_id": "line_cr_uran",
+    "name": "URAN to BEPR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_uran",
+    "destination_station_id": "stn_bepr",
+    "description": "URAN to BEPR (UP)"
+  },
+  {
+    "id": "route_cr_uran_uran_neu_up",
+    "line_id": "line_cr_uran",
+    "name": "URAN to NEU (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_uran",
+    "destination_station_id": "stn_neu",
+    "description": "URAN to NEU (UP)"
+  },
+  {
+    "id": "route_cr_pune_tgn_kk_dn",
+    "line_id": "line_cr_pune_suburban",
+    "name": "TGN to KK (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_tgn",
+    "destination_station_id": "stn_kk",
+    "description": "TGN to KK (DN)"
+  },
+  {
+    "id": "route_cr_pune_lnl_kk_dn",
+    "line_id": "line_cr_pune_suburban",
+    "name": "LNL to KK (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_lnl",
+    "destination_station_id": "stn_kk",
+    "description": "LNL to KK (DN)"
+  },
+  {
+    "id": "route_cr_pune_lnl_pune_dn",
+    "line_id": "line_cr_pune_suburban",
+    "name": "LNL to PUNE (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_lnl",
+    "destination_station_id": "stn_pune",
+    "description": "LNL to PUNE (DN)"
+  },
+  {
+    "id": "route_cr_pune_tgn_pune_dn",
+    "line_id": "line_cr_pune_suburban",
+    "name": "TGN to PUNE (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_tgn",
+    "destination_station_id": "stn_pune",
+    "description": "TGN to PUNE (DN)"
+  },
+  {
+    "id": "route_cr_pune_svjr_mvl_up",
+    "line_id": "line_cr_pune_suburban",
+    "name": "SVJR to MVL (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_svjr",
+    "destination_station_id": "stn_mvl",
+    "description": "SVJR to MVL (UP)"
+  },
+  {
+    "id": "route_cr_pune_kk_mvl_up",
+    "line_id": "line_cr_pune_suburban",
+    "name": "KK to MVL (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_kk",
+    "destination_station_id": "stn_mvl",
+    "description": "KK to MVL (UP)"
+  },
+  {
+    "id": "route_cr_pune_svjr_grwd_up",
+    "line_id": "line_cr_pune_suburban",
+    "name": "SVJR to GRWD (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_svjr",
+    "destination_station_id": "stn_grwd",
+    "description": "SVJR to GRWD (UP)"
+  },
+  {
+    "id": "route_cr_pune_kk_grwd_up",
+    "line_id": "line_cr_pune_suburban",
+    "name": "KK to GRWD (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_kk",
+    "destination_station_id": "stn_grwd",
+    "description": "KK to GRWD (UP)"
+  },
+  {
+    "id": "route_cr_hb_csmt_bepr_dn",
+    "line_id": "line_cr_harbour",
+    "name": "CSMT to BEPR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_bepr",
+    "description": "CSMT to BEPR (DN)"
+  },
+  {
+    "id": "route_cr_hb_csmt_pnvl_dn",
+    "line_id": "line_cr_harbour",
+    "name": "CSMT to PNVL (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_pnvl",
+    "description": "CSMT to PNVL (DN)"
+  },
+  {
+    "id": "route_cr_hb_csmt_ba_dn",
+    "line_id": "line_cr_harbour",
+    "name": "CSMT to BA (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_ba",
+    "description": "CSMT to BA (DN)"
+  },
+  {
+    "id": "route_cr_hb_csmt_vsh_dn",
+    "line_id": "line_cr_harbour",
+    "name": "CSMT to VSH (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_vsh",
+    "description": "CSMT to VSH (DN)"
+  },
+  {
+    "id": "route_cr_hb_vdlr_bepr_dn",
+    "line_id": "line_cr_harbour",
+    "name": "VDLR to BEPR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_vdlr",
+    "destination_station_id": "stn_bepr",
+    "description": "VDLR to BEPR (DN)"
+  },
+  {
+    "id": "route_cr_hb_csmt_gmn_dn",
+    "line_id": "line_cr_harbour",
+    "name": "CSMT to GMN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_gmn",
+    "description": "CSMT to GMN (DN)"
+  },
+  {
+    "id": "route_cr_hb_msd_pnvl_dn",
+    "line_id": "line_cr_harbour",
+    "name": "MSD to PNVL (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_msd",
+    "destination_station_id": "stn_pnvl",
+    "description": "MSD to PNVL (DN)"
+  },
+  {
+    "id": "route_cr_hb_vdlr_pnvl_dn",
+    "line_id": "line_cr_harbour",
+    "name": "VDLR to PNVL (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_vdlr",
+    "destination_station_id": "stn_pnvl",
+    "description": "VDLR to PNVL (DN)"
+  },
+  {
+    "id": "route_cr_hb_vdlr_gmn_dn",
+    "line_id": "line_cr_harbour",
+    "name": "VDLR to GMN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_vdlr",
+    "destination_station_id": "stn_gmn",
+    "description": "VDLR to GMN (DN)"
+  },
+  {
+    "id": "route_cr_hb_vdlr_vsh_dn",
+    "line_id": "line_cr_harbour",
+    "name": "VDLR to VSH (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_vdlr",
+    "destination_station_id": "stn_vsh",
+    "description": "VDLR to VSH (DN)"
+  },
+  {
+    "id": "route_cr_hb_csmt_cmbr_dn",
+    "line_id": "line_cr_harbour",
+    "name": "CSMT to CMBR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_cmbr",
+    "description": "CSMT to CMBR (DN)"
+  },
+  {
+    "id": "route_cr_hb_gmn_csmt_up",
+    "line_id": "line_cr_harbour",
+    "name": "GMN to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_gmn",
+    "destination_station_id": "stn_csmt",
+    "description": "GMN to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_hb_pnvl_bepr_up",
+    "line_id": "line_cr_harbour",
+    "name": "PNVL to BEPR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_pnvl",
+    "destination_station_id": "stn_bepr",
+    "description": "PNVL to BEPR (UP)"
+  },
+  {
+    "id": "route_cr_hb_ba_csmt_up",
+    "line_id": "line_cr_harbour",
+    "name": "BA to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_ba",
+    "destination_station_id": "stn_csmt",
+    "description": "BA to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_hb_vsh_csmt_up",
+    "line_id": "line_cr_harbour",
+    "name": "VSH to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_vsh",
+    "destination_station_id": "stn_csmt",
+    "description": "VSH to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_hb_bepr_csmt_up",
+    "line_id": "line_cr_harbour",
+    "name": "BEPR to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_bepr",
+    "destination_station_id": "stn_csmt",
+    "description": "BEPR to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_hb_vsh_vdlr_up",
+    "line_id": "line_cr_harbour",
+    "name": "VSH to VDLR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_vsh",
+    "destination_station_id": "stn_vdlr",
+    "description": "VSH to VDLR (UP)"
+  },
+  {
+    "id": "route_cr_hb_pnvl_csmt_up",
+    "line_id": "line_cr_harbour",
+    "name": "PNVL to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_pnvl",
+    "destination_station_id": "stn_csmt",
+    "description": "PNVL to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_hb_pnvl_neu_up",
+    "line_id": "line_cr_harbour",
+    "name": "PNVL to NEU (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_pnvl",
+    "destination_station_id": "stn_neu",
+    "description": "PNVL to NEU (UP)"
+  },
+  {
+    "id": "route_cr_hb_bepr_vdlr_up",
+    "line_id": "line_cr_harbour",
+    "name": "BEPR to VDLR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_bepr",
+    "destination_station_id": "stn_vdlr",
+    "description": "BEPR to VDLR (UP)"
+  },
+  {
+    "id": "route_cr_hb_pnvl_vdlr_up",
+    "line_id": "line_cr_harbour",
+    "name": "PNVL to VDLR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_pnvl",
+    "destination_station_id": "stn_vdlr",
+    "description": "PNVL to VDLR (UP)"
+  },
+  {
+    "id": "route_cr_hb_gmn_vdlr_up",
+    "line_id": "line_cr_harbour",
+    "name": "GMN to VDLR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_gmn",
+    "destination_station_id": "stn_vdlr",
+    "description": "GMN to VDLR (UP)"
+  },
+  {
+    "id": "route_cr_hb_mnkd_csmt_up",
+    "line_id": "line_cr_harbour",
+    "name": "MNKD to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_mnkd",
+    "destination_station_id": "stn_csmt",
+    "description": "MNKD to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_hb_cmbr_csmt_up",
+    "line_id": "line_cr_harbour",
+    "name": "CMBR to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_cmbr",
+    "destination_station_id": "stn_csmt",
+    "description": "CMBR to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_hb_pnvl_vsh_up",
+    "line_id": "line_cr_harbour",
+    "name": "PNVL to VSH (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_pnvl",
+    "destination_station_id": "stn_vsh",
+    "description": "PNVL to VSH (UP)"
+  },
+  {
+    "id": "route_cr_main_csmt_abh_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to ABH (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_abh",
+    "description": "CSMT to ABH (DN)"
+  },
+  {
+    "id": "route_cr_main_csmt_cla_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to CLA (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_cla",
+    "description": "CSMT to CLA (DN)"
+  },
+  {
+    "id": "route_cr_main_csmt_ksra_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to KSRA (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_ksra",
+    "description": "CSMT to KSRA (DN)"
+  },
+  {
+    "id": "route_cr_main_csmt_kjt_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to KJT (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_kjt",
+    "description": "CSMT to KJT (DN)"
+  },
+  {
+    "id": "route_cr_main_csmt_tna_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to TNA (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_tna",
+    "description": "CSMT to TNA (DN)"
+  },
+  {
+    "id": "route_cr_main_kjt_khpi_dn",
+    "line_id": "line_cr_main",
+    "name": "KJT to KHPI (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_kjt",
+    "destination_station_id": "stn_khpi",
+    "description": "KJT to KHPI (DN)"
+  },
+  {
+    "id": "route_cr_main_kyn_aso_dn",
+    "line_id": "line_cr_main",
+    "name": "KYN to ASO (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_kyn",
+    "destination_station_id": "stn_aso",
+    "description": "KYN to ASO (DN)"
+  },
+  {
+    "id": "route_cr_main_tna_kjt_dn",
+    "line_id": "line_cr_main",
+    "name": "TNA to KJT (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_kjt",
+    "description": "TNA to KJT (DN)"
+  },
+  {
+    "id": "route_cr_main_tna_kyn_dn",
+    "line_id": "line_cr_main",
+    "name": "TNA to KYN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_kyn",
+    "description": "TNA to KYN (DN)"
+  },
+  {
+    "id": "route_cr_main_vvh_tlw_dn",
+    "line_id": "line_cr_main",
+    "name": "VVH to TLW (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_vvh",
+    "destination_station_id": "stn_tlw",
+    "description": "VVH to TLW (DN)"
+  },
+  {
+    "id": "route_cr_main_tna_di_dn",
+    "line_id": "line_cr_main",
+    "name": "TNA to DI (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_di",
+    "description": "TNA to DI (DN)"
+  },
+  {
+    "id": "route_cr_main_csmt_khpi_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to KHPI (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_khpi",
+    "description": "CSMT to KHPI (DN)"
+  },
+  {
+    "id": "route_cr_main_cla_tna_dn",
+    "line_id": "line_cr_main",
+    "name": "CLA to TNA (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_cla",
+    "destination_station_id": "stn_tna",
+    "description": "CLA to TNA (DN)"
+  },
+  {
+    "id": "route_cr_main_tna_tlw_dn",
+    "line_id": "line_cr_main",
+    "name": "TNA to TLW (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_tlw",
+    "description": "TNA to TLW (DN)"
+  },
+  {
+    "id": "route_cr_main_tna_aso_dn",
+    "line_id": "line_cr_main",
+    "name": "TNA to ASO (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_aso",
+    "description": "TNA to ASO (DN)"
+  },
+  {
+    "id": "route_cr_main_vvh_bud_dn",
+    "line_id": "line_cr_main",
+    "name": "VVH to BUD (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_vvh",
+    "destination_station_id": "stn_bud",
+    "description": "VVH to BUD (DN)"
+  },
+  {
+    "id": "route_cr_main_csmt_kyn_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to KYN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_kyn",
+    "description": "CSMT to KYN (DN)"
+  },
+  {
+    "id": "route_cr_main_vvh_kyn_dn",
+    "line_id": "line_cr_main",
+    "name": "VVH to KYN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_vvh",
+    "destination_station_id": "stn_kyn",
+    "description": "VVH to KYN (DN)"
+  },
+  {
+    "id": "route_cr_main_csmt_aso_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to ASO (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_aso",
+    "description": "CSMT to ASO (DN)"
+  },
+  {
+    "id": "route_cr_main_csmt_tlw_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to TLW (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_tlw",
+    "description": "CSMT to TLW (DN)"
+  },
+  {
+    "id": "route_cr_main_pr_kyn_dn",
+    "line_id": "line_cr_main",
+    "name": "PR to KYN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_pr",
+    "destination_station_id": "stn_kyn",
+    "description": "PR to KYN (DN)"
+  },
+  {
+    "id": "route_cr_main_vvh_abh_dn",
+    "line_id": "line_cr_main",
+    "name": "VVH to ABH (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_vvh",
+    "destination_station_id": "stn_abh",
+    "description": "VVH to ABH (DN)"
+  },
+  {
+    "id": "route_cr_main_csmt_di_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to DI (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_di",
+    "description": "CSMT to DI (DN)"
+  },
+  {
+    "id": "route_cr_main_csmt_bud_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to BUD (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_bud",
+    "description": "CSMT to BUD (DN)"
+  },
+  {
+    "id": "route_cr_main_vvh_di_dn",
+    "line_id": "line_cr_main",
+    "name": "VVH to DI (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_vvh",
+    "destination_station_id": "stn_di",
+    "description": "VVH to DI (DN)"
+  },
+  {
+    "id": "route_cr_main_pr_tna_dn",
+    "line_id": "line_cr_main",
+    "name": "PR to TNA (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_pr",
+    "destination_station_id": "stn_tna",
+    "description": "PR to TNA (DN)"
+  },
+  {
+    "id": "route_cr_main_dr_abh_dn",
+    "line_id": "line_cr_main",
+    "name": "DR to ABH (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_dr",
+    "destination_station_id": "stn_abh",
+    "description": "DR to ABH (DN)"
+  },
+  {
+    "id": "route_cr_main_csmt_gc_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to GC (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_gc",
+    "description": "CSMT to GC (DN)"
+  },
+  {
+    "id": "route_cr_main_csmt_thk_dn",
+    "line_id": "line_cr_main",
+    "name": "CSMT to THK (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_thk",
+    "description": "CSMT to THK (DN)"
+  },
+  {
+    "id": "route_cr_main_pr_di_dn",
+    "line_id": "line_cr_main",
+    "name": "PR to DI (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_pr",
+    "destination_station_id": "stn_di",
+    "description": "PR to DI (DN)"
+  },
+  {
+    "id": "route_cr_main_dr_kyn_dn",
+    "line_id": "line_cr_main",
+    "name": "DR to KYN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_dr",
+    "destination_station_id": "stn_kyn",
+    "description": "DR to KYN (DN)"
+  },
+  {
+    "id": "route_cr_main_dr_bud_dn",
+    "line_id": "line_cr_main",
+    "name": "DR to BUD (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_dr",
+    "destination_station_id": "stn_bud",
+    "description": "DR to BUD (DN)"
+  },
+  {
+    "id": "route_cr_main_cla_kyn_dn",
+    "line_id": "line_cr_main",
+    "name": "CLA to KYN (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_cla",
+    "destination_station_id": "stn_kyn",
+    "description": "CLA to KYN (DN)"
+  },
+  {
+    "id": "route_cr_main_tna_bud_dn",
+    "line_id": "line_cr_main",
+    "name": "TNA to BUD (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_bud",
+    "description": "TNA to BUD (DN)"
+  },
+  {
+    "id": "route_cr_main_dr_tna_dn",
+    "line_id": "line_cr_main",
+    "name": "DR to TNA (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_dr",
+    "destination_station_id": "stn_tna",
+    "description": "DR to TNA (DN)"
+  },
+  {
+    "id": "route_cr_main_dr_tlw_dn",
+    "line_id": "line_cr_main",
+    "name": "DR to TLW (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_dr",
+    "destination_station_id": "stn_tlw",
+    "description": "DR to TLW (DN)"
+  },
+  {
+    "id": "route_cr_main_tna_abh_dn",
+    "line_id": "line_cr_main",
+    "name": "TNA to ABH (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_abh",
+    "description": "TNA to ABH (DN)"
+  },
+  {
+    "id": "route_cr_main_pr_abh_dn",
+    "line_id": "line_cr_main",
+    "name": "PR to ABH (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_pr",
+    "destination_station_id": "stn_abh",
+    "description": "PR to ABH (DN)"
+  },
+  {
+    "id": "route_cr_main_khpi_kjt_up",
+    "line_id": "line_cr_main",
+    "name": "KHPI to KJT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_khpi",
+    "destination_station_id": "stn_kjt",
+    "description": "KHPI to KJT (UP)"
+  },
+  {
+    "id": "route_cr_main_kjt_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "KJT to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_kjt",
+    "destination_station_id": "stn_csmt",
+    "description": "KJT to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_main_tna_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "TNA to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_csmt",
+    "description": "TNA to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_main_cla_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "CLA to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_cla",
+    "destination_station_id": "stn_csmt",
+    "description": "CLA to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_main_abh_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "ABH to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_abh",
+    "destination_station_id": "stn_csmt",
+    "description": "ABH to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_main_tlw_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "TLW to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_tlw",
+    "destination_station_id": "stn_csmt",
+    "description": "TLW to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_main_kyn_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "KYN to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_kyn",
+    "destination_station_id": "stn_csmt",
+    "description": "KYN to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_main_ksra_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "KSRA to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_ksra",
+    "destination_station_id": "stn_csmt",
+    "description": "KSRA to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_main_khpi_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "KHPI to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_khpi",
+    "destination_station_id": "stn_csmt",
+    "description": "KHPI to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_main_bud_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "BUD to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_bud",
+    "destination_station_id": "stn_csmt",
+    "description": "BUD to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_main_kyn_pr_up",
+    "line_id": "line_cr_main",
+    "name": "KYN to PR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_kyn",
+    "destination_station_id": "stn_pr",
+    "description": "KYN to PR (UP)"
+  },
+  {
+    "id": "route_cr_main_aso_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "ASO to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_aso",
+    "destination_station_id": "stn_csmt",
+    "description": "ASO to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_main_di_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "DI to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_di",
+    "destination_station_id": "stn_csmt",
+    "description": "DI to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_main_kyn_dr_up",
+    "line_id": "line_cr_main",
+    "name": "KYN to DR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_kyn",
+    "destination_station_id": "stn_dr",
+    "description": "KYN to DR (UP)"
+  },
+  {
+    "id": "route_cr_main_bud_tna_up",
+    "line_id": "line_cr_main",
+    "name": "BUD to TNA (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_bud",
+    "destination_station_id": "stn_tna",
+    "description": "BUD to TNA (UP)"
+  },
+  {
+    "id": "route_cr_main_gc_csmt_up",
+    "line_id": "line_cr_main",
+    "name": "GC to CSMT (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_gc",
+    "destination_station_id": "stn_csmt",
+    "description": "GC to CSMT (UP)"
+  },
+  {
+    "id": "route_cr_main_tlw_pr_up",
+    "line_id": "line_cr_main",
+    "name": "TLW to PR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_tlw",
+    "destination_station_id": "stn_pr",
+    "description": "TLW to PR (UP)"
+  },
+  {
+    "id": "route_cr_main_kyn_tna_up",
+    "line_id": "line_cr_main",
+    "name": "KYN to TNA (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_kyn",
+    "destination_station_id": "stn_tna",
+    "description": "KYN to TNA (UP)"
+  },
+  {
+    "id": "route_cr_main_aso_tna_up",
+    "line_id": "line_cr_main",
+    "name": "ASO to TNA (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_aso",
+    "destination_station_id": "stn_tna",
+    "description": "ASO to TNA (UP)"
+  },
+  {
+    "id": "route_cr_main_di_pr_up",
+    "line_id": "line_cr_main",
+    "name": "DI to PR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_di",
+    "destination_station_id": "stn_pr",
+    "description": "DI to PR (UP)"
+  },
+  {
+    "id": "route_cr_main_kyn_cla_up",
+    "line_id": "line_cr_main",
+    "name": "KYN to CLA (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_kyn",
+    "destination_station_id": "stn_cla",
+    "description": "KYN to CLA (UP)"
+  },
+  {
+    "id": "route_cr_main_abh_dr_up",
+    "line_id": "line_cr_main",
+    "name": "ABH to DR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_abh",
+    "destination_station_id": "stn_dr",
+    "description": "ABH to DR (UP)"
+  },
+  {
+    "id": "route_cr_main_bud_dr_up",
+    "line_id": "line_cr_main",
+    "name": "BUD to DR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_bud",
+    "destination_station_id": "stn_dr",
+    "description": "BUD to DR (UP)"
+  },
+  {
+    "id": "route_cr_main_tna_pr_up",
+    "line_id": "line_cr_main",
+    "name": "TNA to PR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_pr",
+    "description": "TNA to PR (UP)"
+  },
+  {
+    "id": "route_cr_main_kjt_tna_up",
+    "line_id": "line_cr_main",
+    "name": "KJT to TNA (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_kjt",
+    "destination_station_id": "stn_tna",
+    "description": "KJT to TNA (UP)"
+  },
+  {
+    "id": "route_cr_main_tlw_tna_up",
+    "line_id": "line_cr_main",
+    "name": "TLW to TNA (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_tlw",
+    "destination_station_id": "stn_tna",
+    "description": "TLW to TNA (UP)"
+  },
+  {
+    "id": "route_cr_main_bud_pr_up",
+    "line_id": "line_cr_main",
+    "name": "BUD to PR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_bud",
+    "destination_station_id": "stn_pr",
+    "description": "BUD to PR (UP)"
+  },
+  {
+    "id": "route_cr_main_tna_cla_up",
+    "line_id": "line_cr_main",
+    "name": "TNA to CLA (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_tna",
+    "destination_station_id": "stn_cla",
+    "description": "TNA to CLA (UP)"
+  },
+  {
+    "id": "route_wr_drd_vr_drd_dn",
+    "line_id": "line_wr_suburban",
+    "name": "VR to DRD (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_vr",
+    "destination_station_id": "stn_drd",
+    "description": "VR to DRD (DN)"
+  },
+  {
+    "id": "route_wr_drd_ccg_drd_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to DRD (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_drd",
+    "description": "CCG to DRD (DN)"
+  },
+  {
+    "id": "route_wr_drd_ccg_bsr_dn",
+    "line_id": "line_wr_suburban",
+    "name": "CCG to BSR (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_ccg",
+    "destination_station_id": "stn_bsr",
+    "description": "CCG to BSR (DN)"
+  },
+  {
+    "id": "route_wr_drd_bvi_drd_dn",
+    "line_id": "line_wr_suburban",
+    "name": "BVI to DRD (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_bvi",
+    "destination_station_id": "stn_drd",
+    "description": "BVI to DRD (DN)"
+  },
+  {
+    "id": "route_wr_drd_dr_drd_dn",
+    "line_id": "line_wr_suburban",
+    "name": "DR to DRD (DN)",
+    "direction": "DN",
+    "origin_station_id": "stn_dr",
+    "destination_station_id": "stn_drd",
+    "description": "DR to DRD (DN)"
+  },
+  {
+    "id": "route_wr_drd_drd_ccg_up",
+    "line_id": "line_wr_suburban",
+    "name": "DRD to CCG (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_drd",
+    "destination_station_id": "stn_ccg",
+    "description": "DRD to CCG (UP)"
+  },
+  {
+    "id": "route_wr_drd_drd_vr_up",
+    "line_id": "line_wr_suburban",
+    "name": "DRD to VR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_drd",
+    "destination_station_id": "stn_vr",
+    "description": "DRD to VR (UP)"
+  },
+  {
+    "id": "route_wr_drd_drd_bvi_up",
+    "line_id": "line_wr_suburban",
+    "name": "DRD to BVI (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_drd",
+    "destination_station_id": "stn_bvi",
+    "description": "DRD to BVI (UP)"
+  },
+  {
+    "id": "route_wr_drd_drd_dr_up",
+    "line_id": "line_wr_suburban",
+    "name": "DRD to DR (UP)",
+    "direction": "UP",
+    "origin_station_id": "stn_drd",
+    "destination_station_id": "stn_dr",
+    "description": "DRD to DR (UP)"
+  },
+  {
+    "id": "route_cr_vdp_bsr_pnvl_dn",
+    "line_id": "line_cr_vasai_diva_panvel",
+    "name": "Vasai Road to Panvel Down",
+    "direction": "DN",
+    "origin_station_id": "stn_bsr",
+    "destination_station_id": "stn_pnvl",
+    "description": "Vasai Road to Panvel MEMU Service"
+  },
+  {
+    "id": "route_cr_vdp_pnvl_bsr_up",
+    "line_id": "line_cr_vasai_diva_panvel",
+    "name": "Panvel to Vasai Road Up",
+    "direction": "UP",
+    "origin_station_id": "stn_pnvl",
+    "destination_station_id": "stn_bsr",
+    "description": "Panvel to Vasai Road MEMU Service"
+  },
+  {
+    "id": "route_cr_matheran_nrl_mae_dn",
+    "line_id": "line_cr_neral_matheran",
+    "name": "Neral to Matheran Down",
+    "direction": "DN",
+    "origin_station_id": "stn_nrl",
+    "destination_station_id": "stn_mae",
+    "description": "Neral to Matheran Toy Train"
+  },
+  {
+    "id": "route_cr_matheran_mae_nrl_up",
+    "line_id": "line_cr_neral_matheran",
+    "name": "Matheran to Neral Up",
+    "direction": "UP",
+    "origin_station_id": "stn_mae",
+    "destination_station_id": "stn_nrl",
+    "description": "Matheran to Neral Toy Train"
   }
 ]

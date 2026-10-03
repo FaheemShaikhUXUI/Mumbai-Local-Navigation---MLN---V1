@@ -9,6 +9,7 @@
     "apps/*"
   ],
   "scripts": {
+    "build": "tsc --outDir dist && node setup-links.js",
     "test": "node --test packages/**/__tests__/*.test.js services/**/__tests__/*.test.js",
     "dev:admin": "npm run dev --workspace=apps/web-admin",
     "dev:mobile": "npm run start --workspace=apps/mobile",

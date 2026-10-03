@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import {
   CanonicalDataset,
   Railway,
@@ -60,7 +62,25 @@ export class CanonicalCompiler {
 
     const stations = Array.from(stationMap.values());
 
-    // 5. Parse services from both railways
+    // 5. Check if official compiled dataset exists in storage
+    try {
+      const storageDatasetPath = path.resolve(process.cwd(), 'storage/google-drive-mock/current/dataset.json');
+      if (fs.existsSync(storageDatasetPath)) {
+        const fileContent = fs.readFileSync(storageDatasetPath, 'utf8');
+        const parsed = JSON.parse(fileContent) as CanonicalDataset;
+        if (parsed.trains && parsed.trains.length > 50) {
+          return {
+            ...parsed,
+            version,
+            effectiveDate,
+          };
+        }
+      }
+    } catch {
+      // fallback to dynamic generator below
+    }
+
+    // 6. Dynamic seed parser fallback
     const wrData = WesternRailwayParser.parseOfficialServices(stations);
     const crData = CentralRailwayParser.parseOfficialServices(stations);
 
@@ -91,3 +111,4 @@ export class CanonicalCompiler {
     };
   }
 }
+

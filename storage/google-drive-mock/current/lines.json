@@ -30,5 +30,37 @@
     "name": "Trans-Harbour Line",
     "color": "#16A34A",
     "order_seq": 4
+  },
+  {
+    "id": "line_cr_uran",
+    "railway_id": "railway_cr",
+    "code": "URAN_LINE",
+    "name": "Uran Line",
+    "color": "#EAB308",
+    "order_seq": 5
+  },
+  {
+    "id": "line_cr_vasai_diva_panvel",
+    "railway_id": "railway_cr",
+    "code": "VASAI_DIVA_PANVEL",
+    "name": "Vasai-Diva-Panvel Line",
+    "color": "#8B5CF6",
+    "order_seq": 6
+  },
+  {
+    "id": "line_cr_neral_matheran",
+    "railway_id": "railway_cr",
+    "code": "NERAL_MATHERAN",
+    "name": "Neral-Matheran Line",
+    "color": "#F97316",
+    "order_seq": 7
+  },
+  {
+    "id": "line_cr_pune_suburban",
+    "railway_id": "railway_cr",
+    "code": "PUNE_SUBURBAN",
+    "name": "Pune Suburban Line",
+    "color": "#0D9488",
+    "order_seq": 8
   }
 ]

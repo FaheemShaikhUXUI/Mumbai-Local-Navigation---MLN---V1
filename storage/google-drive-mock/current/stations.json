@@ -116,11 +116,13 @@
     "aliases": [
       "DDR",
       "Dadar WR",
-      "Dadar Western"
+      "Dadar CR",
+      "Dadar Western",
+      "Dadar Central"
     ],
     "latitude": 19.0178,
     "longitude": 72.8434,
-    "zone": "WR",
+    "zone": "CR",
     "status": "ACTIVE"
   },
   {
@@ -139,10 +141,11 @@
   {
     "id": "stn_mm",
     "station_code": "MM",
-    "station_name": "Mahim",
-    "normalized_name": "mahim",
+    "station_name": "Mahim Junction",
+    "normalized_name": "mahimjunction",
     "aliases": [
-      "MM"
+      "MM",
+      "Mahim"
     ],
     "latitude": 19.0411,
     "longitude": 72.8436,
@@ -156,7 +159,8 @@
     "normalized_name": "bandra",
     "aliases": [
       "BA",
-      "Bandra Terminus"
+      "Bandra Terminus",
+      "BDTS"
     ],
     "latitude": 19.0544,
     "longitude": 72.8406,
@@ -169,7 +173,8 @@
     "station_name": "Khar Road",
     "normalized_name": "kharroad",
     "aliases": [
-      "KHAR"
+      "KHAR",
+      "Khar"
     ],
     "latitude": 19.0694,
     "longitude": 72.8385,
@@ -182,7 +187,8 @@
     "station_name": "Santacruz",
     "normalized_name": "santacruz",
     "aliases": [
-      "STC"
+      "STC",
+      "Santa Cruz"
     ],
     "latitude": 19.0818,
     "longitude": 72.8415,
@@ -208,7 +214,9 @@
     "station_name": "Andheri",
     "normalized_name": "andheri",
     "aliases": [
-      "ADH"
+      "ADH",
+      "Andheri West",
+      "Andheri Metro"
     ],
     "latitude": 19.1197,
     "longitude": 72.8464,
@@ -234,7 +242,8 @@
     "station_name": "Ram Mandir",
     "normalized_name": "rammandir",
     "aliases": [
-      "RMAR"
+      "RMAR",
+      "RamMandir"
     ],
     "latitude": 19.1464,
     "longitude": 72.8512,
@@ -273,7 +282,8 @@
     "station_name": "Kandivali",
     "normalized_name": "kandivali",
     "aliases": [
-      "KILE"
+      "KILE",
+      "Kandivli"
     ],
     "latitude": 19.2046,
     "longitude": 72.8524,
@@ -286,7 +296,8 @@
     "station_name": "Borivali",
     "normalized_name": "borivali",
     "aliases": [
-      "BVI"
+      "BVI",
+      "Borivli"
     ],
     "latitude": 19.2292,
     "longitude": 72.8569,
@@ -325,7 +336,8 @@
     "station_name": "Bhayandar",
     "normalized_name": "bhayandar",
     "aliases": [
-      "BYR"
+      "BYR",
+      "Bhayander"
     ],
     "latitude": 19.3012,
     "longitude": 72.8519,
@@ -352,7 +364,8 @@
     "normalized_name": "vasairoad",
     "aliases": [
       "BSR",
-      "Vasai"
+      "Vasai",
+      "Bassein Road"
     ],
     "latitude": 19.3814,
     "longitude": 72.8335,
@@ -365,7 +378,8 @@
     "station_name": "Nallasopara",
     "normalized_name": "nallasopara",
     "aliases": [
-      "NSP"
+      "NSP",
+      "Nala Sopara"
     ],
     "latitude": 19.4184,
     "longitude": 72.8188,
@@ -513,7 +527,8 @@
     "station_name": "Masjid",
     "normalized_name": "masjid",
     "aliases": [
-      "MSD"
+      "MSD",
+      "Masjid Bunder"
     ],
     "latitude": 18.9528,
     "longitude": 72.8394,
@@ -672,7 +687,8 @@
     "station_name": "Kanjurmarg",
     "normalized_name": "kanjurmarg",
     "aliases": [
-      "KJRD"
+      "KJRD",
+      "Kanjur Marg"
     ],
     "latitude": 19.1274,
     "longitude": 72.9372,
@@ -738,7 +754,8 @@
     "station_name": "Kalva",
     "normalized_name": "kalva",
     "aliases": [
-      "KLVA"
+      "KLVA",
+      "Kalwa"
     ],
     "latitude": 19.2012,
     "longitude": 72.9964,
@@ -761,11 +778,11 @@
   {
     "id": "stn_diva",
     "station_code": "DIVA",
-    "station_name": "Diva",
-    "normalized_name": "diva",
+    "station_name": "Diva Junction",
+    "normalized_name": "divajunction",
     "aliases": [
       "DIVA",
-      "Diva Jn"
+      "Diva"
     ],
     "latitude": 19.1894,
     "longitude": 73.0424,
@@ -778,7 +795,8 @@
     "station_name": "Kopar",
     "normalized_name": "kopar",
     "aliases": [
-      "KOPR"
+      "KOPR",
+      "Upper Kopar"
     ],
     "latitude": 19.2084,
     "longitude": 73.0784,
@@ -792,7 +810,8 @@
     "normalized_name": "dombivli",
     "aliases": [
       "DI",
-      "Dombivali"
+      "Dombivali",
+      "DL"
     ],
     "latitude": 19.2184,
     "longitude": 73.0864,
@@ -815,14 +834,42 @@
   {
     "id": "stn_kyn",
     "station_code": "KYN",
-    "station_name": "Kalyan",
-    "normalized_name": "kalyan",
+    "station_name": "Kalyan Junction",
+    "normalized_name": "kalyanjunction",
     "aliases": [
       "KYN",
-      "Kalyan Jn"
+      "Kalyan",
+      "K"
     ],
     "latitude": 19.2354,
     "longitude": 73.1302,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_shad",
+    "station_code": "SHAD",
+    "station_name": "Shahad",
+    "normalized_name": "shahad",
+    "aliases": [
+      "SHAD"
+    ],
+    "latitude": 19.2554,
+    "longitude": 73.1554,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_aby",
+    "station_code": "ABY",
+    "station_name": "Ambivli",
+    "normalized_name": "ambivli",
+    "aliases": [
+      "ABY",
+      "Ambivli"
+    ],
+    "latitude": 19.2784,
+    "longitude": 73.1784,
     "zone": "CR",
     "status": "ACTIVE"
   },
@@ -832,10 +879,38 @@
     "station_name": "Titwala",
     "normalized_name": "titwala",
     "aliases": [
-      "TLW"
+      "TLW",
+      "TL"
     ],
     "latitude": 19.2984,
     "longitude": 73.2084,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_kdv",
+    "station_code": "KDV",
+    "station_name": "Khadavli",
+    "normalized_name": "khadavli",
+    "aliases": [
+      "KDV",
+      "Khadavali"
+    ],
+    "latitude": 19.3684,
+    "longitude": 73.2484,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_vsd",
+    "station_code": "VSD",
+    "station_name": "Vasind",
+    "normalized_name": "vasind",
+    "aliases": [
+      "VSD"
+    ],
+    "latitude": 19.4084,
+    "longitude": 73.2784,
     "zone": "CR",
     "status": "ACTIVE"
   },
@@ -845,10 +920,63 @@
     "station_name": "Asangaon",
     "normalized_name": "asangaon",
     "aliases": [
-      "ASO"
+      "ASO",
+      "AN"
     ],
     "latitude": 19.4384,
     "longitude": 73.3084,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_atg",
+    "station_code": "ATG",
+    "station_name": "Atgaon",
+    "normalized_name": "atgaon",
+    "aliases": [
+      "ATG"
+    ],
+    "latitude": 19.4984,
+    "longitude": 73.3584,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_ths",
+    "station_code": "THS",
+    "station_name": "Thansit",
+    "normalized_name": "thansit",
+    "aliases": [
+      "THS"
+    ],
+    "latitude": 19.5384,
+    "longitude": 73.3884,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_ke",
+    "station_code": "KE",
+    "station_name": "Khardi",
+    "normalized_name": "khardi",
+    "aliases": [
+      "KE"
+    ],
+    "latitude": 19.5884,
+    "longitude": 73.4184,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_umb",
+    "station_code": "UMB",
+    "station_name": "Umbermali",
+    "normalized_name": "umbermali",
+    "aliases": [
+      "UMB"
+    ],
+    "latitude": 19.6184,
+    "longitude": 73.4484,
     "zone": "CR",
     "status": "ACTIVE"
   },
@@ -858,10 +986,38 @@
     "station_name": "Kasara",
     "normalized_name": "kasara",
     "aliases": [
-      "KSRA"
+      "KSRA",
+      "N"
     ],
     "latitude": 19.6484,
     "longitude": 73.4784,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_vldi",
+    "station_code": "VLDI",
+    "station_name": "Vithalwadi",
+    "normalized_name": "vithalwadi",
+    "aliases": [
+      "VLDI",
+      "Vitthalwadi"
+    ],
+    "latitude": 19.2284,
+    "longitude": 73.1484,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_ulnr",
+    "station_code": "ULNR",
+    "station_name": "Ulhasnagar",
+    "normalized_name": "ulhasnagar",
+    "aliases": [
+      "ULNR"
+    ],
+    "latitude": 19.2184,
+    "longitude": 73.1684,
     "zone": "CR",
     "status": "ACTIVE"
   },
@@ -871,7 +1027,8 @@
     "station_name": "Ambernath",
     "normalized_name": "ambernath",
     "aliases": [
-      "ABH"
+      "ABH",
+      "A"
     ],
     "latitude": 19.2012,
     "longitude": 73.1954,
@@ -884,7 +1041,8 @@
     "station_name": "Badlapur",
     "normalized_name": "badlapur",
     "aliases": [
-      "BUD"
+      "BUD",
+      "BL"
     ],
     "latitude": 19.1654,
     "longitude": 73.2354,
@@ -892,13 +1050,39 @@
     "status": "ACTIVE"
   },
   {
+    "id": "stn_vgi",
+    "station_code": "VGI",
+    "station_name": "Vangani",
+    "normalized_name": "vangani",
+    "aliases": [
+      "VGI"
+    ],
+    "latitude": 19.1084,
+    "longitude": 73.2784,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_shlu",
+    "station_code": "SHLU",
+    "station_name": "Shelu",
+    "normalized_name": "shelu",
+    "aliases": [
+      "SHLU"
+    ],
+    "latitude": 19.0684,
+    "longitude": 73.3084,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
     "id": "stn_nrl",
     "station_code": "NRL",
-    "station_name": "Neral",
-    "normalized_name": "neral",
+    "station_name": "Neral Junction",
+    "normalized_name": "neraljunction",
     "aliases": [
       "NRL",
-      "Neral Jn"
+      "Neral"
     ],
     "latitude": 19.0284,
     "longitude": 73.3184,
@@ -906,16 +1090,84 @@
     "status": "ACTIVE"
   },
   {
+    "id": "stn_bvs",
+    "station_code": "BVS",
+    "station_name": "Bhivpuri Road",
+    "normalized_name": "bhivpuriroad",
+    "aliases": [
+      "BVS"
+    ],
+    "latitude": 18.9784,
+    "longitude": 73.3284,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
     "id": "stn_kjt",
     "station_code": "KJT",
-    "station_name": "Karjat",
-    "normalized_name": "karjat",
+    "station_name": "Karjat Junction",
+    "normalized_name": "karjatjunction",
     "aliases": [
       "KJT",
-      "Karjat Jn"
+      "Karjat",
+      "S"
     ],
     "latitude": 18.9124,
     "longitude": 73.3284,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_pdi",
+    "station_code": "PDI",
+    "station_name": "Palasdari",
+    "normalized_name": "palasdari",
+    "aliases": [
+      "PDI",
+      "Palasdhari"
+    ],
+    "latitude": 18.8884,
+    "longitude": 73.3384,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_kly",
+    "station_code": "KLY",
+    "station_name": "Kelavli",
+    "normalized_name": "kelavli",
+    "aliases": [
+      "KLY"
+    ],
+    "latitude": 18.8584,
+    "longitude": 73.3484,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_dlv",
+    "station_code": "DLV",
+    "station_name": "Dolavali",
+    "normalized_name": "dolavali",
+    "aliases": [
+      "DLV",
+      "Dolavli"
+    ],
+    "latitude": 18.8284,
+    "longitude": 73.3484,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_lwj",
+    "station_code": "LWJ",
+    "station_name": "Lowjee",
+    "normalized_name": "lowjee",
+    "aliases": [
+      "LWJ"
+    ],
+    "latitude": 18.8084,
+    "longitude": 73.3484,
     "zone": "CR",
     "status": "ACTIVE"
   },
@@ -925,10 +1177,64 @@
     "station_name": "Khopoli",
     "normalized_name": "khopoli",
     "aliases": [
-      "KHPI"
+      "KHPI",
+      "KP"
     ],
     "latitude": 18.7884,
     "longitude": 73.3484,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_dkrd",
+    "station_code": "DKRD",
+    "station_name": "Dockyard Road",
+    "normalized_name": "dockyardroad",
+    "aliases": [
+      "DKRD"
+    ],
+    "latitude": 18.9684,
+    "longitude": 72.8424,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_rrd",
+    "station_code": "RRD",
+    "station_name": "Reay Road",
+    "normalized_name": "reayroad",
+    "aliases": [
+      "RRD"
+    ],
+    "latitude": 18.9784,
+    "longitude": 72.8454,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_ctgn",
+    "station_code": "CTGN",
+    "station_name": "Cotton Green",
+    "normalized_name": "cottongreen",
+    "aliases": [
+      "CTGN"
+    ],
+    "latitude": 18.9884,
+    "longitude": 72.8484,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_sve",
+    "station_code": "SVE",
+    "station_name": "Sewri",
+    "normalized_name": "sewri",
+    "aliases": [
+      "SVE",
+      "Sewree"
+    ],
+    "latitude": 18.9984,
+    "longitude": 72.8524,
     "zone": "CR",
     "status": "ACTIVE"
   },
@@ -948,6 +1254,20 @@
     "status": "ACTIVE"
   },
   {
+    "id": "stn_gtbn",
+    "station_code": "GTBN",
+    "station_name": "Guru Tegh Bahadur Nagar",
+    "normalized_name": "guruteghbahadurnagar",
+    "aliases": [
+      "GTBN",
+      "GTB Nagar"
+    ],
+    "latitude": 19.0384,
+    "longitude": 72.8684,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
     "id": "stn_chf",
     "station_code": "CHF",
     "station_name": "Chunabhatti",
@@ -961,12 +1281,54 @@
     "status": "ACTIVE"
   },
   {
+    "id": "stn_tkng",
+    "station_code": "TKNG",
+    "station_name": "Tilak Nagar",
+    "normalized_name": "tilaknagar",
+    "aliases": [
+      "TKNG",
+      "Tilaknagar"
+    ],
+    "latitude": 19.0684,
+    "longitude": 72.8924,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_cmbr",
+    "station_code": "CMBR",
+    "station_name": "Chembur",
+    "normalized_name": "chembur",
+    "aliases": [
+      "CMBR",
+      "CM"
+    ],
+    "latitude": 19.0612,
+    "longitude": 72.9024,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_gv",
+    "station_code": "GV",
+    "station_name": "Govandi",
+    "normalized_name": "govandi",
+    "aliases": [
+      "GV"
+    ],
+    "latitude": 19.0554,
+    "longitude": 72.9154,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
     "id": "stn_mnkd",
     "station_code": "MNKD",
     "station_name": "Mankhurd",
     "normalized_name": "mankhurd",
     "aliases": [
-      "MNKD"
+      "MNKD",
+      "M"
     ],
     "latitude": 19.0484,
     "longitude": 72.9324,
@@ -979,7 +1341,8 @@
     "station_name": "Vashi",
     "normalized_name": "vashi",
     "aliases": [
-      "VSH"
+      "VSH",
+      "V"
     ],
     "latitude": 19.0642,
     "longitude": 72.9984,
@@ -987,16 +1350,59 @@
     "status": "ACTIVE"
   },
   {
+    "id": "stn_sncr",
+    "station_code": "SNCR",
+    "station_name": "Sanpada",
+    "normalized_name": "sanpada",
+    "aliases": [
+      "SNCR",
+      "SNPD"
+    ],
+    "latitude": 19.0584,
+    "longitude": 73.0084,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_jnj",
+    "station_code": "JNJ",
+    "station_name": "Juinagar",
+    "normalized_name": "juinagar",
+    "aliases": [
+      "JNJ",
+      "Jui Nagar"
+    ],
+    "latitude": 19.0484,
+    "longitude": 73.0184,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
     "id": "stn_neu",
     "station_code": "NEU",
-    "station_name": "Nerul",
-    "normalized_name": "nerul",
+    "station_name": "Nerul Junction",
+    "normalized_name": "neruljunction",
     "aliases": [
       "NEU",
-      "Nerul Jn"
+      "Nerul"
     ],
     "latitude": 19.0342,
     "longitude": 73.0184,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_swdv",
+    "station_code": "SWDV",
+    "station_name": "Seawoods - Darave",
+    "normalized_name": "seawoodsdarave",
+    "aliases": [
+      "SWDV",
+      "Seawoods",
+      "Seawoods Darave Karave"
+    ],
+    "latitude": 19.0224,
+    "longitude": 73.0224,
     "zone": "CR",
     "status": "ACTIVE"
   },
@@ -1008,7 +1414,9 @@
     "aliases": [
       "BEPR",
       "CBD Belapur",
-      "Belapur"
+      "Belapur",
+      "BR",
+      "BP"
     ],
     "latitude": 19.0184,
     "longitude": 73.0384,
@@ -1016,16 +1424,729 @@
     "status": "ACTIVE"
   },
   {
+    "id": "stn_khag",
+    "station_code": "KHAG",
+    "station_name": "Kharghar",
+    "normalized_name": "kharghar",
+    "aliases": [
+      "KHAG"
+    ],
+    "latitude": 19.0254,
+    "longitude": 73.0684,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_manr",
+    "station_code": "MANR",
+    "station_name": "Mansarovar",
+    "normalized_name": "mansarovar",
+    "aliases": [
+      "MANR"
+    ],
+    "latitude": 19.0184,
+    "longitude": 73.0884,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_knds",
+    "station_code": "KNDS",
+    "station_name": "Khandeshwar",
+    "normalized_name": "khandeshwar",
+    "aliases": [
+      "KNDS"
+    ],
+    "latitude": 19.0084,
+    "longitude": 73.1024,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
     "id": "stn_pnvl",
     "station_code": "PNVL",
-    "station_name": "Panvel",
-    "normalized_name": "panvel",
+    "station_name": "Panvel Junction",
+    "normalized_name": "panveljunction",
     "aliases": [
       "PNVL",
-      "Panvel Jn"
+      "Panvel",
+      "PL",
+      "P"
     ],
     "latitude": 18.9894,
     "longitude": 73.1184,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_kce",
+    "station_code": "KCE",
+    "station_name": "King's Circle",
+    "normalized_name": "kingscircle",
+    "aliases": [
+      "KCE",
+      "Kings Circle"
+    ],
+    "latitude": 19.0312,
+    "longitude": 72.8564,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_digha",
+    "station_code": "DIGHA",
+    "station_name": "Digha Gaon",
+    "normalized_name": "dighagaon",
+    "aliases": [
+      "DIGHA",
+      "DIGH",
+      "Digha"
+    ],
+    "latitude": 19.1684,
+    "longitude": 72.9884,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_airl",
+    "station_code": "AIRL",
+    "station_name": "Airoli",
+    "normalized_name": "airoli",
+    "aliases": [
+      "AIRL"
+    ],
+    "latitude": 19.1584,
+    "longitude": 72.9984,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_rabe",
+    "station_code": "RABE",
+    "station_name": "Rabale",
+    "normalized_name": "rabale",
+    "aliases": [
+      "RABE"
+    ],
+    "latitude": 19.1412,
+    "longitude": 73.0084,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_gnsl",
+    "station_code": "GNSL",
+    "station_name": "Ghansoli",
+    "normalized_name": "ghansoli",
+    "aliases": [
+      "GNSL"
+    ],
+    "latitude": 19.1242,
+    "longitude": 73.0112,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_kphn",
+    "station_code": "KPHN",
+    "station_name": "Kopar Khairane",
+    "normalized_name": "koparkhairane",
+    "aliases": [
+      "KPHN",
+      "Koparkhairane"
+    ],
+    "latitude": 19.1024,
+    "longitude": 73.0124,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_tuh",
+    "station_code": "TUH",
+    "station_name": "Turbhe",
+    "normalized_name": "turbhe",
+    "aliases": [
+      "TUH"
+    ],
+    "latitude": 19.0784,
+    "longitude": 73.0154,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_sgsg",
+    "station_code": "SGSG",
+    "station_name": "Sagar Sangam",
+    "normalized_name": "sagarsangam",
+    "aliases": [
+      "SGSG"
+    ],
+    "latitude": 19.0124,
+    "longitude": 73.0184,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_trgr",
+    "station_code": "TRGR",
+    "station_name": "Targhar",
+    "normalized_name": "targhar",
+    "aliases": [
+      "TRGR"
+    ],
+    "latitude": 18.9954,
+    "longitude": 73.0284,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_bmdr",
+    "station_code": "BMDR",
+    "station_name": "Bamandongri",
+    "normalized_name": "bamandongri",
+    "aliases": [
+      "BMDR"
+    ],
+    "latitude": 18.9812,
+    "longitude": 73.0212,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_karp",
+    "station_code": "KARP",
+    "station_name": "Kharkopar",
+    "normalized_name": "kharkopar",
+    "aliases": [
+      "KARP"
+    ],
+    "latitude": 18.9684,
+    "longitude": 73.0124,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_gavn",
+    "station_code": "GAVN",
+    "station_name": "Gavan",
+    "normalized_name": "gavan",
+    "aliases": [
+      "GAVN",
+      "Gavhan"
+    ],
+    "latitude": 18.9484,
+    "longitude": 73.0084,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_rjn",
+    "station_code": "RJN",
+    "station_name": "Ranjanpada",
+    "normalized_name": "ranjanpada",
+    "aliases": [
+      "RJN",
+      "Shematikhar"
+    ],
+    "latitude": 18.9324,
+    "longitude": 73.0012,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_nhsv",
+    "station_code": "NHSV",
+    "station_name": "Nhava Sheva",
+    "normalized_name": "nhavasheva",
+    "aliases": [
+      "NHSV",
+      "Nhave Sheva"
+    ],
+    "latitude": 18.9184,
+    "longitude": 72.9884,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_drgi",
+    "station_code": "DRGI",
+    "station_name": "Dronagiri",
+    "normalized_name": "dronagiri",
+    "aliases": [
+      "DRGI"
+    ],
+    "latitude": 18.9012,
+    "longitude": 72.9684,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_uran",
+    "station_code": "URAN",
+    "station_name": "Uran City",
+    "normalized_name": "urancity",
+    "aliases": [
+      "URAN",
+      "Uran"
+    ],
+    "latitude": 18.8824,
+    "longitude": 72.9384,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_jsi",
+    "station_code": "JSI",
+    "station_name": "Jasai",
+    "normalized_name": "jasai",
+    "aliases": [
+      "JSI",
+      "Jasai Chirle"
+    ],
+    "latitude": 18.9224,
+    "longitude": 72.9612,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_jcnr",
+    "station_code": "JCNR",
+    "station_name": "Juchandra",
+    "normalized_name": "juchandra",
+    "aliases": [
+      "JCNR",
+      "Juchandra"
+    ],
+    "latitude": 19.3524,
+    "longitude": 72.8712,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_kard",
+    "station_code": "KARD",
+    "station_name": "Kaman Road",
+    "normalized_name": "kamanroad",
+    "aliases": [
+      "KARD",
+      "Kaman"
+    ],
+    "latitude": 19.3324,
+    "longitude": 72.9124,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_khbv",
+    "station_code": "KHBV",
+    "station_name": "Kharbav",
+    "normalized_name": "kharbav",
+    "aliases": [
+      "KHBV",
+      "Kharbao"
+    ],
+    "latitude": 19.2984,
+    "longitude": 72.9784,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_bird",
+    "station_code": "BIRD",
+    "station_name": "Bhiwandi Road",
+    "normalized_name": "bhiwandiroad",
+    "aliases": [
+      "BIRD",
+      "Bhivandi"
+    ],
+    "latitude": 19.2684,
+    "longitude": 73.0312,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_dtvl",
+    "station_code": "DTVL",
+    "station_name": "Dativali",
+    "normalized_name": "dativali",
+    "aliases": [
+      "DTVL"
+    ],
+    "latitude": 19.1712,
+    "longitude": 73.0612,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_niij",
+    "station_code": "NIIJ",
+    "station_name": "Nilaje",
+    "normalized_name": "nilaje",
+    "aliases": [
+      "NIIJ",
+      "Nilje"
+    ],
+    "latitude": 19.1384,
+    "longitude": 73.0812,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_tpnd",
+    "station_code": "TPND",
+    "station_name": "Taloja Panchanand",
+    "normalized_name": "talojapanchanand",
+    "aliases": [
+      "TPND",
+      "Taloja"
+    ],
+    "latitude": 19.1024,
+    "longitude": 73.0984,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_nvrd",
+    "station_code": "NVRD",
+    "station_name": "Navade Road",
+    "normalized_name": "navaderoad",
+    "aliases": [
+      "NVRD"
+    ],
+    "latitude": 19.0612,
+    "longitude": 73.1112,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_klmg",
+    "station_code": "KLMG",
+    "station_name": "Kalamboli",
+    "normalized_name": "kalamboli",
+    "aliases": [
+      "KLMG"
+    ],
+    "latitude": 19.0284,
+    "longitude": 73.1124,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_jtt",
+    "station_code": "JTT",
+    "station_name": "Jummapatti",
+    "normalized_name": "jummapatti",
+    "aliases": [
+      "JTT"
+    ],
+    "latitude": 19.0084,
+    "longitude": 73.3084,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_wtp",
+    "station_code": "WTP",
+    "station_name": "Water Pipe",
+    "normalized_name": "waterpipe",
+    "aliases": [
+      "WTP"
+    ],
+    "latitude": 18.9954,
+    "longitude": 73.2884,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_amna",
+    "station_code": "AMNA",
+    "station_name": "Aman Lodge",
+    "normalized_name": "amanlodge",
+    "aliases": [
+      "AMNA"
+    ],
+    "latitude": 18.9884,
+    "longitude": 73.2724,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_mae",
+    "station_code": "MAE",
+    "station_name": "Matheran",
+    "normalized_name": "matheran",
+    "aliases": [
+      "MAE"
+    ],
+    "latitude": 18.9854,
+    "longitude": 73.2684,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_tkw",
+    "station_code": "TKW",
+    "station_name": "Thakurvadi",
+    "normalized_name": "thakurvadi",
+    "aliases": [
+      "TKW"
+    ],
+    "latitude": 18.8484,
+    "longitude": 73.3484,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_mh",
+    "station_code": "MH",
+    "station_name": "Monkey Hill",
+    "normalized_name": "monkeyhill",
+    "aliases": [
+      "MH"
+    ],
+    "latitude": 18.8084,
+    "longitude": 73.3684,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_knd",
+    "station_code": "KND",
+    "station_name": "Khandala",
+    "normalized_name": "khandala",
+    "aliases": [
+      "KND"
+    ],
+    "latitude": 18.7612,
+    "longitude": 73.3754,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_lnl",
+    "station_code": "LNL",
+    "station_name": "Lonavala",
+    "normalized_name": "lonavala",
+    "aliases": [
+      "LNL",
+      "Lonavla"
+    ],
+    "latitude": 18.7512,
+    "longitude": 73.4084,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_mvl",
+    "station_code": "MVL",
+    "station_name": "Malavli",
+    "normalized_name": "malavli",
+    "aliases": [
+      "MVL",
+      "Malavali"
+    ],
+    "latitude": 18.7412,
+    "longitude": 73.4684,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_kmst",
+    "station_code": "KMST",
+    "station_name": "Kamshet",
+    "normalized_name": "kamshet",
+    "aliases": [
+      "KMST"
+    ],
+    "latitude": 18.7584,
+    "longitude": 73.5584,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_knhe",
+    "station_code": "KNHE",
+    "station_name": "Kanhe",
+    "normalized_name": "kanhe",
+    "aliases": [
+      "KNHE"
+    ],
+    "latitude": 18.7524,
+    "longitude": 73.5984,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_vdn",
+    "station_code": "VDN",
+    "station_name": "Vadgaon",
+    "normalized_name": "vadgaon",
+    "aliases": [
+      "VDN"
+    ],
+    "latitude": 18.7484,
+    "longitude": 73.6484,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_tgn",
+    "station_code": "TGN",
+    "station_name": "Talegaon",
+    "normalized_name": "talegaon",
+    "aliases": [
+      "TGN",
+      "Talegaon Dabhade"
+    ],
+    "latitude": 18.7324,
+    "longitude": 73.6884,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_grwd",
+    "station_code": "GRWD",
+    "station_name": "Ghorawadi",
+    "normalized_name": "ghorawadi",
+    "aliases": [
+      "GRWD"
+    ],
+    "latitude": 18.7184,
+    "longitude": 73.7124,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_bgwi",
+    "station_code": "BGWI",
+    "station_name": "Begdewadi",
+    "normalized_name": "begdewadi",
+    "aliases": [
+      "BGWI",
+      "Begdewadi / Shelarwadi"
+    ],
+    "latitude": 18.7084,
+    "longitude": 73.7312,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_dehr",
+    "station_code": "DEHR",
+    "station_name": "Dehu Road",
+    "normalized_name": "dehuroad",
+    "aliases": [
+      "DEHR"
+    ],
+    "latitude": 18.6884,
+    "longitude": 73.7612,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_akrd",
+    "station_code": "AKRD",
+    "station_name": "Akurdi",
+    "normalized_name": "akurdi",
+    "aliases": [
+      "AKRD"
+    ],
+    "latitude": 18.6584,
+    "longitude": 73.7884,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_cch",
+    "station_code": "CCH",
+    "station_name": "Chinchwad",
+    "normalized_name": "chinchwad",
+    "aliases": [
+      "CCH"
+    ],
+    "latitude": 18.6384,
+    "longitude": 73.8084,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_pmp",
+    "station_code": "PMP",
+    "station_name": "Pimpri",
+    "normalized_name": "pimpri",
+    "aliases": [
+      "PMP"
+    ],
+    "latitude": 18.6254,
+    "longitude": 73.8184,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_kswd",
+    "station_code": "KSWD",
+    "station_name": "Kasarwadi",
+    "normalized_name": "kasarwadi",
+    "aliases": [
+      "KSWD"
+    ],
+    "latitude": 18.6084,
+    "longitude": 73.8284,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_dapd",
+    "station_code": "DAPD",
+    "station_name": "Dapodi",
+    "normalized_name": "dapodi",
+    "aliases": [
+      "DAPD"
+    ],
+    "latitude": 18.5884,
+    "longitude": 73.8384,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_kk",
+    "station_code": "KK",
+    "station_name": "Khadki",
+    "normalized_name": "khadki",
+    "aliases": [
+      "KK",
+      "Kirkee"
+    ],
+    "latitude": 18.5684,
+    "longitude": 73.8484,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_svjr",
+    "station_code": "SVJR",
+    "station_name": "Shivajinagar",
+    "normalized_name": "shivajinagar",
+    "aliases": [
+      "SVJR",
+      "Shivaji Nagar"
+    ],
+    "latitude": 18.5312,
+    "longitude": 73.8512,
+    "zone": "CR",
+    "status": "ACTIVE"
+  },
+  {
+    "id": "stn_pune",
+    "station_code": "PUNE",
+    "station_name": "Pune Junction",
+    "normalized_name": "punejunction",
+    "aliases": [
+      "PUNE",
+      "Pune"
+    ],
+    "latitude": 18.5284,
+    "longitude": 73.8744,
     "zone": "CR",
     "status": "ACTIVE"
   }

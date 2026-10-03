@@ -53,7 +53,7 @@ export interface Station {
   status: StationStatus;
 }
 
-export type TrainType = 'SLOW' | 'FAST' | 'AC_SLOW' | 'AC_FAST' | 'SEMI_FAST';
+export type TrainType = 'SLOW' | 'FAST' | 'AC_SLOW' | 'AC_FAST' | 'SEMI_FAST' | 'SHUTTLE' | 'MEMU' | 'SPECIAL';
 export type TrainStatus = 'ACTIVE' | 'CANCELLED' | 'SPECIAL';
 
 export interface Train {
@@ -66,7 +66,7 @@ export interface Train {
   destination_station_id: string;
   line_id: string;
   route_id: string;
-  cars: 12 | 15;
+  cars: number;
   status: TrainStatus;
 }
 

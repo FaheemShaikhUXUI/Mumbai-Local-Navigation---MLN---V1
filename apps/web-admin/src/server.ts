@@ -9,6 +9,51 @@ import { StationSearchEngine, TrainSearchEngine, LineExplorer } from '@mumbai-ti
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const syncEngine = new SyncEngine();
 
+let cachedDb: DatabaseManager | null = null;
+let cachedVersion: string | null = null;
+
+async function getOrInitDb(): Promise<DatabaseManager | null> {
+  const storage = createStorageProviderFromEnv();
+  const manifest = await storage.getManifest();
+  const curVer = manifest?.latestVersion || 'current';
+  if (cachedDb && cachedVersion === curVer) {
+    return cachedDb;
+  }
+  const dataset = await storage.getDataset('current');
+  if (!dataset) return null;
+  const db = new DatabaseManager();
+  await db.initializeDatabase();
+  await db.importFullDataset(dataset);
+  cachedDb = db;
+  cachedVersion = curVer;
+  return cachedDb;
+}
+
+interface CrowdLiveReport {
+  trainKey: string;
+  trainId?: string;
+  trainNumber?: string;
+  isActive: boolean;
+  isUserInside: boolean;
+  delayMinutes: number;
+  latitude?: number;
+  longitude?: number;
+  speed?: number;
+  currentStation?: string;
+  updatedAt: number;
+}
+
+const crowdReportsMap = new Map<string, CrowdLiveReport>();
+
+function purgeExpiredReports() {
+  const now = Date.now();
+  for (const [key, rep] of crowdReportsMap.entries()) {
+    if (now - rep.updatedAt > 45 * 60 * 1000) {
+      crowdReportsMap.delete(key);
+    }
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
   const pathname = parsedUrl.pathname;
@@ -61,6 +106,7 @@ const server = http.createServer(async (req, res) => {
     // 4. API: /api/sync/trigger
     if (pathname === '/api/sync/trigger' && req.method === 'POST') {
       const result = await syncEngine.executeSync(true);
+      cachedDb = null;
       res.setHeader('Content-Type', 'application/json');
       res.statusCode = 200;
       res.end(JSON.stringify(result));
@@ -70,6 +116,7 @@ const server = http.createServer(async (req, res) => {
     // 5. API: /api/sync/simulate
     if (pathname === '/api/sync/simulate' && req.method === 'POST') {
       const sim = await syncEngine.simulateTimetableChangeScenario();
+      cachedDb = null;
       res.setHeader('Content-Type', 'application/json');
       res.statusCode = 200;
       res.end(JSON.stringify(sim));
@@ -106,16 +153,12 @@ const server = http.createServer(async (req, res) => {
     // 7. API: /api/stations
     if (pathname === '/api/stations') {
       const query = parsedUrl.searchParams.get('q') || '';
-      const storage = createStorageProviderFromEnv();
-      const dataset = await storage.getDataset('current');
-      if (!dataset) {
+      const db = await getOrInitDb();
+      if (!db) {
         res.statusCode = 404;
         res.end(JSON.stringify([]));
         return;
       }
-      const db = new DatabaseManager();
-      await db.initializeDatabase();
-      await db.importFullDataset(dataset);
       const search = new StationSearchEngine(db.getAdapter());
       const results = query ? await search.search(query, 20) : await search.loadStations();
       res.setHeader('Content-Type', 'application/json');
@@ -124,31 +167,42 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // 8. API: /api/trains
+    // 8. API: /api/trains?from=stn_dr&to=stn_vr OR /api/trains?from=stn_dr&direction=DN&lineId=line_wr_suburban
     if (pathname === '/api/trains') {
       const from = parsedUrl.searchParams.get('from');
       const to = parsedUrl.searchParams.get('to');
+      const direction = parsedUrl.searchParams.get('direction');
+      const lineId = parsedUrl.searchParams.get('lineId') || undefined;
+      const corridor = parsedUrl.searchParams.get('corridor') || undefined;
       const type = (parsedUrl.searchParams.get('type') || 'ALL') as any;
 
-      if (!from || !to) {
+      if (!from || (!to && !direction)) {
         res.statusCode = 400;
-        res.end(JSON.stringify({ error: 'Missing from or to' }));
+        res.end(JSON.stringify({ error: 'Missing from or (to/direction)' }));
         return;
       }
 
-      const storage = createStorageProviderFromEnv();
-      const dataset = await storage.getDataset('current');
-      if (!dataset) {
+      const db = await getOrInitDb();
+      if (!db) {
         res.statusCode = 404;
         res.end(JSON.stringify([]));
         return;
       }
-      const db = new DatabaseManager();
-      await db.initializeDatabase();
-      await db.importFullDataset(dataset);
 
       const trainSearch = new TrainSearchEngine(db.getAdapter());
-      const results = await trainSearch.findTrainsBetweenStations(from, to, { trainType: type });
+      let results: any[] = [];
+      if (direction) {
+        results = await trainSearch.findTrainsInDirection(from, direction, {
+          lineId,
+          corridor,
+          trainType: type,
+        });
+      } else if (to) {
+        results = await trainSearch.findTrainsBetweenStations(from, to, {
+          lineId,
+          trainType: type,
+        });
+      }
 
       res.setHeader('Content-Type', 'application/json');
       res.statusCode = 200;
@@ -164,16 +218,12 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: 'Missing trainId' }));
         return;
       }
-      const storage = createStorageProviderFromEnv();
-      const dataset = await storage.getDataset('current');
-      if (!dataset) {
+      const db = await getOrInitDb();
+      if (!db) {
         res.statusCode = 404;
         res.end(JSON.stringify({ error: 'No dataset' }));
         return;
       }
-      const db = new DatabaseManager();
-      await db.initializeDatabase();
-      await db.importFullDataset(dataset);
 
       const trainSearch = new TrainSearchEngine(db.getAdapter());
       const details = await trainSearch.getTrainRouteDetails(trainId);
@@ -185,16 +235,12 @@ const server = http.createServer(async (req, res) => {
 
     // 10. API: /api/lines
     if (pathname === '/api/lines') {
-      const storage = createStorageProviderFromEnv();
-      const dataset = await storage.getDataset('current');
-      if (!dataset) {
+      const db = await getOrInitDb();
+      if (!db) {
         res.statusCode = 404;
         res.end(JSON.stringify([]));
         return;
       }
-      const db = new DatabaseManager();
-      await db.initializeDatabase();
-      await db.importFullDataset(dataset);
 
       const lineExplorer = new LineExplorer(db.getAdapter());
       const lines = await lineExplorer.getAllLines();
@@ -204,10 +250,72 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // Static Assets serving
-    let filePath = path.join(__dirname, '..', 'public', pathname === '/' ? 'index.html' : pathname.replace(/^\//, ''));
+    // 10.5. API: /api/trains/live-reports & /api/trains/live-report (Phase 1 & 2 Live Crowdsourced Tracking)
+    if (pathname === '/api/trains/live-reports' && req.method === 'GET') {
+      purgeExpiredReports();
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = 200;
+      res.end(JSON.stringify({ success: true, reports: Object.fromEntries(crowdReportsMap) }));
+      return;
+    }
+
+    if (pathname === '/api/trains/live-report' && req.method === 'POST') {
+      let bodyStr = '';
+      req.on('data', (chunk) => { bodyStr += chunk; });
+      req.on('end', () => {
+        try {
+          const payload = JSON.parse(bodyStr || '{}');
+          const { trainKey, report } = payload;
+          if (trainKey) {
+            if (report && report.isActive) {
+              crowdReportsMap.set(trainKey, {
+                ...report,
+                updatedAt: Date.now()
+              });
+            } else {
+              crowdReportsMap.delete(trainKey);
+            }
+          }
+          res.setHeader('Content-Type', 'application/json');
+          res.statusCode = 200;
+          res.end(JSON.stringify({ success: true, activeCount: crowdReportsMap.size }));
+        } catch (e: any) {
+          res.statusCode = 400;
+          res.end(JSON.stringify({ error: 'Invalid JSON' }));
+        }
+      });
+      return;
+    }
+
+    // 11. Dev Version Endpoint for Instant Live-Reload / Hot CSS Injection
+    if (pathname === '/api/dev/version') {
+      const srcPub = path.join(process.cwd(), 'apps', 'web-admin', 'public');
+      const distPub = path.join(__dirname, '..', 'public');
+      const targetDir = fs.existsSync(srcPub) ? srcPub : distPub;
+      let cssMtime = 0, jsMtime = 0, htmlMtime = 0;
+      try {
+        const cP = path.join(targetDir, 'mobile.css');
+        if (fs.existsSync(cP)) cssMtime = fs.statSync(cP).mtimeMs;
+        const jP = path.join(targetDir, 'mobile.js');
+        if (fs.existsSync(jP)) jsMtime = fs.statSync(jP).mtimeMs;
+        const hP = path.join(targetDir, 'mobile.html');
+        if (fs.existsSync(hP)) htmlMtime = fs.statSync(hP).mtimeMs;
+      } catch (e) {}
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.statusCode = 200;
+      res.end(JSON.stringify({ cssMtime, jsMtime, htmlMtime }));
+      return;
+    }
+
+    // Static Assets serving: check apps/web-admin/public FIRST so changes are 100% INSTANT!
+    const srcPub = path.join(process.cwd(), 'apps', 'web-admin', 'public');
+    const distPub = path.join(__dirname, '..', 'public');
+    const activePub = fs.existsSync(srcPub) ? srcPub : distPub;
+
+    let filePath = path.join(activePub, pathname === '/' ? 'index.html' : pathname.replace(/^\//, ''));
     if (pathname === '/mobile') {
-      filePath = path.join(__dirname, '..', 'public', 'mobile.html');
+      filePath = path.join(activePub, 'mobile.html');
     }
 
     if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
@@ -221,6 +329,9 @@ const server = http.createServer(async (req, res) => {
         '.svg': 'image/svg+xml',
       };
       res.setHeader('Content-Type', mimeTypes[ext] || 'application/octet-stream');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       res.statusCode = 200;
       res.end(fs.readFileSync(filePath));
       return;

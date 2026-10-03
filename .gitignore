@@ -58,3 +58,11 @@ Desktop.ini
 temp/
 tmp/
 *.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Scratch dumps
+scratch_*.html

@@ -13,6 +13,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
+    "outDir": "./dist",
     "paths": {
       "@mumbai-timetable/types": ["packages/types/src/index.ts"],
       "@mumbai-timetable/database": ["packages/database/src/index.ts"],

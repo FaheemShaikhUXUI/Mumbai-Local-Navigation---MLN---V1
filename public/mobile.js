@@ -484,10 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const savedPhone = localStorage.getItem('ml_user_phone') || '00000 00000';
       userPhoneEl.textContent = savedPhone;
     }
-    const toggleNotify = document.getElementById('toggleStopsNotification');
-    if (toggleNotify) {
-      toggleNotify.checked = localStorage.getItem('ml_stops_notification') === 'true';
-    }
+    // Notification state is restored by restoreNotifUI() after the engine is set up
   }
 
   function openDrawer() {
@@ -512,14 +509,453 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('🚪 Logged out successfully');
   });
 
-  // Stops Notification Toggle Switch
-  document.getElementById('toggleStopsNotification')?.addEventListener('change', (e) => {
+  // ==========================================
+  // STOPS NOTIFICATION ENGINE
+  // ==========================================
+
+  const NOTIF_PREFS_KEY = 'ml_notif_prefs';
+
+  function getNotifPrefs() {
+    try {
+      return JSON.parse(localStorage.getItem(NOTIF_PREFS_KEY) || '{}');
+    } catch { return {}; }
+  }
+
+  function saveNotifPrefs(prefs) {
+    localStorage.setItem(NOTIF_PREFS_KEY, JSON.stringify(prefs));
+  }
+
+  // -- DOM refs --
+  const toggleNotif           = document.getElementById('toggleStopsNotification');
+  const menuItemStopsNotif    = document.getElementById('menuItemStopsNotification');
+  const accordion             = document.getElementById('notifAccordion');
+  const chkShutter            = document.getElementById('chkNotifShutter');
+  const chkHeader             = document.getElementById('chkNotifHeader');
+  const chkVibrate            = document.getElementById('chkNotifVibrate');
+  const chkAllowAll           = document.getElementById('chkNotifAllowAll');
+  const shutterCard           = document.getElementById('shutterNotifCard');
+  const headerPill            = document.getElementById('headerNotifPill');
+  const headerPillText        = document.getElementById('headerNotifText');
+  const btnShutterClose       = document.getElementById('btnShutterNotifClose');
+  const shutterPrev           = document.getElementById('shutterStnPrev');
+  const shutterCurr           = document.getElementById('shutterStnCurrent');
+  const shutterNext           = document.getElementById('shutterStnNext');
+  const shutterArrivedBadge   = document.getElementById('shutterArrivedBadge');
+  const shutterEtaBadge       = document.getElementById('shutterEtaBadge');
+  const androidShutterShade   = document.getElementById('androidShutterShade');
+  const shadeBackdrop         = document.getElementById('androidShadeBackdrop');
+  const shadePullHandle       = document.getElementById('shadePullHandle');
+  const phoneStatusBar        = document.getElementById('phoneStatusBar');
+  const shadeMlCardHost       = document.getElementById('shadeMlCardHost');
+
+  // -- Read saved state and restore UI --
+  function restoreNotifUI() {
+    const prefs = getNotifPrefs();
+    const enabled = prefs.enabled || false;
+    if (toggleNotif) toggleNotif.checked = enabled;
+    if (accordion) accordion.classList.toggle('open', enabled);
+    if (chkShutter)  chkShutter.checked  = Boolean(prefs.shutter);
+    if (chkHeader)   chkHeader.checked   = Boolean(prefs.header);
+    if (chkVibrate)  chkVibrate.checked  = Boolean(prefs.vibrate);
+    if (chkAllowAll) chkAllowAll.checked = Boolean(prefs.allowAll);
+  }
+
+  // -- Toggle main switch → open/close accordion --
+  if (toggleNotif) {
+    toggleNotif.addEventListener('change', (e) => {
+      const enabled = e.target.checked;
+      const prefs = getNotifPrefs();
+      prefs.enabled = enabled;
+
+      // When first enabled, default to "Allow All"
+      if (enabled && !prefs.shutter && !prefs.header && !prefs.allowAll) {
+        prefs.allowAll = true;
+        prefs.shutter  = true;
+        prefs.header   = true;
+        prefs.vibrate  = true;
+      }
+      saveNotifPrefs(prefs);
+
+      if (accordion) accordion.classList.toggle('open', enabled);
+
+      if (chkShutter)  chkShutter.checked  = Boolean(prefs.shutter);
+      if (chkHeader)   chkHeader.checked   = Boolean(prefs.header);
+      if (chkVibrate)  chkVibrate.checked  = Boolean(prefs.vibrate);
+      if (chkAllowAll) chkAllowAll.checked = Boolean(prefs.allowAll);
+
+      if (!enabled) {
+        notifEngine.stopAll();
+        showToast('🔕 Stops Notification Disabled');
+      } else {
+        showToast('🔔 Stops Notification Enabled');
+        // Trigger live demonstration showing Arrived & In-between states!
+        notifEngine.triggerDemo(prefs);
+      }
+    });
+  }
+
+  // Clicking anywhere on the drawer menu item row toggles the switch
+  if (menuItemStopsNotif) {
+    menuItemStopsNotif.addEventListener('click', (e) => {
+      if (e.target.closest('.drawer-toggle-switch')) return;
+      if (toggleNotif) {
+        toggleNotif.checked = !toggleNotif.checked;
+        toggleNotif.dispatchEvent(new Event('change'));
+      }
+    });
+  }
+
+  // ========================================================
+  // Accordion 4 Options Logic:
+  // 1. Show Only in Shutter (Check Box)
+  // 2. Show only in header (Check Box)
+  // 3. Vibrat before 1 mnts (Check Box)
+  // 4. Allow All (Check Box)
+  // ========================================================
+
+  // 1. Show Only in Shutter
+  chkShutter?.addEventListener('change', (e) => {
     const isChecked = e.target.checked;
-    localStorage.setItem('ml_stops_notification', isChecked ? 'true' : 'false');
-    showToast(isChecked ? '🔔 Stops Notification Enabled' : 'Stops Notification Disabled');
+    const prefs = getNotifPrefs();
+
+    if (isChecked) {
+      prefs.shutter  = true;
+      prefs.header   = false;
+      prefs.allowAll = false;
+      if (chkHeader)   chkHeader.checked   = false;
+      if (chkAllowAll) chkAllowAll.checked = false;
+      hideHeaderPill();
+      showToast('📱 Stops Notification: Show Only in Shutter');
+    } else {
+      prefs.shutter = false;
+      hideShutterCard();
+    }
+    saveNotifPrefs(prefs);
+    if (prefs.enabled && isChecked) notifEngine.triggerDemo(prefs);
   });
 
-  // Menu Items (simplicity placeholders, logic will be added when specified)
+  // 2. Show only in header
+  chkHeader?.addEventListener('change', (e) => {
+    const isChecked = e.target.checked;
+    const prefs = getNotifPrefs();
+
+    if (isChecked) {
+      prefs.header   = true;
+      prefs.shutter  = false;
+      prefs.allowAll = false;
+      if (chkShutter)  chkShutter.checked  = false;
+      if (chkAllowAll) chkAllowAll.checked = false;
+      hideShutterCard();
+      showToast('📌 Stops Notification: Show Only in Header Bar');
+    } else {
+      prefs.header = false;
+      hideHeaderPill();
+    }
+    saveNotifPrefs(prefs);
+    if (prefs.enabled && isChecked) notifEngine.triggerDemo(prefs);
+  });
+
+  // 3. Vibrat before 1 mnts
+  chkVibrate?.addEventListener('change', (e) => {
+    const isChecked = e.target.checked;
+    const prefs = getNotifPrefs();
+    prefs.vibrate = isChecked;
+
+    if (isChecked) {
+      if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+      showToast('📳 Vibrate Before 1 Minute Enabled');
+    } else {
+      prefs.allowAll = false;
+      if (chkAllowAll) chkAllowAll.checked = false;
+    }
+    saveNotifPrefs(prefs);
+  });
+
+  // 4. Allow All
+  chkAllowAll?.addEventListener('change', (e) => {
+    const isChecked = e.target.checked;
+    const prefs = getNotifPrefs();
+
+    prefs.allowAll = isChecked;
+    prefs.shutter  = isChecked;
+    prefs.header   = isChecked;
+    prefs.vibrate  = isChecked;
+
+    if (chkShutter)  chkShutter.checked  = isChecked;
+    if (chkHeader)   chkHeader.checked   = isChecked;
+    if (chkVibrate)  chkVibrate.checked  = isChecked;
+
+    saveNotifPrefs(prefs);
+
+    if (isChecked) {
+      showToast('✨ All Notifications Enabled (Shutter + Header + Vibration)');
+      if (prefs.enabled) notifEngine.triggerDemo(prefs);
+    } else {
+      notifEngine.stopAll();
+      showToast('🔕 All Notification options cleared');
+    }
+  });
+
+  // -- Full Android Shutter Pull-down Shade handling --
+  function openAndroidShade() {
+    if (!androidShutterShade) return;
+    androidShutterShade.classList.add('shade-open');
+    androidShutterShade.setAttribute('aria-hidden', 'false');
+    syncShadeCardHost();
+  }
+
+  function closeAndroidShade() {
+    if (!androidShutterShade) return;
+    androidShutterShade.classList.remove('shade-open');
+    androidShutterShade.setAttribute('aria-hidden', 'true');
+  }
+
+  function toggleAndroidShade() {
+    if (!androidShutterShade) return;
+    if (androidShutterShade.classList.contains('shade-open')) {
+      closeAndroidShade();
+    } else {
+      openAndroidShade();
+    }
+  }
+
+  function syncShadeCardHost() {
+    if (!shadeMlCardHost || !shutterCard) return;
+    shadeMlCardHost.innerHTML = '';
+    const clone = shutterCard.cloneNode(true);
+    clone.id = 'shutterNotifCard_shade';
+    clone.classList.remove('shutter-notif-hidden');
+    clone.classList.add('shutter-notif-visible');
+    clone.style.position = 'static';
+    clone.style.width = '100%';
+    const closeBtn = clone.querySelector('.shutter-notif-close');
+    if (closeBtn) closeBtn.style.display = 'none';
+    shadeMlCardHost.appendChild(clone);
+  }
+
+  phoneStatusBar?.addEventListener('click', toggleAndroidShade);
+  shadeBackdrop?.addEventListener('click', closeAndroidShade);
+  shadePullHandle?.addEventListener('click', closeAndroidShade);
+
+  // -- Shutter card controls --
+  function showShutterCard() {
+    if (!shutterCard) return;
+    shutterCard.classList.remove('shutter-notif-hidden');
+    shutterCard.classList.add('shutter-notif-visible');
+    syncShadeCardHost();
+  }
+
+  function hideShutterCard() {
+    if (!shutterCard) return;
+    shutterCard.classList.remove('shutter-notif-visible');
+    shutterCard.classList.add('shutter-notif-hidden');
+    syncShadeCardHost();
+  }
+
+  function updateShutterCard({ prev = 'Prabhadevi', curr = 'Dadar', next = 'Matunga Rd.', state = 'arrived', eta = 'in 2.5 min' }) {
+    if (!shutterCard) return;
+    if (shutterPrev) shutterPrev.textContent = prev;
+    if (shutterCurr) shutterCurr.textContent = curr;
+    if (shutterNext) shutterNext.textContent = next;
+    if (shutterArrivedBadge) shutterArrivedBadge.textContent = 'Arrived ' + curr;
+    if (shutterEtaBadge) shutterEtaBadge.textContent = eta;
+
+    shutterCard.classList.remove('state-arrived', 'state-inbetween');
+    if (state === 'arrived') {
+      shutterCard.classList.add('state-arrived');
+    } else {
+      shutterCard.classList.add('state-inbetween');
+    }
+
+    showShutterCard();
+  }
+
+  // -- Header pill controls --
+  function showHeaderPill(text, type = 'arrived') {
+    if (!headerPill || !headerPillText) return;
+    headerPillText.textContent = text;
+    headerPill.classList.remove(
+      'header-notif-hidden', 'header-notif-visible',
+      'header-notif-arrived', 'header-notif-upcoming'
+    );
+    void headerPill.offsetWidth; // force reflow
+    headerPill.classList.add('header-notif-visible');
+    headerPill.classList.add(type === 'arrived' ? 'header-notif-arrived' : 'header-notif-upcoming');
+  }
+
+  function hideHeaderPill() {
+    if (!headerPill) return;
+    headerPill.classList.remove('header-notif-visible');
+    headerPill.classList.add('header-notif-hidden');
+  }
+
+  // -- Close button on shutter card --
+  if (btnShutterClose) {
+    btnShutterClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      hideShutterCard();
+    });
+  }
+
+  // ========================================================
+  // STOPS NOTIFICATION ENGINE
+  // Dynamic Width Header Pill + Android Shutter Card
+  // 18s duration on Arrival, 20s interval for Upcoming
+  // ========================================================
+  const notifEngine = {
+    _shutterTimer: null,
+    _headerTimer: null,
+    _upcomingInterval: null,
+
+    // Called when a journey stop is reached (Arrival state: Phone 1 & Phone 3)
+    // "Arrived: Notification Will show like this on any screen till 18 sec. (Dynamic Width according to name)"
+    onArrived(stationName = 'Dadar', prevStation = 'Prabhadevi', nextStation = 'Matunga Rd.') {
+      const prefs = getNotifPrefs();
+      if (!prefs.enabled) return;
+
+      const showS = prefs.shutter || prefs.allowAll;
+      const showH = prefs.header  || prefs.allowAll;
+
+      // 1. Shutter Notification Card (Phone 1 Mockup)
+      if (showS) {
+        updateShutterCard({
+          prev: prevStation,
+          curr: stationName,
+          next: nextStation,
+          state: 'arrived'
+        });
+        clearTimeout(this._shutterTimer);
+        // Show till 18 seconds!
+        this._shutterTimer = setTimeout(() => hideShutterCard(), 18000);
+      }
+
+      // 2. Header Bar Pill (Phone 3 Mockup: green pill, dynamic width, stays till 18 sec!)
+      if (showH) {
+        showHeaderPill(stationName, 'arrived');
+        clearTimeout(this._headerTimer);
+        this._headerTimer = setTimeout(() => hideHeaderPill(), 18000);
+      }
+
+      // 3. Vibration if enabled
+      if (prefs.vibrate && navigator.vibrate) {
+        navigator.vibrate([150, 70, 150]);
+      }
+    },
+
+    // Called when train is in-between stops (In between state: Phone 2 & Phone 4)
+    // "Next Upcoming Stop : Notification Will show like this on any screen (After Every 20 sec.) (Dynamic Width according to name)"
+    onInBetween(prevStation = 'Prabhadevi', currStation = 'Dadar', nextStation = 'Matunga Rd.', etaStr = 'in 2.5 min') {
+      const prefs = getNotifPrefs();
+      if (!prefs.enabled) return;
+
+      const showS = prefs.shutter || prefs.allowAll;
+      const showH = prefs.header  || prefs.allowAll;
+
+      // 1. Shutter Notification Card (Phone 2 Mockup: glowing orange progress line + in 2.5 min)
+      if (showS) {
+        updateShutterCard({
+          prev: prevStation,
+          curr: currStation,
+          next: nextStation,
+          state: 'inbetween',
+          eta: etaStr
+        });
+      }
+
+      // 2. Header Bar Pill (Phone 4 Mockup: orange pill "Next Matunga Rd.", dynamic width!)
+      if (showH) {
+        showHeaderPill('Next ' + nextStation, 'upcoming');
+        clearTimeout(this._headerTimer);
+        // Pill shows for 7 seconds during each 20-second cycle
+        this._headerTimer = setTimeout(() => hideHeaderPill(), 7000);
+      }
+    },
+
+    // Start recurring 20-second timer for in-between upcoming stops
+    startUpcomingCycle(prevStation = 'Prabhadevi', currStation = 'Dadar', nextStation = 'Matunga Rd.') {
+      clearInterval(this._upcomingInterval);
+      this.onInBetween(prevStation, currStation, nextStation, 'in 2.5 min');
+      // Fires after every 20 seconds!
+      this._upcomingInterval = setInterval(() => {
+        this.onInBetween(prevStation, currStation, nextStation, 'in 2.5 min');
+      }, 20000);
+    },
+
+    // Live demonstration showing both mockups sequentially
+    triggerDemo(prefs) {
+      if (!prefs.shutter && !prefs.header && !prefs.allowAll) return;
+      this.stopAll();
+
+      const showS = prefs.shutter || prefs.allowAll;
+      const showH = prefs.header  || prefs.allowAll;
+
+      // Stage 1: Arrived At Dadar (Phone 1 & Phone 3)
+      if (showS) {
+        updateShutterCard({ prev: 'Prabhadevi', curr: 'Dadar', next: 'Matunga Rd.', state: 'arrived' });
+      }
+      if (showH) {
+        showHeaderPill('Dadar', 'arrived');
+      }
+
+      // Stage 2: After 5 seconds, simulate departing towards next stop (Phone 2 & Phone 4)
+      this._shutterTimer = setTimeout(() => {
+        if (showS) {
+          updateShutterCard({ prev: 'Prabhadevi', curr: 'Dadar', next: 'Matunga Rd.', state: 'inbetween', eta: 'in 2.5 min' });
+        }
+        if (showH) {
+          showHeaderPill('Next Matunga Rd.', 'upcoming');
+        }
+
+        // Auto-dismiss demo after 7 more seconds
+        this._shutterTimer = setTimeout(() => {
+          hideShutterCard();
+          hideHeaderPill();
+        }, 7000);
+      }, 5000);
+    },
+
+    stopAll() {
+      clearTimeout(this._shutterTimer);
+      clearTimeout(this._headerTimer);
+      clearInterval(this._upcomingInterval);
+      hideShutterCard();
+      hideHeaderPill();
+      closeAndroidShade();
+    }
+  };
+
+  // Expose engine to window for global access
+  window.stopsNotifEngine = notifEngine;
+
+  // Restore prefs on load
+  restoreNotifUI();
+
+  // Preview Test Buttons in Stops Notification Accordion
+  document.getElementById('btnPreviewArrived')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    notifEngine.stopAll();
+    const prefs = getNotifPrefs();
+    const showS = prefs.shutter !== false;
+    const showH = prefs.header !== false;
+    if (showS) updateShutterCard({ prev: 'Prabhadevi', curr: 'Dadar', next: 'Matunga Rd.', state: 'arrived' });
+    if (showH) showHeaderPill('Dadar', 'arrived');
+    showToast('🟢 Testing "Arrived At: Dadar" Notification (18s)');
+  });
+
+  document.getElementById('btnPreviewInbetween')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    notifEngine.stopAll();
+    const prefs = getNotifPrefs();
+    const showS = prefs.shutter !== false;
+    const showH = prefs.header !== false;
+    if (showS) updateShutterCard({ prev: 'Prabhadevi', curr: 'Dadar', next: 'Matunga Rd.', state: 'inbetween', eta: 'in 2.5 min' });
+    if (showH) showHeaderPill('Next Matunga Rd.', 'upcoming');
+    showToast('🟠 Testing "In between: Next Matunga Rd." Notification');
+  });
+
+  // ==========================================
+  // Menu Items (simplicity placeholders)
+  // ==========================================
   document.getElementById('menuItemAlerts')?.addEventListener('click', () => {
     showToast('🔔 Alerts');
   });
@@ -2268,7 +2704,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const elapsedTotalSeconds = elapsedMinutes * 60 + currentSeconds;
 
-    // 4. In transit along route: match exact station arrival (20s halt) vs in-between transit
+    // 4. In transit along route: CONTINUOUS SMOOTH MOVEMENT (No 15-20s stop, smooth color morphing)
     for (let i = 0; i < totalStops - 1; i++) {
       const sElapsed = (stopMinutes[i] - originMinutes + 1440) % 1440;
       const nextElapsed = (stopMinutes[i + 1] - originMinutes + 1440) % 1440;
@@ -2277,57 +2713,49 @@ document.addEventListener('DOMContentLoaded', () => {
       const nextSec = nextElapsed * 60;
 
       if (elapsedTotalSeconds >= sSec && elapsedTotalSeconds < nextSec) {
-        // Station halt is strictly 20 seconds for all intermediate stops
-        const haltSec = 20;
+        const transitDuration = Math.max(10, nextSec - sSec);
+        const elapsedTransit = elapsedTotalSeconds - sSec;
+        const rawProgress = Math.max(0, Math.min(1, elapsedTransit / transitDuration));
 
-        if (elapsedTotalSeconds < sSec + haltSec) {
-          // Train has arrived and is halted at station i (Green capsule + blinking dot)
-          return {
-            mode: 'AT_STATION',
-            stationIdx: i,
-            fromIdx: i,
-            toIdx: i + 1,
-            statusTag: 'ARRIVED HERE',
-            notStarted: false,
-            isCompleted: false,
-            delayMinutes,
-            topPercent: 50
-          };
-        } else {
-          // 20 seconds completed: train departed station i and is traveling towards station i + 1
-          // Orange capsule smoothly travels down the track between stations
-          const departureSec = sSec + haltSec;
-          const transitDuration = Math.max(20, nextSec - departureSec);
-          const elapsedTransit = elapsedTotalSeconds - departureSec;
-          const rawProgress = Math.max(0.01, Math.min(0.99, elapsedTransit / transitDuration));
-          const topPercent = parseFloat((14 + rawProgress * 72).toFixed(2));
+        // Smooth top position from 2% (touching station i dot) down to 98% (touching station i+1 dot)
+        const topPercent = parseFloat((2 + rawProgress * 96).toFixed(2));
 
-          return {
-            mode: 'BETWEEN',
-            stationIdx: -1,
-            fromIdx: i,
-            toIdx: i + 1,
-            statusTag: 'BETWEEN',
-            notStarted: false,
-            isCompleted: false,
-            delayMinutes,
-            progress: rawProgress,
-            topPercent
-          };
-        }
+        // Touching dot threshold:
+        // When leaving station i (rawProgress <= 0.12) -> touching station i dot (GREEN)
+        // When approaching/touching station i + 1 (rawProgress >= 0.86) -> touching station i + 1 dot (GREEN)
+        // In-between (0.12 < rawProgress < 0.86) -> traveling down the track (ORANGE)
+        const isTouchingDot = (rawProgress <= 0.12) || (rawProgress >= 0.86);
+        const activeStationIdx = (rawProgress >= 0.86) ? (i + 1) : i;
+
+        return {
+          mode: 'BETWEEN',
+          stationIdx: activeStationIdx,
+          fromIdx: i,
+          toIdx: i + 1,
+          statusTag: isTouchingDot ? 'AT_STOP' : 'BETWEEN',
+          notStarted: false,
+          isCompleted: false,
+          delayMinutes,
+          progress: rawProgress,
+          topPercent,
+          isTouchingDot
+        };
       }
     }
 
     // Fallback to terminus
     return {
-      mode: 'AT_STATION',
+      mode: 'BETWEEN',
       stationIdx: totalStops - 1,
-      fromIdx: totalStops - 2,
+      fromIdx: Math.max(0, totalStops - 2),
       toIdx: totalStops - 1,
       statusTag: 'ARRIVED HERE',
       notStarted: false,
       isCompleted: true,
-      delayMinutes
+      delayMinutes,
+      progress: 1.0,
+      topPercent: 98,
+      isTouchingDot: true
     };
   }
 
@@ -2335,7 +2763,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function calculateCurrentStopByTime(stops, trainItem) {
     const pos = calculateTrainLivePosition(stops, trainItem);
     return {
-      currentStopIdx: pos.mode === 'AT_STATION' ? pos.stationIdx : pos.fromIdx,
+      currentStopIdx: pos.stationIdx,
       statusTag: pos.statusTag,
       notStarted: pos.notStarted,
       isCompleted: pos.isCompleted,
@@ -2362,10 +2790,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Support object or numeric index
     if (typeof livePos === 'number') {
       livePos = {
-        mode: 'AT_STATION',
+        mode: 'BETWEEN',
         stationIdx: livePos,
-        fromIdx: livePos,
-        toIdx: livePos + 1
+        fromIdx: Math.max(0, livePos - 1),
+        toIdx: livePos,
+        topPercent: 50,
+        isTouchingDot: false
       };
     }
 
@@ -2383,37 +2813,28 @@ document.addEventListener('DOMContentLoaded', () => {
       const sCode = stop.stationCode || stop.station_code || '';
       const isMajor = isMajorStation(sName, sCode, isOrigin, isDest);
 
-      const isCurrentAtStation = (livePos.mode === 'AT_STATION' && livePos.stationIdx === idx);
-      const isPassed = (livePos.mode === 'AT_STATION')
-        ? (livePos.stationIdx !== -1 && idx < livePos.stationIdx)
-        : (idx <= livePos.fromIdx);
+      const isTouchingThisStop = Boolean(livePos.isTouchingDot && livePos.stationIdx === idx);
+      const isPassed = (idx < livePos.fromIdx) || (idx === livePos.fromIdx && !isTouchingThisStop);
 
       // 12-hour AM/PM Time
       const stopRaw = stop.departure_time || stop.arrival_time || '05:45:00';
       const stopTime = formatTime12(stopRaw);
 
-      // Platform: populated for ALL stops (both big stations and small stations)
+      // Platform: populated for ALL stops
       const pfStr = getStopPlatform(stop, isMajor, isFast, trainItem, idx);
 
       html += `
-        <div class="journey-stop-row ${isMajor ? 'is-major' : 'is-minor'} ${isCurrentAtStation ? 'is-current' : ''} ${isPassed ? 'is-passed' : ''}" id="journey-stop-${idx}" data-stop-idx="${idx}">
+        <div class="journey-stop-row ${isMajor ? 'is-major' : 'is-minor'} ${isTouchingThisStop ? 'is-current' : ''} ${isPassed ? 'is-passed' : ''}" id="journey-stop-${idx}" data-stop-idx="${idx}">
           <div class="stop-time">
             <span class="stop-time-val">${stopTime.hhmm}</span>
             <span class="stop-time-ampm">${stopTime.ampm}</span>
-            ${(delayMinutes > 0 && isCurrentAtStation) ? `<span class="stop-delay-badge">+${delayMinutes}m</span>` : ''}
+            ${(delayMinutes > 0 && isTouchingThisStop) ? `<span class="stop-delay-badge">+${delayMinutes}m</span>` : ''}
           </div>
 
           <div class="stop-track">
             <div class="stop-track-line line-top ${idx === 0 ? 'hidden' : ''}"></div>
             <div class="stop-dot-anchor">
-              ${isCurrentAtStation ? `
-                <div class="train-capsule-green">
-                  <div class="capsule-blinking-dot"></div>
-                  <div class="capsule-radar-ring"></div>
-                </div>
-              ` : `
-                <div class="stop-dot"></div>
-              `}
+              <div class="stop-dot ${isTouchingThisStop ? 'is-touched' : ''}"></div>
             </div>
             <div class="stop-track-line line-bottom ${idx === total - 1 ? 'hidden' : ''}"></div>
           </div>
@@ -2421,7 +2842,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="stop-content">
             <div class="stop-station-col">
               <span class="stop-station-name">${sName}</span>
-              ${isCurrentAtStation ? '<span class="stop-arrived-text">Arrived here</span>' : ''}
+              ${isTouchingThisStop ? '<span class="stop-arrived-text">Arrived here</span>' : ''}
             </div>
             <div class="stop-meta-right">
               ${pfStr ? `<span class="stop-pf-badge">PF: ${pfStr}</span>` : ''}
@@ -2430,18 +2851,19 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
-      // If train is IN BETWEEN station idx and idx + 1, insert the Orange Capsule row (no blinking dot - dot is only for arrived)
-      if (livePos.mode === 'BETWEEN' && idx === livePos.fromIdx && idx < total - 1) {
+      // Continuous moving capsule in the active transit segment (smooth green when touching dot, orange when in between)
+      if (idx === livePos.fromIdx && idx < total - 1) {
         const topP = livePos.topPercent || 50;
+        const isGreen = Boolean(livePos.isTouchingDot);
         html += `
           <div class="journey-between-row" id="journey-between-${idx}">
             <div class="between-time-spacer"></div>
             <div class="between-track">
               <div class="between-track-line" style="background: linear-gradient(180deg, #A855F7 0%, #A855F7 ${topP}%, rgba(255, 255, 255, 0.22) ${topP}%, rgba(255, 255, 255, 0.22) 100%);"></div>
-              <div class="train-capsule-orange is-moving" style="top: ${topP}%;"></div>
+              <div class="train-capsule-orange ${isGreen ? 'is-green' : 'is-orange'} is-moving" style="top: ${topP}%;"></div>
             </div>
             <div class="between-content">
-              <span class="between-text">Between</span>
+              <span class="between-text ${isGreen ? 'is-arriving' : ''}">${isGreen ? 'Arriving' : 'Between'}</span>
             </div>
           </div>
         `;
@@ -2507,19 +2929,54 @@ document.addEventListener('DOMContentLoaded', () => {
   function refreshJourneyCurrentStop(shouldScroll = true) {
     if (!currentJourneyStops || currentJourneyStops.length === 0 || !activeJourneyTrain) return;
     const livePos = calculateTrainLivePosition(currentJourneyStops, activeJourneyTrain);
-    const liveKey = `${livePos.mode}_${livePos.stationIdx}_${livePos.fromIdx}_${livePos.delayMinutes}`;
+    const liveKey = `${livePos.fromIdx}_${livePos.delayMinutes}`;
 
     if (shouldScroll || liveKey !== lastJourneyLiveKey) {
       lastJourneyLiveKey = liveKey;
       renderJourneyStopsList(currentJourneyStops, livePos, activeJourneyTrain, shouldScroll);
-    } else if (livePos.mode === 'BETWEEN') {
-      // Continuous smooth live gliding of the orange capsule along the track between stations
+
+      // Trigger Stops Notification when train state changes!
+      if (window.stopsNotifEngine) {
+        if (livePos.isTouchingDot) {
+          const curr = currentJourneyStops[livePos.stationIdx]?.station?.station_name || currentJourneyStops[livePos.stationIdx]?.station_name || 'Dadar';
+          const prev = (livePos.stationIdx > 0) ? (currentJourneyStops[livePos.stationIdx - 1]?.station?.station_name || currentJourneyStops[livePos.stationIdx - 1]?.station_name) : 'Prabhadevi';
+          const next = (livePos.stationIdx < currentJourneyStops.length - 1) ? (currentJourneyStops[livePos.stationIdx + 1]?.station?.station_name || currentJourneyStops[livePos.stationIdx + 1]?.station_name) : 'Matunga Rd.';
+          window.stopsNotifEngine.onArrived(curr, prev, next);
+        } else {
+          const prev = currentJourneyStops[livePos.fromIdx]?.station?.station_name || currentJourneyStops[livePos.fromIdx]?.station_name || 'Prabhadevi';
+          const curr = currentJourneyStops[livePos.fromIdx]?.station?.station_name || currentJourneyStops[livePos.fromIdx]?.station_name || 'Dadar';
+          const next = currentJourneyStops[livePos.toIdx]?.station?.station_name || currentJourneyStops[livePos.toIdx]?.station_name || 'Matunga Rd.';
+          window.stopsNotifEngine.onInBetween(prev, curr, next);
+        }
+      }
+    } else {
+      // Continuous smooth live gliding of the capsule along the track between stations
       const orangeCapsule = document.querySelector('.train-capsule-orange');
       const trackLine = document.querySelector('.between-track-line');
-      if (orangeCapsule && trackLine) {
+      const betweenText = document.querySelector('.between-text');
+
+      if (orangeCapsule) {
         const topP = livePos.topPercent || 50;
         orangeCapsule.style.top = `${topP}%`;
-        trackLine.style.background = `linear-gradient(180deg, #A855F7 0%, #A855F7 ${topP}%, rgba(255, 255, 255, 0.22) ${topP}%, rgba(255, 255, 255, 0.22) 100%)`;
+
+        // Smooth transition to green when touching dot, and orange when leaving dot
+        const isGreen = Boolean(livePos.isTouchingDot);
+        orangeCapsule.classList.toggle('is-green', isGreen);
+        orangeCapsule.classList.toggle('is-orange', !isGreen);
+
+        if (trackLine) {
+          trackLine.style.background = `linear-gradient(180deg, #A855F7 0%, #A855F7 ${topP}%, rgba(255, 255, 255, 0.22) ${topP}%, rgba(255, 255, 255, 0.22) 100%)`;
+        }
+
+        if (betweenText) {
+          betweenText.textContent = isGreen ? 'Arriving' : 'Between';
+          betweenText.classList.toggle('is-arriving', isGreen);
+        }
+
+        // Highlight station dot when capsule touches it
+        document.querySelectorAll('.stop-dot').forEach((dot, dotIdx) => {
+          dot.classList.toggle('is-touched', isGreen && livePos.stationIdx === dotIdx);
+        });
       }
     }
   }

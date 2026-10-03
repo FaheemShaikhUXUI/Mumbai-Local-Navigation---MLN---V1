@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MumbaiLocal Super Intelligent — Official Navigation App</title>
+  <link rel="stylesheet" id="appStylesheet" href="mobile.css?v=20261003_34">
+</head>
+<body class="theme-night">
+
+  <!-- Supporting Side Tools (Right Side Dock) -->
+  <aside class="supporting-side-tools" id="supportingSideTools" aria-label="Supporting Side Tools">
+    <!-- Top Pill: Theme Switcher & Reset Flow (Exactly as in user reference) -->
+    <div class="side-tools-pill-group">
+      <button id="themeToggleQuick" class="side-tool-pill-btn" title="Toggle Day/Night Theme">
+        <span id="themeQuickIcon">🌙</span>
+        <span id="themeQuickText">Night Theme (Black & Purple)</span>
+      </button>
+      <span class="side-tools-divider">|</span>
+      <button id="authResetQuick" class="side-tool-pill-link" title="Test 1st Time Splash & OTP Flow">
+        Reset / Test 1st Time Login
+      </button>
+    </div>
+
+    <!-- Below Setting: Refresh Page -->
+    <div class="side-tools-pill-group side-tools-refresh-group">
+      <button id="btnRefreshPageQuick" class="btn-side-refresh" title="Refresh current page without losing login">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"/>
+          <polyline points="1 20 1 14 7 14"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+        <span>Refresh Page</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Mobile Device Shell Viewport -->
+  <div class="phone-viewport">
+    
+    <!-- Phone Top Notch -->
+    <div class="phone-notch">
+      <div class="notch-camera"></div>
+      <div class="notch-speaker"></div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span id="statusTime">04:30</span>
+      <div class="status-icons">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"/></svg>
+        <span style="font-size: 0.7rem; font-weight: 800;">5G</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 4h-3V2h-4v2H7v18h10V4z"/></svg>
+      </div>
+    </div>
+
+    <!-- App Screen Views Wrapper -->
+    <div class="screen-wrapper">
+
+      <!-- Floating Overlay Scrollbar (3px rounded white bar with 30% opacity, over content) -->
+      <div class="custom-overlay-scrollbar" id="customOverlayScrollbar">
+        <div class="custom-overlay-thumb" id="customScrollThumb"></div>
+      </div>
+
+      <!-- ==========================================
+           SCREEN 1: SPLASH SCREEN (2 Seconds)
+           ========================================== -->
+      <section id="screen-splash" class="app-screen active">
+        <div class="auth-brand-header">
+          <div class="auth-logo-box">
+            <img src="logo.svg" alt="Mumbai Local AI Logo" style="width: 100%; height: 100%;">
+          </div>
+          <h1 class="auth-title">MumbaiLocal</h1>
+          <h2 class="auth-subtitle">Super Intelligent</h2>
+          <p class="auth-tagline">The smart way of find your Local<br>with power of SI</p>
+          <div class="splash-loader">
+            <span class="splash-dot"></span>
+            <span class="splash-dot"></span>
+            <span class="splash-dot"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SCREEN 2: FIRST TIME MOBILE AUTHENTICATION
+           ========================================== -->
+      <section id="screen-mobile-login" class="app-screen">
+        <div class="auth-brand-header">
+          <div class="auth-logo-box">
+            <img src="logo.svg" alt="Mumbai Local AI Logo" style="width: 100%; height: 100%;">
+          </div>
+          <h1 class="auth-title">MumbaiLocal</h1>
+          <h2 class="auth-subtitle">Super Intelligent</h2>
+          <p class="auth-tagline">The smart way of find your Local<br>with power of SI</p>
+        </div>
+
+        <div class="auth-content-area">
+          <label class="input-section-label" for="phoneInput">Enter Your 10 Digit Mobile Number For OTP</label>
+          
+          <div class="mobile-input-group">
+            <div class="country-code-box">+91</div>
+            <input type="tel" id="phoneInput" class="mobile-number-input" placeholder="0000 000 000" maxlength="12" autocomplete="tel">
+          </div>
+
+          <p class="auth-security-note">
+            <strong>Note:</strong><br>
+            Your Mobile Number will be 100% secure<br>
+            We don't use your number for any other reason,<br>
+            We just need for Authentication from OTP
+          </p>
+
+          <button id="btnLoginSendOtp" class="btn-auth-action">Login</button>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SCREEN 3: OTP VERIFICATION
+           ========================================== -->
+      <section id="screen-otp" class="app-screen">
+        <div class="auth-brand-header">
+          <div class="auth-logo-box">
+            <img src="logo.svg" alt="Mumbai Local AI Logo" style="width: 100%; height: 100%;">
+          </div>
+          <h1 class="auth-title">MumbaiLocal</h1>
+          <h2 class="auth-subtitle">Super Intelligent</h2>
+          <p class="auth-tagline">The smart way of find your Local<br>with power of SI</p>
+        </div>
+
+        <div class="auth-content-area">
+          <label class="input-section-label" style="text-align: center; display: block;">Enter 4 Digit OTP</label>
+          
+          <div class="otp-inputs-row">
+            <input type="text" class="otp-box" maxlength="1" inputmode="numeric" id="otp-1">
+            <input type="text" class="otp-box" maxlength="1" inputmode="numeric" id="otp-2">
+            <input type="text" class="otp-box" maxlength="1" inputmode="numeric" id="otp-3">
+            <input type="text" class="otp-box" maxlength="1" inputmode="numeric" id="otp-4">
+          </div>
+
+          <div class="otp-resend-row">
+            <span id="otpCountdown">Resend OTP in 25s</span>
+            <button id="btnResendOtp" class="btn-resend-otp" disabled>Resend Code</button>
+          </div>
+
+          <button id="btnVerifyOtp" class="btn-auth-action">Login</button>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SCREEN 4: REGULAR HOME SCREEN (AFTER AUTH)
+           ========================================== -->
+      <section id="screen-home" class="app-screen">
+        <div class="home-container">
+
+          <!-- Top Navigation Header -->
+          <div class="home-topbar">
+            <button id="btnOpenMenu" class="btn-hamburger" title="Menu" aria-label="Open Menu">
+              <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+                <line x1="1" y1="2" x2="21" y2="2"/>
+                <line x1="1" y1="8" x2="21" y2="8"/>
+                <line x1="1" y1="14" x2="21" y2="14"/>
+              </svg>
+            </button>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <img src="logo.svg" alt="Logo" style="width: 26px; height: 30px;">
+              <span style="font-size: 0.88rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.01em;">
+                Mumbai<span style="color: var(--accent-purple);">Local</span>
+              </span>
+            </div>
+            <button id="btnToggleTheme" class="btn-theme-minimal" title="Toggle Day/Night Theme" aria-label="Toggle Theme">
+              <span id="themeHeaderIcon">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="4"/>
+                  <path d="M12 2v2"/>
+                  <path d="M12 20v2"/>
+                  <path d="m4.93 4.93 1.41 1.41"/>
+                  <path d="m17.66 17.66 1.41 1.41"/>
+                  <path d="M2 12h2"/>
+                  <path d="M20 12h2"/>
+                  <path d="m6.34 17.66-1.41 1.41"/>
+                  <path d="m19.07 4.93-1.41 1.41"/>
+                </svg>
+              </span>
+            </button>
+          </div>
+
+          <!-- Journey Planner Component (From & To Tile) -->
+          <div class="journey-search-box" id="journeySearchBox">
+            <!-- From Input Row -->
+            <div class="search-row search-row-from tile-active" id="fromInputBox">
+              <span class="search-icon-prefix" id="fromSearchIconBtn" role="button" aria-label="Search or clear" title="Search station">
+                <svg class="icon-search" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="10.5" cy="10.5" r="7"/>
+                  <line x1="21" y1="21" x2="15.5" y2="15.5"/>
+                </svg>
+                <svg class="icon-clear" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </span>
+              <span class="input-label-tag from-label">From:</span>
+              <input type="text" id="inputFromStation" class="field-input" placeholder="" autocomplete="off">
+              <button id="btnSwapOrLocate" class="btn-locate-pill" title="Swap or Current Location">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFFFFF">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C7.58 2 4 5.58 4 10c0 5.25 7.13 11.4 7.44 11.66.33.28.8.28 1.13 0C12.87 21.4 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" fill="#FFFFFF"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Middle Divider Line -->
+            <div class="search-row-divider" id="middleSearchDivider"></div>
+
+            <!-- Extended Middle Direction Possibilities (Expanding from Center as in Image 2) -->
+            <div class="tile-center-extension" id="tileCenterExtension">
+              <!-- Dynamically populated direction possibilities -->
+            </div>
+
+            <!-- To Input Row -->
+            <div class="search-row search-row-to" id="toInputBox">
+              <span class="search-icon-prefix" id="toSearchIconBtn" role="button" aria-label="Search or clear" title="Search destination">
+                <svg class="icon-search" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="10.5" cy="10.5" r="7"/>
+                  <line x1="21" y1="21" x2="15.5" y2="15.5"/>
+                </svg>
+                <svg class="icon-clear" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </span>
+              <span class="input-label-tag to-label">To:</span>
+              <input type="text" id="inputToStation" class="field-input" placeholder="Search" autocomplete="off">
+            </div>
+          </div>
+
+          <!-- Proceed to Show Results Button (Smoothly appears ONLY when both From & To are filled) -->
+          <div class="search-proceed-wrap" id="searchProceedWrap">
+            <button id="btnProceedResults" class="btn-proceed-results" title="Show Trains & Schedules" aria-label="Show Trains and Schedules">
+              <span class="btn-proceed-text">Show Trains & Schedules</span>
+              <svg class="btn-proceed-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Corridor Filter Pills Row (Placed BELOW From and To tile as requested) -->
+          <div class="corridor-pills-row" id="lineFilterRow">
+            <button class="line-chip active" data-line="all">All</button>
+            <button class="line-chip" data-line="line_wr_suburban">Western</button>
+            <button class="line-chip" data-line="line_cr_main">Central</button>
+            <button class="line-chip" data-line="line_cr_harbour">Harbour</button>
+            <button class="line-chip" data-line="line_cr_trans_harbour">Trans-Harbour</button>
+            <button class="line-chip" data-line="line_cr_uran">Uran</button>
+            <button class="line-chip" data-line="line_cr_vasai_diva_panvel">Vasai–Diva</button>
+            <button class="line-chip" data-line="line_cr_neral_matheran">Matheran</button>
+            <button class="line-chip" data-line="line_cr_pune_suburban">Pune</button>
+          </div>
+
+          <!-- Quick Route Suggestion Pills (Starred Routes) -->
+          <div class="quick-routes-row" id="quickRoutesRow">
+            <button class="route-shortcut-chip" data-from="stn_dr" data-to="stn_vr"><span class="chip-star-icon">★</span>Dadar – Virar</button>
+            <button class="route-shortcut-chip" data-from="stn_bvi" data-to="stn_vr"><span class="chip-star-icon">★</span>Borivali – Virar</button>
+            <button class="route-shortcut-chip" data-from="stn_ccg" data-to="stn_vr"><span class="chip-star-icon">★</span>Churchgate – Virar</button>
+            <button class="route-shortcut-chip" data-from="stn_dr" data-to="stn_csmt"><span class="chip-star-icon">★</span>Dadar – CSMT</button>
+            <button class="route-shortcut-chip" data-from="stn_tna" data-to="stn_pnvl"><span class="chip-star-icon">★</span>Thane – Panvel</button>
+            <button class="route-shortcut-chip" data-from="stn_csmt" data-to="stn_pnvl"><span class="chip-star-icon">★</span>CSMT – Panvel</button>
+          </div>
+
+          <!-- Real Trains Results List (Appears when search is triggered) -->
+          <div id="trainResultsPanel" class="train-results-panel">
+            <div class="results-header-bar">
+              <span id="resultsHeaderTitle" class="results-title">Scheduled Trains</span>
+              <button id="btnCloseResults" class="btn-close-results">✕ Clear</button>
+            </div>
+            <div id="trainCardsContainer" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <!-- Dynamic train cards populated from 2,850 official schedules -->
+            </div>
+          </div>
+
+          <!-- Station Directory List (Vertical) -->
+          <div class="station-directory-section" id="stationDirectoryList">
+            <!-- Dynamic station rows populated from master stations -->
+          </div>
+
+        </div>
+
+        <!-- Floating Action Button (Voice Search Microphone) -->
+        <button id="btnVoiceFab" class="fab-voice-search" title="Voice Search / AI Assistant">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </button>
+      </section>
+
+      <!-- ==========================================
+           SCREEN 5: TRAIN TIMETABLE RESULTS SCREEN (Exact match to Reference Image 1 & 2)
+           ========================================== -->
+      <section id="screen-train-results" class="app-screen">
+        <!-- Glassmorphic Frosted Header with Background Blur (Showing scrolling list blurred underneath) -->
+        <div class="results-header-glass" id="resultsHeaderGlass">
+          <!-- Top Navigation Bar: Back Button, Route Title, Favorite Star, Refresh Button -->
+          <div class="results-topbar">
+            <button id="btnBackFromResults" class="btn-results-back" title="Back to Search" aria-label="Back">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            
+            <div class="results-route-marquee-wrapper" id="resultsRouteWrapper">
+              <div class="results-route-title" id="resultsRouteTitle">
+                <span id="resFromStation">Dadar</span>
+                <span class="route-arrow">→</span>
+                <span id="resToStation">Virar</span>
+              </div>
+            </div>
+
+            <div class="results-topbar-actions">
+              <button id="btnResultsFav" class="btn-fav-star" title="Save Favorite Route" aria-label="Favorite">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" class="star-icon-svg">
+                  <polygon points="12 2.5 15.05 8.5 21.8 9.4 16.8 14.1 18.1 20.8 12 17.5 5.9 20.8 7.2 14.1 2.2 9.4 8.95 8.5"/>
+                </svg>
+              </button>
+              <button id="btnScrollToArrived" class="btn-results-refresh" title="Jump to Currently Arrived Train" aria-label="Current Train">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Pills Row: All, Fast (Red), Slow (Green), AC (Blue) -->
+          <div class="timetable-filter-bar" id="timetableFilterBar">
+            <button class="timetable-filter-pill active" data-filter="ALL">All</button>
+            <button class="timetable-filter-pill filter-fast" data-filter="FAST">Fast</button>
+            <button class="timetable-filter-pill filter-slow" data-filter="SLOW">Slow</button>
+            <button class="timetable-filter-pill filter-ac" data-filter="AC">AC</button>
+          </div>
+        </div>
+
+        <!-- Timetable Tiles List (Pure & Precise - Destination, Time, Route, Platform) -->
+        <div class="timetable-tiles-container" id="timetableTilesContainer">
+          <!-- Populated dynamically with precise tiles from Image 2 -->
+        </div>
+      </section>
+
+      <!-- SCREEN 6: TRAIN JOURNEY / STOPS VIEW -->
+      <section id="screen-train-journey" class="app-screen">
+        <!-- Sticky Top Glass Header -->
+        <div class="journey-header-glass" id="journeyHeaderGlass">
+          <!-- Top Navigation Bar: Back Button, Train Name in Center, Right Badge -->
+          <div class="journey-topbar">
+            <button id="btnBackFromJourney" class="btn-journey-back" title="Back to Timetable" aria-label="Back">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+
+            <div class="journey-train-title-wrapper">
+              <div class="journey-train-name" id="journeyTrainName">Train Details</div>
+              <div class="journey-train-meta" id="journeyTrainMeta">Loading schedule...</div>
+            </div>
+
+            <div class="journey-topbar-right">
+              <span class="journey-type-pill" id="journeyTypePill">FAST</span>
+            </div>
+          </div>
+
+          <!-- Secondary Subheader: "You are currently in this train ?" with Toggle Switch -->
+          <div class="journey-subbar" id="journeySubbar">
+            <div class="journey-subbar-content">
+              <div class="journey-subbar-text-group">
+                <span class="journey-subbar-title" id="journeySubbarTitle">You are currently in this train ?</span>
+                <span class="journey-crowd-chip" id="journeyCrowdChip" style="display: none;">
+                  <span class="crowd-beacon-dot"></span>
+                  <span class="crowd-beacon-text">Late by 15m shared</span>
+                </span>
+              </div>
+              <label class="journey-toggle" for="toggleInTrain" title="Toggle current train tracking">
+                <input type="checkbox" id="toggleInTrain">
+                <span class="journey-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stops Timeline Container -->
+        <div class="journey-stops-container" id="journeyStopsContainer">
+          <!-- Dynamically populated with stops timeline -->
+        </div>
+
+        <!-- Bottom Return Button Footer -->
+        <div class="journey-bottom-footer" id="journeyBottomFooter">
+          <button id="btnJourneyReturn" class="btn-journey-return" title="Return">
+            <span>Return</span>
+          </button>
+        </div>
+      </section>
+
+
+    </div>
+
+    <!-- 70% Width Minimalist Side Navigation Drawer (Matching User Reference Image) -->
+    <div id="sideDrawerOverlay" class="side-drawer-overlay" aria-hidden="true">
+      <div class="side-drawer-menu" role="dialog" aria-modal="true" aria-label="Navigation Menu">
+        
+        <!-- Top Profile & Auth Bar -->
+        <div class="drawer-user-header">
+          <div class="drawer-user-info">
+            <div class="drawer-avatar"></div>
+            <div class="drawer-user-text">
+              <span class="drawer-user-label">User:</span>
+              <span class="drawer-user-phone" id="drawerUserPhone">00000 00000</span>
+            </div>
+          </div>
+          <button id="btnDrawerLogout" class="btn-drawer-logout" title="Logout">Logout</button>
+        </div>
+
+        <div class="drawer-divider"></div>
+
+        <!-- Menu Navigation Items -->
+        <nav class="drawer-menu-list">
+          <!-- Item 1: Stops Notification with Toggle Switch -->
+          <div class="drawer-menu-item drawer-item-toggle" id="menuItemStopsNotification">
+            <span class="drawer-item-title">Stops Notification</span>
+            <label class="drawer-toggle-switch" title="Toggle Stops Notification">
+              <input type="checkbox" id="toggleStopsNotification">
+              <span class="drawer-toggle-slider"></span>
+            </label>
+          </div>
+
+          <!-- Item 2: Alerts -->
+          <button type="button" class="drawer-menu-item" id="menuItemAlerts">
+            <span class="drawer-item-title">Alerts</span>
+          </button>
+
+          <!-- Item 3: Community -->
+          <button type="button" class="drawer-menu-item" id="menuItemCommunity">
+            <span class="drawer-item-title">Community</span>
+          </button>
+
+          <!-- Item 4: Share this App -->
+          <button type="button" class="drawer-menu-item" id="menuItemShare">
+            <span class="drawer-item-title">Share this App</span>
+          </button>
+
+          <!-- Item 5: Application User Guide -->
+          <button type="button" class="drawer-menu-item" id="menuItemGuide">
+            <span class="drawer-item-title">Application User Guide</span>
+          </button>
+
+          <!-- Item 6: Contact for Advertise -->
+          <button type="button" class="drawer-menu-item" id="menuItemAdvertise">
+            <span class="drawer-item-title">Contact for Advertise</span>
+          </button>
+        </nav>
+
+      </div>
+    </div>
+
+    <!-- Toast Notification Popup -->
+    <div id="toastNotice" class="toast-notice">Welcome to MumbaiLocal!</div>
+
+  </div>
+
+  <script src="mobile.js?v=20261003_34"></script>
+  <!-- Instant Hot-Reload & Live CSS Injection (Zero manual refresh required!) -->
+  <script>
+    (function initHotReload() {
+      let lastCss = 0;
+      let lastJs = 0;
+      let lastHtml = 0;
+      async function pollUpdates() {
+        try {
+          const r = await fetch('/api/dev/version?t=' + Date.now());
+          if (!r.ok) return;
+          const d = await r.json();
+          if (lastCss && d.cssMtime > lastCss) {
+            // Hot swap stylesheet instantly with zero page reload and zero scroll reset!
+            const link = document.getElementById('appStylesheet') || document.querySelector('link[href*="mobile.css"]');
+            if (link) {
+              const currentHref = link.href.split('?')[0];
+              link.href = currentHref + '?v=' + d.cssMtime;
+            }
+          }
+          if ((lastJs && d.jsMtime > lastJs) || (lastHtml && d.htmlMtime > lastHtml)) {
+            // Reload page automatically when JS or HTML changes
+            location.reload();
+          }
+          lastCss = d.cssMtime;
+          lastJs = d.jsMtime;
+          lastHtml = d.htmlMtime;
+        } catch (e) {}
+      }
+      setInterval(pollUpdates, 750);
+    })();
+  </script>
+</body>
+</html>

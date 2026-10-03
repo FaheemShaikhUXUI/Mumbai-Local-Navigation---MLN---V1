@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mumbai Local — Timetable Admin & Developer Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="navbar">
+    <div class="brand">
+      <span class="brand-badge">IR</span>
+      <span>Mumbai Local Timetable Engine</span>
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-link active">Dashboard</a>
+      <a href="/api/sync/status" target="_blank" class="nav-link">API Status</a>
+      <a href="/api/timetable/manifest" target="_blank" class="nav-link">Manifest</a>
+      <a href="/mobile" class="btn-mobile-view" id="openMobileBtn">📱 Launch Mobile App</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Status Grid -->
+    <div class="status-grid">
+      <!-- Card 1: Official Sources -->
+      <div class="card">
+        <div class="card-title">
+          <span>Official Sources</span>
+          <span class="pill pill-success" id="sourcePill"><span class="pill-pulse"></span> WR & CR</span>
+        </div>
+        <div class="card-value" id="sourceStatusText">Verified 2026</div>
+        <div class="card-subtitle" id="sourceDetails">Last checked: Just now (every 6 hrs)</div>
+      </div>
+
+      <!-- Card 2: Google Drive Repository -->
+      <div class="card">
+        <div class="card-title">
+          <span>Storage Repository</span>
+          <span class="pill pill-info" id="storagePill"><span class="pill-pulse"></span> Google Drive / Mock</span>
+        </div>
+        <div class="card-value" id="storageStatusText">Repository Sync</div>
+        <div class="card-subtitle" id="storageFolder">MumbaiLocalTimetable/current</div>
+      </div>
+
+      <!-- Card 3: Timetable Version -->
+      <div class="card">
+        <div class="card-title">
+          <span>Active Version</span>
+          <span class="pill pill-info" id="versionPill">Canonical</span>
+        </div>
+        <div class="card-value" id="activeVersionText">Loading...</div>
+        <div class="card-subtitle" id="effectiveDateText">Effective: w.e.f. 01.09.2026</div>
+      </div>
+
+      <!-- Card 4: Sync Status -->
+      <div class="card">
+        <div class="card-title">
+          <span>Engine Status</span>
+          <span class="pill pill-success" id="engineStatusPill"><span class="pill-pulse"></span> IDLE</span>
+        </div>
+        <div class="card-value" id="engineStatusText">SYNC_IDLE</div>
+        <div class="card-subtitle" id="syncScheduleText">Scheduled check: Every 6 hours</div>
+      </div>
+    </div>
+
+    <!-- Dev / Test Action Controls (Section 32, 33, 35, 36) -->
+    <div class="section-header">
+      <h2 class="section-title">Developer & Ingestion Control Panel</h2>
+      <span class="card-subtitle">Authenticated Admin Operations</span>
+    </div>
+
+    <div class="actions-bar">
+      <button class="btn btn-primary" id="btnSyncNow">
+        <span>⚡</span> Sync Now (Official Fetch)
+      </button>
+      <button class="btn btn-secondary" id="btnSimulateUpdate">
+        <span>🧪</span> Simulate Kalyan 07:20 &rarr; 07:23 (Sec 35)
+      </button>
+      <button class="btn btn-danger" id="btnRollbackTest">
+        <span>🛡️</span> Test Rollback on Corrupted Payload (Sec 36)
+      </button>
+      <button class="btn btn-secondary" id="btnRunE2E">
+        <span>🚀</span> Run Full E2E Verification
+      </button>
+      <button class="btn btn-secondary" id="btnRefresh">
+        <span>🔄</span> Refresh Status
+      </button>
+    </div>
+
+    <!-- Alert / Toast Banner -->
+    <div id="statusAlert" style="display: none; padding: 1rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; font-weight: 500; font-size: 0.9rem;"></div>
+
+    <!-- Main Two-Column Layout -->
+    <div class="dashboard-columns">
+      <!-- Left Column: Search Test Console & Corridors -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Live Station & Train Search Console -->
+        <div class="card">
+          <div class="card-title">
+            <span>Live Timetable Search Console (Section 23 & 24)</span>
+            <span class="pill pill-info">Local Relational DB</span>
+          </div>
+          
+          <div class="search-console" style="margin-top: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="input-group">
+                <label class="input-label" for="fromStationInput">From Station</label>
+                <input type="text" id="fromStationInput" class="input-field" placeholder="e.g. Churchgate or CCG or VT" value="Churchgate">
+                <div id="fromSuggestions" style="position: absolute; display: none;"></div>
+              </div>
+
+              <div class="input-group">
+                <label class="input-label" for="toStationInput">To Station</label>
+                <input type="text" id="toStationInput" class="input-field" placeholder="e.g. Borivali or Kalyan" value="Borivali">
+                <div id="toSuggestions" style="position: absolute; display: none;"></div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+              <button class="btn btn-primary" id="btnSearchTrains" style="padding: 0.5rem 1rem;">Find Matching Trains</button>
+              <button class="btn btn-secondary" id="btnSwapStations" style="padding: 0.5rem 0.75rem;">⇄ Swap</button>
+              <select id="trainTypeSelect" class="input-field" style="padding: 0.5rem; font-size: 0.85rem;">
+                <option value="ALL">All Train Types</option>
+                <option value="FAST">Fast Trains Only</option>
+                <option value="SLOW">Slow Trains Only</option>
+                <option value="AC">AC Local Trains</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Train Results List -->
+          <div class="train-results-list" id="trainResultsList">
+            <div style="color: var(--text-dim); text-align: center; padding: 2rem;">Click "Find Matching Trains" to search schedules.</div>
+          </div>
+        </div>
+
+        <!-- Line Explorer (Section 27) -->
+        <div class="card">
+          <div class="card-title">
+            <span>Mumbai Suburban Line Explorer (Section 27)</span>
+            <span class="pill pill-info">Verified Corridors</span>
+          </div>
+          <div id="linesList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
+            <!-- Lines loaded via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Sync Logs & Manifest Details -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Sync Logs Timeline -->
+        <div class="card">
+          <div class="card-title">
+            <span>Sync Audit Logs</span>
+            <span class="pill pill-info" id="logCountPill">Logs</span>
+          </div>
+          <div class="logs-card" id="logsContainer" style="margin-top: 0.5rem;">
+            <div style="color: var(--text-dim); padding: 1rem;">Loading sync audit trail...</div>
+          </div>
+        </div>
+
+        <!-- Update Package & Diff Summary -->
+        <div class="card">
+          <div class="card-title">
+            <span>Incremental Update Optimizer (Sec 15)</span>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
+            <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-subtle);">
+              <span>Full Database Initial Download</span>
+              <strong style="color: var(--text-main);">~50 MB</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-subtle);">
+              <span>Incremental Patch Size</span>
+              <strong style="color: #34D399;" id="patchSizeValue">735 Bytes</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>Mobile Bandwidth Saved</span>
+              <strong style="color: #34D399;">~99.98%</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

@@ -1,6 +1,11 @@
 {
   "version": 2,
   "outputDirectory": "public",
+  "functions": {
+    "api/**": {
+      "includeFiles": "storage/**"
+    }
+  },
   "crons": [
     {
       "path": "/api/sync/cron",

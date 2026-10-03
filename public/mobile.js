@@ -2717,14 +2717,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const elapsedTransit = elapsedTotalSeconds - sSec;
         const rawProgress = Math.max(0, Math.min(1, elapsedTransit / transitDuration));
 
-        // Smooth top position from 2% (touching station i dot) down to 98% (touching station i+1 dot)
-        const topPercent = parseFloat((2 + rawProgress * 96).toFixed(2));
-
         // Touching dot threshold:
-        // When leaving station i (rawProgress <= 0.12) -> touching station i dot (GREEN)
+        // When leaving station i (rawProgress <= 0.14) -> touching station i dot (GREEN)
         // When approaching/touching station i + 1 (rawProgress >= 0.86) -> touching station i + 1 dot (GREEN)
-        // In-between (0.12 < rawProgress < 0.86) -> traveling down the track (ORANGE)
-        const isTouchingDot = (rawProgress <= 0.12) || (rawProgress >= 0.86);
+        // In-between (0.14 < rawProgress < 0.86) -> smoothly gliding down the track (ORANGE)
+        const isTouchingDot = (rawProgress <= 0.14) || (rawProgress >= 0.86);
         const activeStationIdx = (rawProgress >= 0.86) ? (i + 1) : i;
 
         return {
@@ -2737,7 +2734,6 @@ document.addEventListener('DOMContentLoaded', () => {
           isCompleted: false,
           delayMinutes,
           progress: rawProgress,
-          topPercent,
           isTouchingDot
         };
       }
@@ -2754,7 +2750,6 @@ document.addEventListener('DOMContentLoaded', () => {
       isCompleted: true,
       delayMinutes,
       progress: 1.0,
-      topPercent: 98,
       isTouchingDot: true
     };
   }
@@ -2853,14 +2848,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Continuous moving capsule in the active transit segment (smooth green when touching dot, orange when in between)
       if (idx === livePos.fromIdx && idx < total - 1) {
-        const topP = livePos.topPercent || 50;
         const isGreen = Boolean(livePos.isTouchingDot);
         html += `
           <div class="journey-between-row" id="journey-between-${idx}">
             <div class="between-time-spacer"></div>
             <div class="between-track">
-              <div class="between-track-line" style="background: linear-gradient(180deg, #A855F7 0%, #A855F7 ${topP}%, rgba(255, 255, 255, 0.22) ${topP}%, rgba(255, 255, 255, 0.22) 100%);"></div>
-              <div class="train-capsule-orange ${isGreen ? 'is-green' : 'is-orange'} is-moving" style="top: ${topP}%;"></div>
+              <div class="between-track-line"></div>
+              <div class="train-capsule-orange ${isGreen ? 'is-green' : 'is-orange'} is-moving" style="top: 50%;">
+                <div class="capsule-layer capsule-layer-orange"></div>
+                <div class="capsule-layer capsule-layer-green"></div>
+                <div class="capsule-headlight"></div>
+              </div>
             </div>
             <div class="between-content">
               <span class="between-text ${isGreen ? 'is-arriving' : ''}">${isGreen ? 'Arriving' : 'Between'}</span>
@@ -2870,7 +2868,29 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    const prevScrollTop = stopsContainer.scrollTop;
     stopsContainer.innerHTML = html;
+    if (!shouldScroll) {
+      stopsContainer.scrollTop = prevScrollTop;
+    }
+
+    // Immediately calculate dynamic dot offset so capsule lands precisely on the dots
+    requestAnimationFrame(() => {
+      const orangeCapsule = document.querySelector('.train-capsule-orange');
+      const trackLine = document.querySelector('.between-track-line');
+      const betweenRow = document.getElementById(`journey-between-${livePos.fromIdx}`);
+      const stopFromEl = document.getElementById(`journey-stop-${livePos.fromIdx}`);
+      const stopToEl = document.getElementById(`journey-stop-${livePos.toIdx}`);
+      if (orangeCapsule && betweenRow) {
+        const { startY, endY } = getBetweenRowDotOffsets(betweenRow, stopFromEl, stopToEl);
+        const currentY = startY + (livePos.progress || 0) * (endY - startY);
+        orangeCapsule.style.top = `${currentY.toFixed(1)}px`;
+        if (trackLine) {
+          const fillY = Math.max(0, currentY);
+          trackLine.style.background = `linear-gradient(180deg, #A855F7 0px, #A855F7 ${fillY.toFixed(1)}px, rgba(255, 255, 255, 0.22) ${fillY.toFixed(1)}px, rgba(255, 255, 255, 0.22) 100%)`;
+        }
+      }
+    });
 
     if (shouldScroll) {
       setTimeout(() => {
@@ -2894,6 +2914,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }, 80);
     }
+  }
+
+  // Measures dynamic start and end pixel offsets to exactly center on the station stop dots
+  function getBetweenRowDotOffsets(betweenEl, stopFromEl, stopToEl) {
+    if (!betweenEl) return { startY: -32, endY: 88 };
+    const anchorFrom = stopFromEl ? stopFromEl.querySelector('.stop-dot-anchor') : null;
+    const anchorTo = stopToEl ? stopToEl.querySelector('.stop-dot-anchor') : null;
+    const bRect = betweenEl.getBoundingClientRect();
+    const fRect = anchorFrom ? anchorFrom.getBoundingClientRect() : null;
+    const tRect = anchorTo ? anchorTo.getBoundingClientRect() : null;
+
+    const startY = fRect ? (fRect.top + fRect.height / 2) - bRect.top : -32;
+    const endY = tRect ? (tRect.top + tRect.height / 2) - bRect.top : (betweenEl.offsetHeight + 32);
+    return { startY, endY };
   }
 
   function updateJourneyCrowdBadge() {
@@ -2954,10 +2988,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const orangeCapsule = document.querySelector('.train-capsule-orange');
       const trackLine = document.querySelector('.between-track-line');
       const betweenText = document.querySelector('.between-text');
+      const betweenRow = document.getElementById(`journey-between-${livePos.fromIdx}`);
+      const stopFromEl = document.getElementById(`journey-stop-${livePos.fromIdx}`);
+      const stopToEl = document.getElementById(`journey-stop-${livePos.toIdx}`);
 
-      if (orangeCapsule) {
-        const topP = livePos.topPercent || 50;
-        orangeCapsule.style.top = `${topP}%`;
+      if (orangeCapsule && betweenRow) {
+        const { startY, endY } = getBetweenRowDotOffsets(betweenRow, stopFromEl, stopToEl);
+        const currentY = startY + (livePos.progress || 0) * (endY - startY);
+        orangeCapsule.style.top = `${currentY.toFixed(1)}px`;
 
         // Smooth transition to green when touching dot, and orange when leaving dot
         const isGreen = Boolean(livePos.isTouchingDot);
@@ -2965,7 +3003,8 @@ document.addEventListener('DOMContentLoaded', () => {
         orangeCapsule.classList.toggle('is-orange', !isGreen);
 
         if (trackLine) {
-          trackLine.style.background = `linear-gradient(180deg, #A855F7 0%, #A855F7 ${topP}%, rgba(255, 255, 255, 0.22) ${topP}%, rgba(255, 255, 255, 0.22) 100%)`;
+          const fillY = Math.max(0, currentY);
+          trackLine.style.background = `linear-gradient(180deg, #A855F7 0px, #A855F7 ${fillY.toFixed(1)}px, rgba(255, 255, 255, 0.22) ${fillY.toFixed(1)}px, rgba(255, 255, 255, 0.22) 100%)`;
         }
 
         if (betweenText) {

@@ -37,7 +37,11 @@ export class LocalStorageProvider implements StorageProvider {
     for (const dir of dirs) {
       const fullPath = path.join(this.basePath, dir);
       if (!fs.existsSync(fullPath)) {
-        fs.mkdirSync(fullPath, { recursive: true });
+        try {
+          fs.mkdirSync(fullPath, { recursive: true });
+        } catch (err) {
+          // Read-only serverless filesystem protection (e.g. AWS Lambda / Vercel)
+        }
       }
     }
   }

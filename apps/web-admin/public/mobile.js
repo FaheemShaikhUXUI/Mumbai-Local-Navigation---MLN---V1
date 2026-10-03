@@ -484,10 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const savedPhone = localStorage.getItem('ml_user_phone') || '00000 00000';
       userPhoneEl.textContent = savedPhone;
     }
-    const toggleNotify = document.getElementById('toggleStopsNotification');
-    if (toggleNotify) {
-      toggleNotify.checked = localStorage.getItem('ml_stops_notification') === 'true';
-    }
+    // Notification state is restored by restoreNotifUI() after the engine is set up
   }
 
   function openDrawer() {
@@ -512,14 +509,281 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('🚪 Logged out successfully');
   });
 
-  // Stops Notification Toggle Switch
-  document.getElementById('toggleStopsNotification')?.addEventListener('change', (e) => {
-    const isChecked = e.target.checked;
-    localStorage.setItem('ml_stops_notification', isChecked ? 'true' : 'false');
-    showToast(isChecked ? '🔔 Stops Notification Enabled' : 'Stops Notification Disabled');
-  });
+  // ==========================================
+  // STOPS NOTIFICATION ENGINE
+  // ==========================================
 
-  // Menu Items (simplicity placeholders, logic will be added when specified)
+  const NOTIF_PREFS_KEY = 'ml_notif_prefs';
+
+  function getNotifPrefs() {
+    try {
+      return JSON.parse(localStorage.getItem(NOTIF_PREFS_KEY) || '{}');
+    } catch { return {}; }
+  }
+
+  function saveNotifPrefs(prefs) {
+    localStorage.setItem(NOTIF_PREFS_KEY, JSON.stringify(prefs));
+  }
+
+  // -- DOM refs --
+  const toggleNotif    = document.getElementById('toggleStopsNotification');
+  const accordion      = document.getElementById('notifAccordion');
+  const chkShutter     = document.getElementById('chkNotifShutter');
+  const chkHeader      = document.getElementById('chkNotifHeader');
+  const chkVibrate     = document.getElementById('chkNotifVibrate');
+  const chkAllowAll    = document.getElementById('chkNotifAllowAll');
+  const shutterCard    = document.getElementById('shutterNotifCard');
+  const headerPill     = document.getElementById('headerNotifPill');
+  const headerPillText = document.getElementById('headerNotifText');
+  const btnShutterClose = document.getElementById('btnShutterNotifClose');
+  const shutterPrev    = document.getElementById('shutterStnPrev');
+  const shutterCurr    = document.getElementById('shutterStnCurrent');
+  const shutterNext    = document.getElementById('shutterStnNext');
+  const shutterFill    = document.getElementById('shutterNotifProgressFill');
+  const shutterDot     = document.getElementById('shutterNotifProgressDot');
+  const shutterInbetweenRow  = document.getElementById('shutterInbetweenRow');
+  const shutterInbetweenTime = document.getElementById('shutterInbetweenTime');
+
+  // -- Read saved state and restore UI --
+  function restoreNotifUI() {
+    const prefs = getNotifPrefs();
+    const enabled = prefs.enabled || false;
+    if (toggleNotif) toggleNotif.checked = enabled;
+    if (accordion) accordion.classList.toggle('open', enabled);
+    if (chkShutter)  chkShutter.checked  = !!prefs.shutter;
+    if (chkHeader)   chkHeader.checked   = !!prefs.header;
+    if (chkVibrate)  chkVibrate.checked  = !!prefs.vibrate;
+    if (chkAllowAll) chkAllowAll.checked = !!prefs.allowAll;
+  }
+
+  // -- Toggle main switch → open/close accordion --
+  if (toggleNotif) {
+    toggleNotif.addEventListener('change', (e) => {
+      const enabled = e.target.checked;
+      const prefs = getNotifPrefs();
+      prefs.enabled = enabled;
+      if (enabled && !prefs.shutter && !prefs.header && !prefs.allowAll) {
+        // default: allow all when first enabled
+        prefs.allowAll = true;
+        prefs.shutter  = true;
+        prefs.header   = true;
+      }
+      saveNotifPrefs(prefs);
+      if (accordion) accordion.classList.toggle('open', enabled);
+
+      if (chkShutter)  chkShutter.checked  = !!prefs.shutter;
+      if (chkHeader)   chkHeader.checked   = !!prefs.header;
+      if (chkVibrate)  chkVibrate.checked  = !!prefs.vibrate;
+      if (chkAllowAll) chkAllowAll.checked = !!prefs.allowAll;
+
+      if (!enabled) {
+        hideShutterCard();
+        hideHeaderPill();
+      }
+
+      showToast(enabled ? '🔔 Stops Notification Enabled' : '🔕 Stops Notification Disabled');
+
+      // Demo preview: show notification cards if journey is active
+      if (enabled) {
+        const prefs2 = getNotifPrefs();
+        notifEngine.triggerDemo(prefs2);
+      }
+    });
+  }
+
+  // -- Per-option checkboxes --
+  function onOptionChange(key, el) {
+    if (!el) return;
+    el.addEventListener('change', (e) => {
+      const prefs = getNotifPrefs();
+
+      if (key === 'allowAll') {
+        prefs.allowAll = e.target.checked;
+        if (e.target.checked) {
+          prefs.shutter = true;
+          prefs.header  = true;
+          prefs.vibrate = true;
+          if (chkShutter)  chkShutter.checked  = true;
+          if (chkHeader)   chkHeader.checked   = true;
+          if (chkVibrate)  chkVibrate.checked  = true;
+        }
+      } else {
+        prefs[key] = e.target.checked;
+        // If any individual option unchecked, uncheck Allow All
+        if (!e.target.checked && chkAllowAll) {
+          prefs.allowAll = false;
+          chkAllowAll.checked = false;
+        }
+        // If all three ticked, auto-tick Allow All
+        if (prefs.shutter && prefs.header && prefs.vibrate && chkAllowAll) {
+          prefs.allowAll = true;
+          chkAllowAll.checked = true;
+        }
+      }
+
+      saveNotifPrefs(prefs);
+    });
+  }
+
+  onOptionChange('shutter',  chkShutter);
+  onOptionChange('header',   chkHeader);
+  onOptionChange('vibrate',  chkVibrate);
+  onOptionChange('allowAll', chkAllowAll);
+
+  // -- Shutter card controls --
+  function showShutterCard(state = 'arrived') {
+    if (!shutterCard) return;
+    shutterCard.classList.remove('shutter-notif-hidden', 'shutter-notif-visible', 'state-inbetween');
+    void shutterCard.offsetWidth; // reflow
+    shutterCard.classList.add('shutter-notif-visible');
+    if (state === 'inbetween') shutterCard.classList.add('state-inbetween');
+  }
+
+  function hideShutterCard() {
+    if (!shutterCard) return;
+    shutterCard.classList.remove('shutter-notif-visible');
+    shutterCard.classList.add('shutter-notif-hidden');
+  }
+
+  function updateShutterCard({ prev, curr, next, progress = 42, state = 'arrived', timeLeft = null }) {
+    if (shutterPrev)  shutterPrev.textContent  = prev  || '';
+    if (shutterCurr)  shutterCurr.textContent  = curr  || '';
+    if (shutterNext)  shutterNext.textContent  = next  || '';
+    const pct = Math.min(Math.max(progress, 0), 100);
+    if (shutterFill) shutterFill.style.width = pct + '%';
+    if (shutterDot)  shutterDot.style.left   = pct + '%';
+    if (shutterInbetweenRow) {
+      shutterInbetweenRow.style.display = state === 'inbetween' ? 'flex' : 'none';
+    }
+    if (shutterInbetweenTime && timeLeft) {
+      shutterInbetweenTime.textContent = timeLeft;
+    }
+    showShutterCard(state);
+  }
+
+  // -- Header pill controls --
+  function showHeaderPill(text, type = 'arrived') {
+    if (!headerPill || !headerPillText) return;
+    headerPillText.textContent = text;
+    headerPill.classList.remove(
+      'header-notif-hidden', 'header-notif-visible',
+      'header-notif-arrived', 'header-notif-upcoming'
+    );
+    void headerPill.offsetWidth;
+    headerPill.classList.add('header-notif-visible');
+    headerPill.classList.add(type === 'arrived' ? 'header-notif-arrived' : 'header-notif-upcoming');
+  }
+
+  function hideHeaderPill() {
+    if (!headerPill) return;
+    headerPill.classList.remove('header-notif-visible');
+    headerPill.classList.add('header-notif-hidden');
+  }
+
+  // -- Close button on shutter card --
+  if (btnShutterClose) {
+    btnShutterClose.addEventListener('click', () => {
+      hideShutterCard();
+    });
+  }
+
+  // -- Notification Engine: wired to the active journey --
+  const notifEngine = {
+    _shutterTimer: null,
+    _headerTimer: null,
+    _upcomingInterval: null,
+
+    // Called when a journey stop is reached
+    onArrived(stationName, prevStation, nextStation, progressPct) {
+      const prefs = getNotifPrefs();
+      if (!prefs.enabled) return;
+      const showS = prefs.shutter || prefs.allowAll;
+      const showH = prefs.header  || prefs.allowAll;
+
+      if (showS) {
+        updateShutterCard({
+          prev: prevStation,
+          curr: stationName,
+          next: nextStation,
+          progress: progressPct,
+          state: 'arrived'
+        });
+        clearTimeout(this._shutterTimer);
+        this._shutterTimer = setTimeout(() => hideShutterCard(), 18000);
+      }
+
+      if (showH) {
+        showHeaderPill(stationName, 'arrived');
+        clearTimeout(this._headerTimer);
+        this._headerTimer = setTimeout(() => hideHeaderPill(), 18000);
+      }
+
+      if (prefs.vibrate && navigator.vibrate) {
+        navigator.vibrate([120, 60, 120]);
+      }
+    },
+
+    // Called every ~20s when train is between stops
+    onInBetween(prevStation, nextStation, progressPct, timeLeftStr) {
+      const prefs = getNotifPrefs();
+      if (!prefs.enabled) return;
+      const showS = prefs.shutter || prefs.allowAll;
+      const showH = prefs.header  || prefs.allowAll;
+
+      if (showS) {
+        updateShutterCard({
+          prev: prevStation,
+          curr: nextStation,
+          next: '',
+          progress: progressPct,
+          state: 'inbetween',
+          timeLeft: timeLeftStr
+        });
+      }
+
+      if (showH) {
+        showHeaderPill('Next ' + nextStation, 'upcoming');
+        clearTimeout(this._headerTimer);
+        this._headerTimer = setTimeout(() => hideHeaderPill(), 6000);
+      }
+    },
+
+    // Demo trigger for preview when notification is first enabled
+    triggerDemo(prefs) {
+      if (!prefs.shutter && !prefs.header && !prefs.allowAll) return;
+      const demo1 = { prev: 'Prabhadevi', curr: 'Dadar', next: 'Matunga Rd.', progress: 42, state: 'arrived' };
+      updateShutterCard(demo1);
+      showHeaderPill('Dadar', 'arrived');
+      clearTimeout(this._shutterTimer);
+      clearTimeout(this._headerTimer);
+      this._shutterTimer = setTimeout(() => {
+        // Switch to in-between demo
+        updateShutterCard({ prev: 'Dadar', curr: 'Matunga Rd.', next: '', progress: 62, state: 'inbetween', timeLeft: '~1:25 min' });
+        showHeaderPill('Next Matunga Rd.', 'upcoming');
+        this._shutterTimer = setTimeout(() => hideShutterCard(), 8000);
+        this._headerTimer  = setTimeout(() => hideHeaderPill(), 6000);
+      }, 5000);
+      this._headerTimer = setTimeout(() => hideHeaderPill(), 5000);
+    },
+
+    stopAll() {
+      clearTimeout(this._shutterTimer);
+      clearTimeout(this._headerTimer);
+      clearInterval(this._upcomingInterval);
+      hideShutterCard();
+      hideHeaderPill();
+    }
+  };
+
+  // Expose engine to window for journey screen integration
+  window.stopsNotifEngine = notifEngine;
+
+  // Restore prefs on load
+  restoreNotifUI();
+
+  // ==========================================
+  // Menu Items (simplicity placeholders)
+  // ==========================================
   document.getElementById('menuItemAlerts')?.addEventListener('click', () => {
     showToast('🔔 Alerts');
   });

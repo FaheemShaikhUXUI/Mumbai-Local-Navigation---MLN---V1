@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MumbaiLocal Super Intelligent — Official Navigation App</title>
-  <link rel="stylesheet" id="appStylesheet" href="mobile.css?v=20261003_34">
+  <link rel="stylesheet" id="appStylesheet" href="mobile.css?v=20261003_35">
 </head>
 <body class="theme-night">
 
@@ -421,13 +421,67 @@
 
         <!-- Menu Navigation Items -->
         <nav class="drawer-menu-list">
-          <!-- Item 1: Stops Notification with Toggle Switch -->
-          <div class="drawer-menu-item drawer-item-toggle" id="menuItemStopsNotification">
-            <span class="drawer-item-title">Stops Notification</span>
-            <label class="drawer-toggle-switch" title="Toggle Stops Notification">
-              <input type="checkbox" id="toggleStopsNotification">
-              <span class="drawer-toggle-slider"></span>
-            </label>
+
+          <!-- Item 1: Stops Notification with Toggle Switch + Accordion -->
+          <div class="drawer-notif-wrapper" id="stopsNotifWrapper">
+            <div class="drawer-menu-item drawer-item-toggle" id="menuItemStopsNotification">
+              <span class="drawer-item-title">Stops Notification</span>
+              <label class="drawer-toggle-switch" title="Toggle Stops Notification" onclick="event.stopPropagation()">
+                <input type="checkbox" id="toggleStopsNotification">
+                <span class="drawer-toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- Accordion Sub-Settings (expands below when toggle is ON) -->
+            <div class="notif-accordion" id="notifAccordion">
+              <div class="notif-accordion-inner">
+
+                <label class="notif-option-row" id="notifOptionShutter">
+                  <div class="notif-option-info">
+                    <span class="notif-option-title">Show Only in Shutter</span>
+                    <span class="notif-option-desc">Display card in notification shade only</span>
+                  </div>
+                  <div class="notif-checkbox-wrap">
+                    <input type="checkbox" id="chkNotifShutter" class="notif-cb-input">
+                    <span class="notif-cb-custom"></span>
+                  </div>
+                </label>
+
+                <label class="notif-option-row" id="notifOptionHeader">
+                  <div class="notif-option-info">
+                    <span class="notif-option-title">Show Only in Header</span>
+                    <span class="notif-option-desc">Show pill in phone header bar only</span>
+                  </div>
+                  <div class="notif-checkbox-wrap">
+                    <input type="checkbox" id="chkNotifHeader" class="notif-cb-input">
+                    <span class="notif-cb-custom"></span>
+                  </div>
+                </label>
+
+                <label class="notif-option-row" id="notifOptionVibrate">
+                  <div class="notif-option-info">
+                    <span class="notif-option-title">Vibrate Before 1 Min</span>
+                    <span class="notif-option-desc">Vibrate 1 minute before arriving at stop</span>
+                  </div>
+                  <div class="notif-checkbox-wrap">
+                    <input type="checkbox" id="chkNotifVibrate" class="notif-cb-input">
+                    <span class="notif-cb-custom"></span>
+                  </div>
+                </label>
+
+                <label class="notif-option-row notif-option-allow-all" id="notifOptionAllowAll">
+                  <div class="notif-option-info">
+                    <span class="notif-option-title">Allow All</span>
+                    <span class="notif-option-desc">Enable all notification types</span>
+                  </div>
+                  <div class="notif-checkbox-wrap">
+                    <input type="checkbox" id="chkNotifAllowAll" class="notif-cb-input">
+                    <span class="notif-cb-custom"></span>
+                  </div>
+                </label>
+
+              </div>
+            </div>
           </div>
 
           <!-- Item 2: Alerts -->
@@ -459,12 +513,66 @@
       </div>
     </div>
 
+    <!-- ============================================================
+         HEADER NOTIFICATION PILL (Dynamic Island Style)
+         Appears at the very top of phone frame, overlays status bar
+         ============================================================ -->
+    <div id="headerNotifPill" class="header-notif-pill header-notif-hidden" aria-live="polite">
+      <span class="header-notif-dot" id="headerNotifDot"></span>
+      <span class="header-notif-text" id="headerNotifText">Dadar</span>
+    </div>
+
+    <!-- ============================================================
+         ANDROID SHUTTER NOTIFICATION CARD
+         Mimics a real Android notification in the shade
+         ============================================================ -->
+    <div id="shutterNotifCard" class="shutter-notif-card shutter-notif-hidden">
+      <!-- Card Header -->
+      <div class="shutter-notif-header">
+        <div class="shutter-notif-app-info">
+          <div class="shutter-notif-app-icon">
+            <img src="logo.svg" alt="ML" style="width:100%;height:100%;border-radius:5px;">
+          </div>
+          <span class="shutter-notif-app-name">Mumbai Local Navigation</span>
+        </div>
+        <button class="shutter-notif-close" id="btnShutterNotifClose" aria-label="Dismiss notification">✕</button>
+      </div>
+
+      <!-- Journey Progress Bar -->
+      <div class="shutter-notif-progress-row">
+        <div class="shutter-notif-progress-track">
+          <div class="shutter-notif-progress-fill" id="shutterNotifProgressFill"></div>
+          <div class="shutter-notif-progress-dot" id="shutterNotifProgressDot"></div>
+        </div>
+      </div>
+
+      <!-- Station Row: Prev | Current (highlighted) | Next -->
+      <div class="shutter-notif-stations-row" id="shutterNotifStationsRow">
+        <div class="shutter-notif-station shutter-stn-prev">
+          <span class="shutter-stn-name" id="shutterStnPrev">Prabhadevi</span>
+        </div>
+        <div class="shutter-notif-station shutter-stn-current">
+          <span class="shutter-stn-dot shutter-dot-arrived" id="shutterStnDot"></span>
+          <span class="shutter-stn-name shutter-stn-name-current" id="shutterStnCurrent">Dadar</span>
+        </div>
+        <div class="shutter-notif-station shutter-stn-next">
+          <span class="shutter-stn-name" id="shutterStnNext">Matunga Rd.</span>
+        </div>
+      </div>
+
+      <!-- In-Between info row: shown when train is between stations -->
+      <div class="shutter-notif-inbetween-row" id="shutterInbetweenRow" style="display:none;">
+        <span class="shutter-inbetween-label">In between stops</span>
+        <span class="shutter-inbetween-time" id="shutterInbetweenTime">~1:25 min</span>
+      </div>
+    </div>
+
     <!-- Toast Notification Popup -->
     <div id="toastNotice" class="toast-notice">Welcome to MumbaiLocal!</div>
 
   </div>
 
-  <script src="mobile.js?v=20261003_34"></script>
+  <script src="mobile.js?v=20261003_35"></script>
   <!-- Instant Hot-Reload & Live CSS Injection (Zero manual refresh required!) -->
   <script>
     (function initHotReload() {

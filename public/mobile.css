@@ -4,6 +4,9 @@
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+@import './css/tokens.css';
+@import './css/components/search-box.css';
+@import './css/components/station-list.css';
 
 :root {
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -255,22 +258,117 @@ body.theme-day .phone-viewport {
   border-radius: 4px;
 }
 
-/* Android Status Bar */
+/* Android Status Bar (Pull down from top to open Android Shutter) */
 .status-bar {
-  padding: 14px 22px 6px;
+  padding: 12px 20px 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 0.76rem;
   font-weight: 700;
   color: var(--text-secondary);
-  z-index: 90;
+  z-index: 95;
+  user-select: none;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Left side of status bar: strictly constrained to safe area so it NEVER overlaps camera dot! */
+.status-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(50% - 24px); /* Stays strictly to the left of the center punch-hole camera dot */
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#statusTime {
+  font-size: 0.76rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* Header dynamic notification pill (Phone 3 & Phone 4 mockups) */
+.header-notif-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: calc(100% - 44px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.header-notif-pill.header-notif-hidden {
+  display: none !important;
+}
+
+/* Green pill for ARRIVED AT (Phone 3 mockup: "Arrived: Notification Will show like this on any screen till 18 sec. Dynamic Width according to name") */
+.header-notif-pill.header-notif-arrived {
+  background: #16A34A;
+  color: #FFFFFF;
+  box-shadow: 0 0 10px rgba(22, 163, 74, 0.7);
+  animation: header-pill-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Orange pill for UPCOMING STOP (Phone 4 mockup: "Next Upcoming Stop : Notification Will show like this on any screen After Every 20 sec. Dynamic Width according to name") */
+.header-notif-pill.header-notif-upcoming {
+  background: #EA580C;
+  color: #FFFFFF;
+  box-shadow: 0 0 10px rgba(234, 88, 12, 0.75);
+  animation: header-pill-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes header-pill-pop {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.header-notif-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Center pull-down cue bar */
+.status-center-pull-cue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  cursor: pointer;
   user-select: none;
 }
+
+.pull-cue-bar {
+  width: 22px;
+  height: 3px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.status-center-pull-cue:hover .pull-cue-bar,
+.status-bar:hover .pull-cue-bar {
+  background: rgba(255, 255, 255, 0.55);
+  width: 28px;
+}
+
 .status-icons {
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 /* Screen Wrapper */
@@ -672,12 +770,18 @@ body.theme-day .phone-viewport {
 }
 
 .line-chip.active {
-  background: #8B5CF6 !important;
+  background: #4B5563 !important; /* Normal clean neutral gray */
   color: #FFFFFF !important;
   font-weight: 700 !important;
-  border: 1px solid rgba(255, 255, 255, 0.35) !important;
-  box-shadow: 0 0 12px 1px rgba(139, 92, 246, 0.75), 0 0 22px rgba(139, 92, 246, 0.28), 0 2px 6px rgba(0, 0, 0, 0.45) !important;
-  transform: translateY(-1px);
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  box-shadow: none !important; /* Zero glow as requested */
+  transform: none !important;
+}
+
+.line-chip.active:hover {
+  background: #52525B !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 /* Day Theme Glassmorphism */
@@ -695,61 +799,158 @@ body.theme-day .line-chip:hover {
 }
 
 body.theme-day .line-chip.active {
-  background: #7C3AED !important;
-  color: #FFFFFF !important;
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 0 12px 1px rgba(124, 58, 237, 0.6), 0 0 20px rgba(124, 58, 237, 0.2), 0 2px 6px rgba(124, 58, 237, 0.2) !important;
+  background: #94A3B8 !important; /* Normal clean gray in day theme */
+  color: #0F172A !important;
+  font-weight: 700 !important;
+  border: 1px solid #64748B !important;
+  box-shadow: none !important; /* Zero glow as requested */
+  transform: none !important;
 }
 
-/* Journey Search Box - Exact replica of user reference image (No outer frame) */
+body.theme-day .line-chip.active:hover {
+  background: #CBD5E1 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Journey Search Box Container - Clean frame without forced purple outline */
 .journey-search-box {
   margin: 0.9rem 1.25rem 0;
   border-radius: 18px;
-  border: 1px solid rgba(139, 92, 246, 0.65); /* Thin crisp 1px purple outline */
-  overflow: hidden;
-  box-shadow: 0 3px 16px rgba(124, 58, 237, 0.16);
+  border: none;
+  overflow: hidden; /* Clips child backgrounds to rounded corners */
+  box-shadow: 0 3px 16px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 body.theme-day .journey-search-box {
-  border: 1px solid rgba(124, 58, 237, 0.45);
   box-shadow: 0 2px 10px rgba(124, 58, 237, 0.08);
 }
 
 .search-row {
   display: flex;
   align-items: center;
-  height: 42px; /* Reduced by 30% from 60px */
+  height: 50px;
   padding: 0 12px;
-  transition: background 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   box-sizing: border-box;
-  background: #111116; /* Deep dark charcoal when unselected */
+  background: #111116;
   cursor: pointer;
 }
 
-/* Selected Tile: Deep rich Purple (Default is upper tile) */
+/* Unactive tabs: crisp dark gray stroke (#444452) */
+.search-row-from {
+  border-radius: 18px 18px 0 0;
+  border-top: 1.2px solid #444452;
+  border-left: 1.2px solid #444452;
+  border-right: 1.2px solid #444452;
+  border-bottom: none;
+}
+
+.search-row-to {
+  border-radius: 0 0 18px 18px;
+  border-bottom: 1.2px solid #444452;
+  border-left: 1.2px solid #444452;
+  border-right: 1.2px solid #444452;
+  border-top: none;
+}
+
+.search-row:not(.tile-active):hover {
+  border-color: #555566; /* Subtle hover brighten on unactive tab */
+}
+
+/* Active Tile: Vivid purple stroke & rich purple background */
 .search-row.tile-active {
   background: #2E1562;
 }
 
+.search-row-from.tile-active {
+  background: #2E1562;
+  border-top: 1.2px solid #C084FC;
+  border-left: 1.2px solid #C084FC;
+  border-right: 1.2px solid #C084FC;
+  box-shadow: inset 0 0 0 0.5px #C084FC, 0 0 14px rgba(168, 85, 247, 0.25);
+}
+
+.search-row-to.tile-active {
+  background: #2E1562;
+  border-bottom: 1.2px solid #C084FC;
+  border-left: 1.2px solid #C084FC;
+  border-right: 1.2px solid #C084FC;
+  box-shadow: inset 0 0 0 0.5px #C084FC, 0 0 14px rgba(168, 85, 247, 0.25);
+}
+
+/* Middle Divider between From & To */
+.search-row-divider {
+  height: 1px;
+  background: #444452; /* Clean dark gray divider by default */
+  width: 100%;
+  transition: background 0.22s ease;
+}
+
+/* When either tab is active, the dividing line matches the active tab's crisp purple stroke */
+.journey-search-box.active-from .search-row-divider,
+.journey-search-box:has(.search-row-from.tile-active) .search-row-divider,
+.journey-search-box.active-to .search-row-divider,
+.journey-search-box:has(.search-row-to.tile-active) .search-row-divider {
+  background: #C084FC;
+}
+
+/* Day Theme Support */
 body.theme-day .search-row {
   background: #FAF8FF;
+}
+
+body.theme-day .search-row-from {
+  border-top: 1.2px solid #D1D5DB;
+  border-left: 1.2px solid #D1D5DB;
+  border-right: 1.2px solid #D1D5DB;
+}
+
+body.theme-day .search-row-to {
+  border-bottom: 1.2px solid #D1D5DB;
+  border-left: 1.2px solid #D1D5DB;
+  border-right: 1.2px solid #D1D5DB;
+}
+
+body.theme-day .search-row:not(.tile-active):hover {
+  border-color: #9CA3AF;
 }
 
 body.theme-day .search-row.tile-active {
   background: #EDE9FE;
 }
 
-.search-row-divider {
-  height: 1px; /* Thin crisp 1px divider matching outline */
-  background: rgba(139, 92, 246, 0.65);
-  width: 100%;
+body.theme-day .search-row-from.tile-active {
+  background: #EDE9FE;
+  border-top-color: #7C3AED;
+  border-left-color: #7C3AED;
+  border-right-color: #7C3AED;
+  box-shadow: inset 0 0 0 0.5px #7C3AED;
+}
+
+body.theme-day .search-row-to.tile-active {
+  background: #EDE9FE;
+  border-bottom-color: #7C3AED;
+  border-left-color: #7C3AED;
+  border-right-color: #7C3AED;
+  box-shadow: inset 0 0 0 0.5px #7C3AED;
 }
 
 body.theme-day .search-row-divider {
-  background: rgba(124, 58, 237, 0.35);
+  background: #D1D5DB;
+}
+
+body.theme-day .journey-search-box.active-from .search-row-divider,
+body.theme-day .journey-search-box:has(.search-row-from.tile-active) .search-row-divider,
+body.theme-day .journey-search-box.active-to .search-row-divider,
+body.theme-day .journey-search-box:has(.search-row-to.tile-active) .search-row-divider {
+  background: #7C3AED;
 }
 
 /* Extended Middle Direction Possibilities (Expanding from Center - Image 2) */
@@ -1013,11 +1214,12 @@ body.theme-day .input-label-tag.to-label {
 }
 
 .search-proceed-wrap.visible {
-  max-height: 60px;
+  max-height: 84px;
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
-  margin: 15px 1.25rem 0;
+  margin: 10px 1.25rem 0;
+  padding: 12px 0;
   transform: translateY(0) scale(1);
 }
 
@@ -1074,72 +1276,83 @@ body.theme-day .btn-proceed-results:hover {
   box-shadow: 0 6px 20px rgba(124, 58, 237, 0.42);
 }
 
-/* Quick Station Suggestion Chips */
+/* Quick Station Suggestion Chips (Starred & Shortcut Routes - Compact 3+ Rows, Simple Gray Without Glow) */
 .quick-routes-row {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-template-rows: repeat(3, auto);
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  gap: 7px 8px;
   padding: 6px 1.25rem 10px;
   margin: -2px 0 0;
   overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .quick-routes-row::-webkit-scrollbar {
   display: none;
 }
 
 .route-shortcut-chip {
-  padding: 0.38rem 0.85rem;
-  border-radius: 14px;
-  font-size: 0.76rem;
-  font-weight: 600;
-  background: rgba(34, 197, 94, 0.12);
-  color: #4ADE80;
-  border: 1px solid rgba(34, 197, 94, 0.45);
+  padding: 0.28rem 0.70rem; /* 20% bigger than previous 0.22rem 0.58rem */
+  border-radius: 999px;
+  font-size: 0.77rem; /* 20% bigger than previous 0.64rem */
+  font-weight: 500;
+  background: #1E1E28; /* Simple clean gray */
+  color: #D1D5DB;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   white-space: nowrap;
   cursor: pointer;
-  transition: var(--transition-fast);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.18s ease;
+  box-shadow: none !important; /* Zero glow as requested */
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  line-height: 1.2;
 }
 
 .chip-star-icon {
-  color: #FACC15; /* Small Yellow Star as requested */
-  font-size: 0.78rem;
+  color: #9CA3AF; /* Simple muted gray star icon */
+  font-size: 0.77rem; /* 20% bigger */
   line-height: 1;
   display: inline-flex;
   align-items: center;
-  filter: drop-shadow(0 0 4px rgba(250, 204, 21, 0.8));
+  filter: none !important; /* Zero glow as requested */
+  text-shadow: none !important;
 }
 
 .route-shortcut-chip:hover {
-  border-color: #22C55E;
+  border-color: rgba(255, 255, 255, 0.28);
   color: #FFFFFF;
-  background: rgba(34, 197, 94, 0.26);
-  box-shadow: 0 3px 12px rgba(34, 197, 94, 0.35);
+  background: #2D2D3D;
+  box-shadow: none !important; /* No glow on hover */
 }
 
 .route-shortcut-chip:active {
   transform: scale(0.96);
+  box-shadow: none !important;
 }
 
 body.theme-day .route-shortcut-chip {
-  background: rgba(34, 197, 94, 0.10);
-  color: #15803D;
-  border: 1px solid rgba(34, 197, 94, 0.38);
-  box-shadow: 0 1px 4px rgba(34, 197, 94, 0.12);
+  background: #F1F5F9;
+  color: #334155;
+  border: 1px solid #CBD5E1;
+  box-shadow: none !important;
 }
 
 body.theme-day .route-shortcut-chip:hover {
-  background: rgba(34, 197, 94, 0.20);
-  border-color: #16A34A;
-  color: #14532D;
+  background: #E2E8F0;
+  border-color: #94A3B8;
+  color: #0F172A;
+  box-shadow: none !important;
 }
 
 body.theme-day .chip-star-icon {
-  color: #EAB308;
-  filter: drop-shadow(0 0 2px rgba(234, 179, 8, 0.5));
+  color: #64748B;
+  filter: none !important;
+  text-shadow: none !important;
 }
 
 /* Special "From To" Interactive Card (Screen 3) */
@@ -1264,32 +1477,378 @@ body.theme-day .chip-star-icon {
   color: #FFFFFF;
 }
 
-/* Floating Action Button (FAB) */
-.fab-voice-search {
+/* ==============================================================================
+   VOICE SEARCH SYSTEM STYLING (Image Exact Match)
+   - Bottom-Right Floating Container
+   - 1-Second Press & Hold Visual Feedback with Circular Progress Ring
+   - Capsule Morphing: Circular FAB -> Glowing Violet Sound Wave Bar
+   - Real-time Multi-frequency Audio Equalizer Waveform Animation
+   - Floating Multi-Lingual HUD (English, Marathi, Hindi) & One-Tap Test Chips
+   ============================================================================== */
+
+.voice-search-system {
   position: absolute;
   bottom: 24px;
   right: 24px;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+/* Floating Live Speech & Feedback HUD Bubble */
+.voice-hud-bubble {
+  width: 290px;
+  max-width: calc(100vw - 48px);
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(22, 10, 38, 0.96);
+  border: 1.5px solid rgba(168, 85, 247, 0.45);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.65), 0 0 24px rgba(138, 43, 226, 0.35);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  opacity: 0;
+  transform: translateY(12px) scale(0.95);
+  pointer-events: none;
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.voice-hud-bubble.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.voice-hud-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  letter-spacing: 0.3px;
+}
+
+.voice-hud-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 10px #22c55e, 0 0 18px #22c55e;
+  animation: hudDotPulse 1.2s infinite ease-in-out;
+}
+
+.voice-hud-dot.recording {
+  background: #ec4899;
+  box-shadow: 0 0 12px #ec4899, 0 0 20px #ec4899;
+}
+
+@keyframes hudDotPulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+}
+
+.voice-hud-lang-badge {
+  font-weight: 700;
+  color: #d8b4fe;
+  flex: 1;
+}
+
+.voice-hud-hint {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+.voice-hud-transcript {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 1.35;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 8px 10px;
+  border-radius: 10px;
+  border-left: 3px solid #c084fc;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  word-break: break-word;
+}
+
+.voice-hud-transcript.detected {
+  color: #4ade80;
+  border-left-color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+/* Quick Voice Test Chips Container */
+.voice-hud-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 2px;
+  max-height: 140px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.voice-hud-chips::-webkit-scrollbar { display: none; }
+
+.voice-chip-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.74rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.voice-chip-btn:hover {
+  background: rgba(168, 85, 247, 0.22);
+  border-color: rgba(192, 132, 252, 0.45);
+  transform: translateX(2px);
+}
+
+.chip-lang-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.chip-lang-tag.hi { background: #f97316; color: #FFFFFF; }
+.chip-lang-tag.mr { background: #e11d48; color: #FFFFFF; }
+.chip-lang-tag.en { background: #3b82f6; color: #FFFFFF; }
+
+/* Morphing Voice Capsule Bar */
+.voice-capsule-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 54px;
+  width: 54px; /* Collapsed: circular mic button */
+  border-radius: 27px;
+  background: transparent;
+  transition: width 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.25),
+              background 0.3s ease,
+              border 0.3s ease,
+              box-shadow 0.3s ease;
+  pointer-events: auto;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Expanded Recording State: Horizontal Capsule Pill (Image 2 Match) */
+.voice-capsule-bar.recording-active {
+  width: 276px;
+  background: linear-gradient(90deg, rgba(28, 12, 48, 0.96) 0%, rgba(68, 20, 110, 0.96) 100%);
+  border: 1.5px solid rgba(179, 136, 255, 0.55);
+  box-shadow: 0 10px 32px rgba(123, 44, 191, 0.65), 
+              0 0 20px rgba(192, 132, 252, 0.4),
+              inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Animated Sound Waveform Area (Left of mic button inside capsule) */
+.voice-waveform-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3.5px;
+  height: 100%;
+  flex: 1;
+  padding: 0 10px 0 16px;
+  opacity: 0;
+  transform: scaleX(0.7);
+  transition: opacity 0.25s ease 0.08s, transform 0.25s ease 0.08s;
+  pointer-events: none;
+}
+
+.voice-capsule-bar.recording-active .voice-waveform-area {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* Real-time Waveform Frequency Bars (Image 2 Audio Visualizer) */
+.wave-bar {
+  width: 2.5px;
+  min-height: 4px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #D8B4FE 100%);
+  box-shadow: 0 0 6px rgba(216, 180, 254, 0.7);
+  transition: height 0.08s ease;
+}
+
+/* Staggered Default Heights & Keyframe Oscillations */
+.wave-bar.bar-1  { height: 6px;  --max-h: 14px; animation-delay: 0.02s; }
+.wave-bar.bar-2  { height: 9px;  --max-h: 18px; animation-delay: 0.15s; }
+.wave-bar.bar-3  { height: 16px; --max-h: 26px; animation-delay: 0.28s; }
+.wave-bar.bar-4  { height: 24px; --max-h: 34px; animation-delay: 0.08s; }
+.wave-bar.bar-5  { height: 14px; --max-h: 22px; animation-delay: 0.22s; }
+.wave-bar.bar-6  { height: 28px; --max-h: 38px; animation-delay: 0.35s; }
+.wave-bar.bar-7  { height: 34px; --max-h: 42px; animation-delay: 0.12s; }
+.wave-bar.bar-8  { height: 18px; --max-h: 28px; animation-delay: 0.26s; }
+.wave-bar.bar-9  { height: 38px; --max-h: 44px; animation-delay: 0.40s; }
+.wave-bar.bar-10 { height: 24px; --max-h: 34px; animation-delay: 0.05s; }
+.wave-bar.bar-11 { height: 15px; --max-h: 24px; animation-delay: 0.18s; }
+.wave-bar.bar-12 { height: 32px; --max-h: 42px; animation-delay: 0.32s; }
+.wave-bar.bar-13 { height: 40px; --max-h: 46px; animation-delay: 0.10s; } /* Center Peak */
+.wave-bar.bar-14 { height: 28px; --max-h: 38px; animation-delay: 0.24s; }
+.wave-bar.bar-15 { height: 15px; --max-h: 24px; animation-delay: 0.38s; }
+.wave-bar.bar-16 { height: 24px; --max-h: 34px; animation-delay: 0.07s; }
+.wave-bar.bar-17 { height: 36px; --max-h: 44px; animation-delay: 0.20s; }
+.wave-bar.bar-18 { height: 18px; --max-h: 28px; animation-delay: 0.34s; }
+.wave-bar.bar-19 { height: 30px; --max-h: 40px; animation-delay: 0.13s; }
+.wave-bar.bar-20 { height: 24px; --max-h: 32px; animation-delay: 0.27s; }
+.wave-bar.bar-21 { height: 14px; --max-h: 22px; animation-delay: 0.41s; }
+.wave-bar.bar-22 { height: 18px; --max-h: 26px; animation-delay: 0.04s; }
+.wave-bar.bar-23 { height: 12px; --max-h: 20px; animation-delay: 0.17s; }
+.wave-bar.bar-24 { height: 8px;  --max-h: 15px; animation-delay: 0.30s; }
+.wave-bar.bar-25 { height: 5px;  --max-h: 12px; animation-delay: 0.11s; }
+
+.voice-capsule-bar.recording-active .wave-bar {
+  animation: voiceWaveOscillate 0.85s infinite ease-in-out alternate;
+}
+
+@keyframes voiceWaveOscillate {
+  0% {
+    height: 5px;
+    opacity: 0.55;
+    box-shadow: 0 0 4px rgba(216, 180, 254, 0.4);
+  }
+  50% {
+    opacity: 0.85;
+  }
+  100% {
+    height: var(--max-h, 34px);
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.95), 0 0 16px rgba(192, 132, 252, 0.85);
+  }
+}
+
+/* Floating Microphone Action Button */
+.fab-voice-search {
+  position: relative;
   width: 54px;
   height: 54px;
   border-radius: 50%;
-  background: var(--accent-purple);
+  background: radial-gradient(circle at 35% 35%, #9d4edd, #6a0dad);
   color: #FFFFFF;
   border: none;
   box-shadow: 0 8px 24px var(--accent-purple-glow);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.4rem;
   cursor: pointer;
-  z-index: 80;
-  transition: var(--transition-smooth);
+  flex-shrink: 0;
+  z-index: 2;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
+
 .fab-voice-search:hover {
-  transform: scale(1.08);
-  box-shadow: 0 10px 28px var(--accent-purple-glow);
+  transform: scale(1.05);
+  box-shadow: 0 10px 28px rgba(138, 43, 226, 0.65);
 }
-.fab-voice-search:active {
+
+.fab-voice-search:active,
+.fab-voice-search.is-holding {
   transform: scale(0.96);
+  box-shadow: 0 4px 16px rgba(138, 43, 226, 0.7);
+}
+
+.voice-capsule-bar.recording-active .fab-voice-search {
+  box-shadow: 0 0 20px rgba(192, 132, 252, 0.6);
+  animation: micButtonPulse 1.4s infinite ease-in-out;
+}
+
+@keyframes micButtonPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.6)); }
+  50% { transform: scale(1.04); filter: drop-shadow(0 0 14px rgba(216, 180, 254, 0.9)); }
+}
+
+/* Circular Hold Progress Ring (SVG) */
+.mic-hold-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 54px;
+  height: 54px;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.hold-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 3.5;
+}
+
+.hold-ring-fill {
+  fill: none;
+  stroke: #c084fc;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-dasharray: 144.5;
+  stroke-dashoffset: 144.5;
+  transition: stroke-dashoffset 0.08s linear;
+  filter: drop-shadow(0 0 4px #c084fc);
+}
+
+/* Day Theme Support */
+body.theme-day .voice-hud-bubble {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1.5px solid rgba(138, 43, 226, 0.35);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16), 0 0 20px rgba(138, 43, 226, 0.2);
+}
+body.theme-day .voice-hud-lang-badge {
+  color: #6b21a8;
+}
+body.theme-day .voice-hud-hint {
+  color: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.06);
+}
+body.theme-day .voice-hud-transcript {
+  color: #1e1b4b;
+  background: rgba(0, 0, 0, 0.05);
+  border-left-color: #7c3aed;
+}
+body.theme-day .voice-chip-btn {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #1e1b4b;
+}
+body.theme-day .voice-chip-btn:hover {
+  background: rgba(138, 43, 226, 0.1);
+  border-color: rgba(138, 43, 226, 0.3);
+}
+body.theme-day .voice-capsule-bar.recording-active {
+  background: linear-gradient(90deg, rgba(245, 240, 255, 0.98) 0%, rgba(230, 215, 255, 0.98) 100%);
+  border: 1.5px solid rgba(138, 43, 226, 0.45);
+  box-shadow: 0 10px 28px rgba(138, 43, 226, 0.35);
+}
+body.theme-day .wave-bar {
+  background: linear-gradient(180deg, #7c3aed 0%, #a855f7 100%);
+  box-shadow: 0 0 5px rgba(168, 85, 247, 0.5);
 }
 
 /* Results Timetable Modal / Panel */
@@ -1844,26 +2403,28 @@ body.theme-day #screen-train-results {
   background-color: #FFFFFF;
 }
 
-/* Glassmorphic Frosted Header with Light Background Blur */
+/* Glassmorphic Frosted Header with Stronger Background Blur & Tint (30%+ stronger) */
 .results-header-glass {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   z-index: 50;
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(3px) saturate(140%);
-  -webkit-backdrop-filter: blur(3px) saturate(140%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
 }
 
 body.theme-day .results-header-glass {
-  background: rgba(255, 255, 255, 0.42);
-  backdrop-filter: blur(3px) saturate(140%);
-  -webkit-backdrop-filter: blur(3px) saturate(140%);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 /* Results Top Bar (< Dadar → Virar   ☆    ↻) */
@@ -1887,7 +2448,7 @@ body.theme-day .results-topbar {
 .btn-results-back {
   background: none;
   border: none;
-  color: #EF4444; /* Clean Red Chevron as shown in user image */
+  color: #FACC15; /* Yellow in black/dark theme as requested */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1899,6 +2460,14 @@ body.theme-day .results-topbar {
 }
 
 .btn-results-back:hover {
+  background: rgba(250, 204, 21, 0.15);
+}
+
+body.theme-day .btn-results-back {
+  color: #EF4444; /* Red in white theme as requested */
+}
+
+body.theme-day .btn-results-back:hover {
   background: rgba(239, 68, 68, 0.12);
 }
 
@@ -1938,14 +2507,38 @@ body.theme-day .results-route-title {
   color: #0F172A;
 }
 
-.results-route-title .route-arrow {
-  color: #94A3B8;
-  font-weight: 600;
-  font-size: 0.95rem;
+.results-route-title .route-arrow,
+.route-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 4px;
+  vertical-align: middle;
+  flex-shrink: 0;
+  color: #FFFFFF;
 }
 
-body.theme-day .results-route-title .route-arrow {
-  color: #64748B;
+.header-route-arrow,
+.header-bold-green-arrow {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  stroke: #FFFFFF;
+  color: #FFFFFF;
+  fill: none;
+  filter: none;
+  vertical-align: middle;
+  transition: transform 0.2s ease;
+}
+
+body.theme-day .results-route-title .route-arrow,
+body.theme-day .route-arrow,
+body.theme-day .header-route-arrow,
+body.theme-day .header-bold-green-arrow {
+  stroke: #0F172A;
+  color: #0F172A;
+  fill: none;
+  filter: none;
 }
 
 /* Requirement 2:
@@ -2073,6 +2666,24 @@ body.theme-day .btn-results-refresh:hover {
   padding: 4px 14px 8px;
   background: transparent;
   flex-shrink: 0;
+  max-height: 52px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: max-height 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.24s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.timetable-filter-bar.is-scrolled-hidden {
+  max-height: 0 !important;
+  opacity: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  transform: translateY(-10px) !important;
+  pointer-events: none !important;
 }
 
 body.theme-day .timetable-filter-bar {
@@ -2299,17 +2910,26 @@ body.theme-day .train-timetable-tile.tile-ac:hover {
   background: #DBEAFE !important;
 }
 
-/* Top Row: [Time + Destination/Speed + Badges]     [Platform PF: 03] */
+/* Top Row: [Time (07:17 PM)]                           [Platform (PF: 03)] */
 .tile-top-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
+}
+
+/* Middle Row: [Destination Station Name (Churchgate)] + Badges */
+.tile-dest-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-top: 2px;
 }
 
 .tile-dest-box {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
   min-width: 0;
   flex: 1;
@@ -2442,29 +3062,18 @@ body.theme-day .btn-time-step {
   border-color: #DDD6FE;
 }
 
-/* Very Light Gradient Cross Flash on Arrived Train Tile */
-.train-timetable-tile.tile-arrived,
-.train-timetable-tile.tile-arriving {
+/* Very Light Gradient Cross Flash ONLY on Arrived Train Tile (Train time matches current time) */
+.train-timetable-tile.tile-arrived {
   position: relative;
   overflow: hidden;
   flex-shrink: 0 !important;
   min-height: 76px !important;
+  background: rgba(34, 197, 94, 0.05) !important;
+  border-color: rgba(34, 197, 94, 0.55) !important;
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.2), 0 2px 8px rgba(0, 0, 0, 0.4) !important;
 }
 
-.train-timetable-tile.tile-arrived {
-  background: rgba(34, 197, 94, 0.04) !important;
-  border-color: rgba(34, 197, 94, 0.5) !important;
-  box-shadow: 0 0 16px rgba(34, 197, 94, 0.18), 0 2px 8px rgba(0, 0, 0, 0.4) !important;
-}
-
-.train-timetable-tile.tile-arriving {
-  background: rgba(250, 204, 21, 0.04) !important;
-  border-color: rgba(250, 204, 21, 0.45) !important;
-  box-shadow: 0 0 14px rgba(250, 204, 21, 0.16), 0 2px 8px rgba(0, 0, 0, 0.4) !important;
-}
-
-.train-timetable-tile.tile-arrived::after,
-.train-timetable-tile.tile-arriving::after {
+.train-timetable-tile.tile-arrived::after {
   content: '';
   position: absolute;
   top: 0;
@@ -2473,30 +3082,28 @@ body.theme-day .btn-time-step {
   height: 100%;
   pointer-events: none;
   animation: tileCrossGradientFlash 1.65s ease-in-out infinite;
-}
-
-.train-timetable-tile.tile-arrived::after {
   background: linear-gradient(
     115deg,
     transparent 10%,
     rgba(34, 197, 94, 0.02) 25%,
     rgba(34, 197, 94, 0.12) 48%,
-    rgba(74, 222, 128, 0.18) 52%,
+    rgba(74, 222, 128, 0.22) 52%,
     rgba(34, 197, 94, 0.02) 75%,
     transparent 90%
   );
 }
 
+/* Arriving tiles do NOT flash - strictly non-flashing */
+.train-timetable-tile.tile-arriving {
+  position: relative;
+  flex-shrink: 0 !important;
+  min-height: 76px !important;
+}
+
 .train-timetable-tile.tile-arriving::after {
-  background: linear-gradient(
-    115deg,
-    transparent 10%,
-    rgba(250, 204, 21, 0.02) 25%,
-    rgba(250, 204, 21, 0.12) 48%,
-    rgba(253, 224, 71, 0.18) 52%,
-    rgba(250, 204, 21, 0.02) 75%,
-    transparent 90%
-  );
+  display: none !important;
+  content: none !important;
+  animation: none !important;
 }
 
 @keyframes tileCrossGradientFlash {
@@ -2508,17 +3115,12 @@ body.theme-day .btn-time-step {
   }
 }
 
-.train-timetable-tile.tile-arrived.tile-ac,
-.train-timetable-tile.tile-arriving.tile-ac {
+.train-timetable-tile.tile-arrived.tile-ac {
   background: #0A1C3C !important;
 }
 
 body.theme-day .train-timetable-tile.tile-arrived {
   background: rgba(34, 197, 94, 0.08) !important;
-}
-
-body.theme-day .train-timetable-tile.tile-arriving {
-  background: rgba(250, 204, 21, 0.1) !important;
 }
 
 /* Status Badge: ARRIVED or ARRIVING IN 1M */
@@ -2713,13 +3315,130 @@ body.theme-day .tile-platform-text {
   color: #1E293B;
 }
 
-/* Bottom Row: [Route: Churchgate - Virar]            [Late by 15 mnts] */
+/* Bottom Row: [Route: Churchgate - Virar]            [Below PF: Arrival badge / Delay] */
 .tile-bottom-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
   margin-top: 4px;
+}
+
+.tile-below-pf {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+  text-align: right;
+  justify-content: flex-end;
+}
+
+/* Arrival Indicator Below Platform Number (Frameless: Dot + Remaining Time with Seconds) */
+.arrival-pill-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+/* Yellow text without frame: Arriving in format MM:SS (e.g. 10:00) under 10 mnts */
+.arrival-pill-container.arrival-arriving {
+  background: transparent !important;
+  border: none !important;
+  color: #FACC15;
+  box-shadow: none !important;
+}
+
+/* Green text without frame: Arrived */
+.arrival-pill-container.arrival-arrived {
+  background: transparent !important;
+  border: none !important;
+  color: #22C55E;
+  box-shadow: none !important;
+}
+
+/* Small Dot (Yellow for Arriving under 10m, Green for Arrived) */
+.arrival-pill-dot {
+  width: 6.5px;
+  height: 6.5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.arrival-pill-dot.dot-yellow {
+  background-color: #FACC15;
+  box-shadow: 0 0 6px rgba(250, 204, 21, 0.95);
+  animation: arrivalDotPulseYellow 1.2s ease-in-out infinite;
+}
+
+.arrival-pill-dot.dot-green {
+  background-color: #22C55E;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.95);
+  animation: arrivalDotPulseGreen 1.2s ease-in-out infinite;
+}
+
+@keyframes arrivalDotPulseYellow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 6px rgba(250, 204, 21, 0.95);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.8);
+    box-shadow: 0 0 2px rgba(250, 204, 21, 0.25);
+  }
+}
+
+@keyframes arrivalDotPulseGreen {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.95);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.8);
+    box-shadow: 0 0 2px rgba(34, 197, 94, 0.25);
+  }
+}
+
+/* Day Theme Support - Frameless with high contrast */
+body.theme-day .arrival-pill-container.arrival-arriving {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #D97706;
+}
+
+body.theme-day .arrival-pill-dot.dot-yellow {
+  background-color: #D97706;
+  box-shadow: 0 0 5px rgba(217, 119, 6, 0.7);
+}
+
+body.theme-day .arrival-pill-container.arrival-arrived {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #16A34A;
+}
+
+body.theme-day .arrival-pill-dot.dot-green {
+  background-color: #16A34A;
+  box-shadow: 0 0 5px rgba(22, 163, 74, 0.7);
 }
 
 .tile-route-text {
@@ -3096,7 +3815,7 @@ body.theme-day .journey-header-glass {
 .btn-journey-back {
   background: none;
   border: none;
-  color: #EF4444; /* Red back chevron matching results screen */
+  color: #FACC15; /* Yellow in black/dark theme as requested */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -3108,6 +3827,14 @@ body.theme-day .journey-header-glass {
 }
 
 .btn-journey-back:hover {
+  background: rgba(250, 204, 21, 0.15);
+}
+
+body.theme-day .btn-journey-back {
+  color: #EF4444; /* Red in white theme as requested */
+}
+
+body.theme-day .btn-journey-back:hover {
   background: rgba(239, 68, 68, 0.12);
 }
 
@@ -3508,7 +4235,7 @@ body.theme-day .journey-stop-row.is-major .stop-dot {
    TRAIN CAPSULE & LIVE ARRIVAL / BETWEEN INDICATOR SYSTEM
    ========================================================================== */
 
-/* 1. Green Capsule at Station - Headlight at bottom pointing downwards */
+/* 1. Green Capsule at Station - Headlight at bottom removed, pure sleek emerald gradient */
 .train-capsule-green {
   position: absolute;
   top: 50%;
@@ -3516,7 +4243,7 @@ body.theme-day .journey-stop-row.is-major .stop-dot {
   transform: translate(-50%, -50%);
   width: 6.5px;
   height: 32px;
-  background: linear-gradient(180deg, #14532D 0%, #16A34A 35%, #4ADE80 70%, rgba(255, 255, 255, 0.75) 100%);
+  background: linear-gradient(180deg, #14532D 0%, #16A34A 45%, #22C55E 100%);
   border-radius: 999px;
   overflow: hidden;
   box-shadow: 0 0 12px rgba(34, 197, 94, 0.95), 0 0 20px rgba(34, 197, 94, 0.45);
@@ -3529,27 +4256,28 @@ body.theme-day .journey-stop-row.is-major .stop-dot {
 }
 
 body.theme-day .train-capsule-green {
-  background: linear-gradient(180deg, #166534 0%, #22C55E 40%, #86EFAC 75%, rgba(255, 255, 255, 0.75) 100%);
+  background: linear-gradient(180deg, #166534 0%, #22C55E 45%, #4ADE80 100%);
   box-shadow: 0 0 10px rgba(22, 163, 74, 0.7);
 }
 
 /* 2. Train Capsule in Transit - Smooth Continuous Movement & Color Morphing */
 .train-capsule-orange {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 0;
+  left: 0;
   transform: translate(-50%, -50%);
   width: 6.5px;
   height: 32px;
   border-radius: 999px;
-  overflow: hidden;
+  overflow: hidden; /* Keeps the moving light beam strictly inside the capsule */
   box-shadow: 0 0 14px rgba(234, 88, 12, 0.95), 0 0 22px rgba(234, 88, 12, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
+  pointer-events: none;
   transition:
-    top 1.05s linear,
+    top 1s linear,
     box-shadow 0.65s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: top, box-shadow;
 }
@@ -3560,28 +4288,29 @@ body.theme-day .train-capsule-green {
   inset: 0;
   border-radius: 999px;
   pointer-events: none;
+  overflow: hidden;
   transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: opacity;
 }
 
 .capsule-layer-orange {
-  background: linear-gradient(180deg, #9A3412 0%, #EA580C 35%, #FB923C 70%, rgba(255, 255, 255, 0.65) 100%);
+  background: linear-gradient(180deg, #9A3412 0%, #EA580C 45%, #FB923C 100%);
   opacity: 1;
   z-index: 1;
 }
 
 .capsule-layer-green {
-  background: linear-gradient(180deg, #14532D 0%, #16A34A 35%, #4ADE80 70%, rgba(255, 255, 255, 0.85) 100%);
+  background: linear-gradient(180deg, #14532D 0%, #16A34A 45%, #22C55E 100%);
   opacity: 0;
   z-index: 2;
 }
 
 body.theme-day .capsule-layer-orange {
-  background: linear-gradient(180deg, #C2410C 0%, #EA580C 40%, #FDBA74 75%, rgba(255, 255, 255, 0.7) 100%);
+  background: linear-gradient(180deg, #C2410C 0%, #EA580C 45%, #FB923C 100%);
 }
 
 body.theme-day .capsule-layer-green {
-  background: linear-gradient(180deg, #166534 0%, #22C55E 40%, #86EFAC 75%, rgba(255, 255, 255, 0.85) 100%);
+  background: linear-gradient(180deg, #166534 0%, #22C55E 45%, #4ADE80 100%);
 }
 
 /* Smooth Green State: when capsule touches the station stop dot */
@@ -3614,43 +4343,42 @@ body.theme-day .train-capsule-orange.is-green {
   opacity: 1 !important;
 }
 
-/* Smooth Flowing Headlight Beam sweeping downward */
-.capsule-headlight {
+/* Faded White Beam Light moving INSIDE the capsule towards the downside (direction of motion) */
+.capsule-inside-beam {
   position: absolute;
-  bottom: 0;
   left: 0;
+  right: 0;
   width: 100%;
-  height: 18px;
+  height: 14px;
   border-radius: 999px;
   background: linear-gradient(
     180deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.15) 20%,
-    rgba(255, 255, 255, 0.45) 60%,
-    rgba(255, 255, 255, 0.90) 100%
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(255, 255, 255, 0) 100%
   );
+  opacity: 0.4; /* Faded at strictly 40% opacity as requested */
+  filter: blur(0.75px);
   pointer-events: none;
-  z-index: 5;
-  filter: blur(0.7px);
-  mix-blend-mode: screen;
-  animation: smoothBeamLightGradientSweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
-  will-change: opacity, filter, transform;
+  z-index: 6;
+  animation: insideBeamDownwards 1.3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: top, opacity;
 }
 
-@keyframes smoothBeamLightGradientSweep {
+@keyframes insideBeamDownwards {
   0% {
-    opacity: 0.2;
-    filter: blur(1px) brightness(0.92);
-    transform: translateY(-1px) scaleY(0.96);
+    top: -14px;
+    opacity: 0;
   }
-  50% {
-    opacity: 0.55;
-    filter: blur(0.7px) brightness(1.05);
+  25% {
+    opacity: 0.4;
+  }
+  75% {
+    opacity: 0.4;
   }
   100% {
-    opacity: 0.85;
-    filter: blur(0.5px) brightness(1.2);
-    transform: translateY(1px) scaleY(1);
+    top: 32px;
+    opacity: 0;
   }
 }
 
@@ -3697,7 +4425,7 @@ body.theme-day .train-capsule-orange.is-green {
 }
 
 body.theme-day .train-capsule-orange {
-  background: linear-gradient(180deg, #B45309 0%, #D97706 35%, #F59E0B 70%, rgba(255, 255, 255, 0.55) 100%);
+  background: linear-gradient(180deg, #B45309 0%, #D97706 45%, #F59E0B 100%);
   box-shadow: 0 0 10px rgba(217, 119, 6, 0.7);
 }
 
@@ -3811,6 +4539,7 @@ body.theme-day .capsule-blinking-dot {
   justify-content: center;
   min-width: 0;
   gap: 2px;
+  position: relative;
 }
 
 .stop-arrived-text {
@@ -3819,7 +4548,12 @@ body.theme-day .capsule-blinking-dot {
   color: #22C55E; /* Vibrant Green as in user image */
   letter-spacing: 0.01em;
   line-height: 1.2;
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 0;
+  white-space: nowrap;
   animation: arrivedTextFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
 }
 
 @keyframes arrivedTextFadeIn {
@@ -3841,12 +4575,10 @@ body.theme-day .stop-arrived-text {
 .journey-between-row {
   display: flex;
   align-items: center;
-  min-height: 56px; /* Generous spacing for smooth train capsule travel */
+  min-height: 48px; /* Stable consistent spacing across all stops without layout jumps */
   padding: 0 16px;
   box-sizing: border-box;
   position: relative;
-  transition: all 0.3s ease;
-  animation: fadeInFast 0.25s ease;
 }
 
 .between-time-spacer {
@@ -3861,7 +4593,7 @@ body.theme-day .stop-arrived-text {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 56px;
+  min-height: 48px;
   height: 100%;
   flex-shrink: 0;
   overflow: visible;
@@ -3871,15 +4603,15 @@ body.theme-day .stop-arrived-text {
   position: absolute;
   width: 2.5px;
   height: 100%;
-  background: linear-gradient(180deg, #A855F7 0%, #A855F7 50%, rgba(255, 255, 255, 0.22) 50%, rgba(255, 255, 255, 0.22) 100%);
+  background: rgba(255, 255, 255, 0.22);
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
-  transition: background 1s linear;
+  transition: background 0.3s ease;
 }
 
 body.theme-day .between-track-line {
-  background: linear-gradient(180deg, #9333EA 0%, #9333EA 50%, rgba(15, 23, 42, 0.16) 50%, rgba(15, 23, 42, 0.16) 100%);
+  background: rgba(15, 23, 42, 0.16);
 }
 
 .between-content {
@@ -3898,6 +4630,7 @@ body.theme-day .between-track-line {
   text-shadow: 0 0 8px rgba(234, 88, 12, 0.35);
   animation: betweenTextFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1), orangeTextGlow 1.8s ease-in-out infinite alternate;
   transition: color 0.5s ease, text-shadow 0.5s ease;
+  display: none; /* hidden until active in transit */
 }
 
 .between-text.is-arriving {
@@ -4062,6 +4795,90 @@ body.theme-day .stop-pf-badge {
 
 body.theme-day .journey-stop-row.is-major .stop-pf-badge {
   color: #1E293B;
+}
+
+/* Skipped / Non-Stopping Station UI on Fast Routes */
+.journey-stop-row.is-skip-station {
+  opacity: 0.8;
+}
+
+.journey-stop-row.is-skip-station .stop-dot {
+  width: 8px !important;
+  height: 8px !important;
+  background: transparent !important;
+  border: 1.8px solid #64748B !important;
+  box-shadow: none !important;
+  box-sizing: border-box;
+}
+
+body.theme-day .journey-stop-row.is-skip-station .stop-dot {
+  border-color: #94A3B8 !important;
+}
+
+/* Passed skip station dot - hollow purple ring */
+.journey-stop-row.is-skip-station.is-passed .stop-dot {
+  border-color: #A855F7 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.theme-day .journey-stop-row.is-skip-station.is-passed .stop-dot {
+  border-color: #9333EA !important;
+}
+
+.journey-stop-row.is-skip-station .stop-station-name {
+  color: #94A3B8 !important;
+  font-weight: 400 !important;
+}
+
+body.theme-day .journey-stop-row.is-skip-station .stop-station-name {
+  color: #64748B !important;
+}
+
+.station-skip-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.16rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #F87171;
+  border: 1px solid rgba(239, 68, 68, 0.32);
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+body.theme-day .station-skip-pill {
+  background: rgba(239, 68, 68, 0.08);
+  color: #DC2626;
+  border-color: rgba(239, 68, 68, 0.24);
+}
+
+.station-will-not-stop-tag {
+  font-size: 0.72rem;
+  color: #F87171;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+body.theme-day .station-will-not-stop-tag {
+  color: #DC2626;
+}
+
+.stop-time-val.is-skipped,
+.stop-time-ampm.is-skipped {
+  color: #475569 !important;
+  opacity: 0.65;
+}
+
+body.theme-day .stop-time-val.is-skipped,
+body.theme-day .stop-time-ampm.is-skipped {
+  color: #94A3B8 !important;
 }
 
 /* Loading / Empty state in stops container */
@@ -4409,7 +5226,7 @@ body.theme-night .btn-prev-inbetween:hover {
 /* ==========================================================================
    HEADER NOTIFICATION PILL (Status Bar / Header Bar Capsule)
    Placed directly next to clock 14:36 in status bar (Phone 3 & Phone 4)
-   Dynamic width according to name!
+   Dynamic width according to name, constrained to left area strictly before camera dot!
    ========================================================================== */
 
 .status-left {
@@ -4417,19 +5234,41 @@ body.theme-night .btn-prev-inbetween:hover {
   align-items: center;
   gap: 7px;
   min-width: 0;
+  max-width: calc(50% - 24px); /* Strictly stops before center camera dot */
+  overflow: hidden;
+}
+
+.status-center-pull-cue {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  cursor: grab;
+  transition: background 0.2s, transform 0.2s;
+  pointer-events: none;
+}
+
+.status-bar:hover .status-center-pull-cue {
+  background: rgba(255, 255, 255, 0.45);
+  transform: translateX(-50%) scaleY(1.3);
 }
 
 .header-notif-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 2.5px 9px;
+  padding: 2px 9px;
   border-radius: 999px;
-  font-size: 0.67rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.15;
   letter-spacing: 0.01em;
   white-space: nowrap;
+  max-width: calc(100% - 36px);
   transition:
     opacity 0.28s ease,
     max-width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -4437,11 +5276,12 @@ body.theme-night .btn-prev-inbetween:hover {
     padding 0.28s ease;
   transform-origin: left center;
   user-select: none;
+  flex-shrink: 1;
 }
 
 .header-notif-pill.header-notif-hidden {
   opacity: 0;
-  max-width: 0;
+  max-width: 0 !important;
   padding-left: 0;
   padding-right: 0;
   pointer-events: none;
@@ -4451,7 +5291,6 @@ body.theme-night .btn-prev-inbetween:hover {
 
 .header-notif-pill.header-notif-visible {
   opacity: 1;
-  max-width: 175px;
   pointer-events: auto;
   transform: scale(1);
 }
@@ -4460,14 +5299,14 @@ body.theme-night .btn-prev-inbetween:hover {
 .header-notif-pill.header-notif-arrived {
   background: #22C55E;
   color: #FFFFFF;
-  box-shadow: 0 1px 6px rgba(34, 197, 94, 0.38);
+  box-shadow: 0 1px 8px rgba(34, 197, 94, 0.55);
 }
 
 /* Phone 4: Next Upcoming Stop (After every 20 sec, dynamic width according to name) */
 .header-notif-pill.header-notif-upcoming {
   background: #F97316;
   color: #FFFFFF;
-  box-shadow: 0 1px 6px rgba(249, 115, 22, 0.38);
+  box-shadow: 0 1px 8px rgba(249, 115, 22, 0.55);
 }
 
 .header-notif-text {
@@ -4482,12 +5321,14 @@ body.theme-night .btn-prev-inbetween:hover {
    Exact 1:1 precision replica of Android notification in mockups (Phone 1 & 2)
    ========================================================================== */
 
+#shadeMlCardHost .shutter-notif-card {
+  display: block;
+  position: static;
+  width: 100%;
+  margin-top: 4px;
+}
+
 .shutter-notif-card {
-  position: absolute;
-  top: 48px;
-  left: 12px;
-  right: 12px;
-  z-index: 450;
   background: rgba(26, 26, 32, 0.96);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -4498,21 +5339,15 @@ body.theme-night .btn-prev-inbetween:hover {
     0 10px 32px rgba(0, 0, 0, 0.65),
     0 1px 4px rgba(255, 255, 255, 0.04);
   color: #E2E8F0;
-  transition:
-    opacity 0.35s ease,
-    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .shutter-notif-hidden {
-  opacity: 0;
-  transform: translateY(-14px) scale(0.96);
-  pointer-events: none;
+  display: none !important;
 }
 
 .shutter-notif-visible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
+  display: block !important;
 }
 
 /* Header: App Icon + App Name + Close 'X' Button */
@@ -4545,174 +5380,238 @@ body.theme-night .btn-prev-inbetween:hover {
   letter-spacing: 0.01em;
 }
 
+.shutter-line-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #c084fc;
+  background: rgba(168, 85, 247, 0.16);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  padding: 1px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.2px;
+}
+
 .shutter-notif-close {
   background: transparent;
   border: none;
   color: #EF4444;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 2px 7px;
+  border-radius: 6px;
   line-height: 1;
-  transition: background 0.15s, opacity 0.15s;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .shutter-notif-close:hover {
   background: rgba(239, 68, 68, 0.15);
-  opacity: 0.9;
 }
 
-/* Stations Row (Above Timeline Track) */
-.shutter-notif-stations-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 6px;
+/* Reset Button state when user scrolls away from current train capsule */
+.shutter-notif-close.is-reset {
+  background: rgba(249, 115, 22, 0.2);
+  border: 1px solid rgba(249, 115, 22, 0.6);
+  color: #FB923C;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.35);
+  gap: 4px;
 }
 
-.shutter-stn-col {
-  flex: 1;
+.shutter-notif-close.is-reset:hover {
+  background: rgba(249, 115, 22, 0.35);
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.55);
+}
+
+/* Horizontal Scroll Viewport across all stops */
+.shutter-scroll-viewport {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  cursor: grab;
+  position: relative;
+  margin-top: 4px;
+  padding: 4px 0 8px;
+  user-select: none;
+}
+
+.shutter-scroll-viewport:active {
+  cursor: grabbing;
+}
+
+.shutter-scroll-viewport::-webkit-scrollbar {
+  height: 3px;
+}
+.shutter-scroll-viewport::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+}
+.shutter-scroll-viewport::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.3);
+  border-radius: 99px;
+}
+
+.shutter-track-scroll-inner {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  padding: 0 40px;
+  min-width: 100%;
+}
+
+/* Continuous Background Track Line */
+.shutter-timeline-base-track {
+  position: absolute;
+  top: 31px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 99px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Continuous Completed Track Line (Fills from start up to Orange Capsule) */
+.shutter-timeline-completed-track {
+  position: absolute;
+  top: 31px;
+  height: 3px;
+  background: #A855F7;
+  border-radius: 99px;
+  z-index: 3;
+  transition: width 0.35s linear;
+  pointer-events: none;
+}
+
+/* Glowing Vibrant Orange Train Capsule (Image 2 - NO DANCING, smooth time gliding) */
+.shutter-timeline-train-capsule {
+  position: absolute;
+  top: 32px;
+  transform: translate(-50%, -50%);
+  width: 34px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #EA580C 0%, #F97316 50%, #FB923C 100%);
+  box-shadow:
+    0 0 12px rgba(249, 115, 22, 0.95),
+    0 0 24px rgba(249, 115, 22, 0.55),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  z-index: 5;
+  transition: left 0.35s linear, opacity 0.3s ease;
+  pointer-events: none;
+}
+
+/* Stations Strip Row */
+.shutter-stations-strip {
+  display: inline-flex;
+  position: relative;
+  z-index: 4;
+}
+
+/* Each station column */
+.shutter-timeline-col {
+  width: 120px;
+  min-width: 120px;
+  flex-shrink: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+/* Station Name (Above Node) */
+.shutter-col-name {
   font-size: 0.72rem;
   font-weight: 600;
   color: #94A3B8;
+  white-space: nowrap;
+  margin-bottom: 8px;
+  transition: color 0.3s ease;
   line-height: 1.2;
 }
 
-.stn-col-prev {
-  text-align: left;
+.shutter-timeline-col.is-passed .shutter-col-name {
+  color: #CBD5E1;
 }
 
-.stn-col-curr {
-  text-align: center;
+.shutter-timeline-col.is-current .shutter-col-name {
+  color: #F8FAFC;
+  font-weight: 700;
 }
 
-.stn-col-next {
-  text-align: right;
-}
-
-.shutter-stn-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: inline-block;
-  max-width: 100%;
-}
-
-/* In "Arrived At" state: Dadar is bright bold green! */
-.shutter-notif-card.state-arrived .stn-col-curr .shutter-stn-name {
+.shutter-timeline-col.is-current.is-arrived .shutter-col-name {
   color: #22C55E;
   font-weight: 800;
   font-size: 0.76rem;
 }
 
-/* In "In between" state: Dadar returns to neutral, Matunga Rd is brighter */
-.shutter-notif-card.state-inbetween .stn-col-curr .shutter-stn-name {
-  color: #64748B;
-  font-weight: 600;
-}
-
-.shutter-notif-card.state-inbetween .stn-col-next .shutter-stn-name {
+.shutter-timeline-col.is-upcoming .shutter-col-name {
   color: #F8FAFC;
   font-weight: 700;
 }
 
-/* Connected Track Line with 3 Nodes */
-.shutter-notif-track-row {
-  display: flex;
-  align-items: center;
-  height: 14px;
-  position: relative;
-  margin-bottom: 3px;
-}
-
-.shutter-node-dot {
-  width: 8px;
-  height: 8px;
+/* Station Node Dot */
+.shutter-col-node {
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  background: #8B5CF6; /* default purple node */
-  z-index: 2;
-  flex-shrink: 0;
+  background: #64748B;
   transition: all 0.3s ease;
-}
-
-.shutter-track-segment {
-  flex: 1;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.15);
+  z-index: 4;
   position: relative;
-  border-radius: 99px;
-  overflow: hidden;
+  box-shadow: none;
 }
 
-/* Left segment (Prabhadevi to Dadar): always connected with purple */
-.seg-prev-curr {
-  background: #8B5CF6;
+.shutter-timeline-col.is-passed .shutter-col-node {
+  background: #A855F7;
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.7);
 }
 
-/* State: ARRIVED AT (Phone 1 Mockup) */
-.shutter-notif-card.state-arrived .node-prev {
-  background: #8B5CF6;
+.shutter-timeline-col.is-current .shutter-col-node {
+  background: #A855F7;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.9);
 }
 
-.shutter-notif-card.state-arrived .node-curr {
-  width: 11px;
-  height: 11px;
+.shutter-timeline-col.is-current.is-arrived .shutter-col-node {
+  width: 12px;
+  height: 12px;
   background: #22C55E;
-  box-shadow: 0 0 10px rgba(34, 197, 94, 0.85), 0 0 0 3px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.95), 0 0 0 3px rgba(34, 197, 94, 0.35);
   animation: shutter-arrived-pulse 1.8s ease-in-out infinite;
 }
 
-.shutter-notif-card.state-arrived .seg-curr-next {
-  background: rgba(255, 255, 255, 0.15);
+/* Subtext Badge (Below Node) */
+.shutter-col-subtext {
+  min-height: 18px;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.shutter-notif-card.state-arrived .node-next {
-  background: #475569;
+.shutter-col-subtext .shutter-arrived-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #22C55E;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  padding: 1px 7px;
+  border-radius: 8px;
+  white-space: nowrap;
 }
 
-/* State: IN BETWEEN (Phone 2 Mockup) */
-.shutter-notif-card.state-inbetween .node-prev {
-  background: #8B5CF6;
-}
-
-.shutter-notif-card.state-inbetween .node-curr {
-  background: #8B5CF6;
-  width: 8px;
-  height: 8px;
-  box-shadow: none;
-  animation: none;
-}
-
-.shutter-notif-card.state-inbetween .seg-curr-next {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* Active Glowing Orange Moving Progress Bar between Dadar and Matunga Rd */
-.shutter-orange-glow-bar {
-  display: none;
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 70%;
-  background: linear-gradient(90deg, #F97316 0%, #FB923C 100%);
-  box-shadow: 0 0 10px rgba(249, 115, 22, 0.85);
-  border-radius: 99px;
-  animation: orange-track-shimmer 1.8s infinite ease-in-out;
-}
-
-.shutter-notif-card.state-inbetween .shutter-orange-glow-bar {
-  display: block;
-}
-
-.shutter-notif-card.state-inbetween .node-next {
-  background: #475569;
-}
-
-@keyframes orange-track-shimmer {
-  0%, 100% { opacity: 0.85; width: 62%; }
-  50% { opacity: 1; width: 75%; }
+.shutter-col-subtext .shutter-eta-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #F97316;
+  white-space: nowrap;
 }
 
 @keyframes shutter-arrived-pulse {
@@ -4767,7 +5666,7 @@ body.theme-night .btn-prev-inbetween:hover {
 
 /* ==========================================================================
    FULL ANDROID SHUTTER PULL-DOWN SHADE
-   Exact 1:1 representation of the Samsung/Android Notification Shade from mockups!
+   Real Android Shutter Shade with Touch & Pointer Drag Physics (Phone 1 & 2 mockups)
    ========================================================================== */
 
 .android-shutter-shade {
@@ -4775,126 +5674,131 @@ body.theme-night .btn-prev-inbetween:hover {
   inset: 0;
   z-index: 550;
   pointer-events: none;
-  transition: opacity 0.35s ease;
-  opacity: 0;
+  transform: translateY(-100%);
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  background: rgba(10, 12, 18, 0.95);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+  user-select: none;
 }
 
 .android-shutter-shade.shade-open {
   pointer-events: auto;
-  opacity: 1;
-}
-
-.android-shade-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-.android-shade-panel {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  background: rgba(24, 24, 30, 0.94);
-  border-bottom-left-radius: 26px;
-  border-bottom-right-radius: 26px;
-  padding: 34px 16px 14px 16px;
-  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.7);
-  transform: translateY(-100%);
-  transition: transform 0.42s cubic-bezier(0.2, 0.9, 0.3, 1);
-  max-height: 90%;
-  overflow-y: auto;
-}
-
-.android-shutter-shade.shade-open .android-shade-panel {
   transform: translateY(0);
 }
 
-.shade-top-bar {
+.android-shutter-shade.shade-dragging {
+  transition: none !important;
+  pointer-events: auto;
+}
+
+.shade-inner-scroll {
+  width: 100%;
+  height: 100%;
+  padding: 34px 14px 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  overscroll-behavior: contain;
+}
+
+/* Shade Top Header: Clock + Date + Settings */
+.shade-top-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  padding: 0 4px 2px;
 }
 
-.shade-clock-row {
+.shade-time-group {
   display: flex;
   align-items: baseline;
   gap: 8px;
 }
 
 .shade-clock {
-  font-size: 1.15rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: #F8FAFC;
+  letter-spacing: -0.02em;
 }
 
 .shade-date {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 500;
   color: #94A3B8;
 }
 
-.shade-btn-icon {
+.shade-icon-btn {
   background: rgba(255, 255, 255, 0.1);
   border: none;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #CBD5E1;
   cursor: pointer;
+  transition: background 0.15s;
 }
 
-/* Quick Toggles Row (Wi-Fi, Sound, Bluetooth, Airplane, Torch) */
-.shade-quick-toggles {
+.shade-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+}
+
+/* Quick Settings Row */
+.shade-quick-grid {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  padding: 2px;
 }
 
-.quick-toggle-item {
+.shade-quick-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
   cursor: pointer;
 }
 
-.toggle-circle {
-  width: 40px;
-  height: 40px;
+.quick-icon-circle {
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
   color: #94A3B8;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s, color 0.2s;
+  transition: all 0.2s ease;
 }
 
-.quick-toggle-item.active .toggle-circle {
+.shade-quick-btn.active .quick-icon-circle {
   background: #3B82F6;
   color: #FFFFFF;
   box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4);
 }
 
-/* Brightness slider */
+/* Brightness Row */
 .shade-brightness-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 12px;
-  padding: 0 4px;
+  padding: 2px 4px;
+  color: #94A3B8;
 }
 
 .shade-brightness-track {
   flex: 1;
-  height: 5px;
+  height: 6px;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 99px;
   position: relative;
@@ -4902,17 +5806,27 @@ body.theme-night .btn-prev-inbetween:hover {
 }
 
 .shade-brightness-fill {
-  width: 65%;
   height: 100%;
   background: #F59E0B;
   border-radius: 99px;
 }
 
-/* Device control & Media output */
-.shade-device-row {
+.shade-brightness-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Control Pills (Device control & Media output) */
+.shade-ctrl-row {
   display: flex;
   gap: 8px;
-  margin-bottom: 14px;
+  padding: 0 2px;
 }
 
 .shade-pill-btn {
@@ -4925,21 +5839,35 @@ body.theme-night .btn-prev-inbetween:hover {
   font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
+  text-align: center;
+  transition: background 0.15s;
 }
 
-/* Rachel Notification Card */
-.shade-notif-rachel {
+.shade-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* Notifications List */
+.shade-notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+/* Rachel Mock Card from mockup */
+.shade-dummy-notif-card {
   background: rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 10px 12px;
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
   color: #F1F5F9;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.rachel-avatar {
+.dummy-notif-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -4951,30 +5879,30 @@ body.theme-night .btn-prev-inbetween:hover {
   flex-shrink: 0;
 }
 
-.rachel-content {
+.dummy-notif-body {
   flex: 1;
   min-width: 0;
 }
 
-.rachel-top {
+.dummy-notif-top {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 2px;
 }
 
-.rachel-name {
-  font-size: 0.76rem;
+.dummy-notif-sender {
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #F8FAFC;
+  color: #FFFFFF;
 }
 
-.rachel-time {
+.dummy-notif-time {
   font-size: 0.65rem;
   color: #94A3B8;
 }
 
-.rachel-msg {
+.dummy-notif-text {
   font-size: 0.7rem;
   color: #CBD5E1;
   overflow: hidden;
@@ -4982,29 +5910,897 @@ body.theme-night .btn-prev-inbetween:hover {
   white-space: nowrap;
 }
 
-.rachel-arrow {
-  color: #94A3B8;
-  font-size: 0.8rem;
-}
-
-.shade-ml-card-host {
-  margin-top: 4px;
-  margin-bottom: 8px;
-}
-
+/* Bottom Handle to Drag Back Up */
 .shade-pull-handle {
+  margin-top: auto;
+  padding: 12px 0 4px;
   display: flex;
   justify-content: center;
-  padding: 8px 0 2px 0;
-  cursor: pointer;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
 }
 
 .shade-handle-bar {
-  width: 38px;
-  height: 4px;
+  width: 42px;
+  height: 4.5px;
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.35);
+  transition: background 0.2s, width 0.2s;
 }
+
+.shade-pull-handle:hover .shade-handle-bar {
+  background: rgba(255, 255, 255, 0.65);
+  width: 48px;
+}
+
+/* ==========================================================================
+   DRAWER "STOPS NOTIFICATION" ACCORDION & PREVIEW CONTROLS
+   ========================================================================== */
+
+.drawer-notif-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.notif-accordion {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawer-notif-wrapper.is-open .notif-accordion {
+  max-height: 320px;
+}
+
+.notif-accordion-inner {
+  padding: 4px 6px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notif-option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.notif-option-row:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.notif-option-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.notif-option-title {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #F1F5F9;
+}
+
+.notif-option-desc {
+  font-size: 0.64rem;
+  color: #94A3B8;
+}
+
+.notif-checkbox-wrap {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.notif-cb-input {
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  margin: 0;
+}
+
+.notif-cb-custom {
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  pointer-events: none;
+  transition: all 0.15s;
+}
+
+.notif-cb-input:checked + .notif-cb-custom {
+  background: #A855F7;
+  border-color: #A855F7;
+}
+
+.notif-cb-input:checked + .notif-cb-custom::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.notif-preview-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.btn-notif-preview {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: #E2E8F0;
+  transition: all 0.15s;
+}
+
+.btn-prev-arrived:hover {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: #22C55E;
+  color: #86EFAC;
+}
+
+.btn-prev-inbetween:hover {
+  background: rgba(249, 115, 22, 0.2);
+  border-color: #F97316;
+  color: #FDBA74;
+}
+
+.preview-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot-green {
+  background: #22C55E;
+  box-shadow: 0 0 6px #22C55E;
+}
+
+.dot-orange {
+  background: #F97316;
+  box-shadow: 0 0 6px #F97316;
+}
+
+/* ==============================================================================
+   SCREEN 7: "VIA" CONNECTING JOURNEY / INTERCHANGE ROUTE PLANNER STYLING
+   - Ultra-Clean Top-to-Bottom Vertical Timeline UI
+   - Origin -> Leg 1 -> Transfer Hub (Dadar/Kurla/Thane) -> Leg 2 -> Destination
+   - Real-time departures, walking transfer guidelines, and alternative hub switcher
+   ============================================================================== */
+
+#screen-via-route {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  flex-direction: column;
+  background: var(--bg-primary, #0B0813);
+  color: #FFFFFF;
+  z-index: 60;
+  overflow: hidden;
+}
+
+#screen-via-route.active {
+  display: flex;
+  animation: viaScreenFadeIn 0.28s ease-out;
+}
+
+@keyframes viaScreenFadeIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Top Glassmorphic Navigation Header */
+.via-header-glass {
+  background: rgba(18, 10, 34, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1.5px solid rgba(168, 85, 247, 0.25);
+  padding: 12px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.via-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.btn-via-back {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.btn-via-back:hover {
+  background: rgba(168, 85, 247, 0.25);
+  border-color: rgba(168, 85, 247, 0.45);
+  transform: translateX(-2px);
+}
+
+.via-header-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.via-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #c084fc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.via-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
+  animation: hudDotPulse 1.3s infinite ease-in-out;
+}
+
+.via-route-marquee {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.via-arrow {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+}
+
+.via-hub-highlight {
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.16);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 1px 7px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+/* Quick Metrics Bar (Est. Time, Transfer, Distance, Fare) */
+.via-metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 6px 2px;
+  align-items: center;
+  text-align: center;
+}
+
+.via-metric-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.vm-label {
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.vm-val {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.vm-val.accent {
+  color: #fbbf24;
+}
+
+.via-metric-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  justify-self: center;
+}
+
+/* Alternative Interchange Hubs Switcher */
+.via-hubs-switcher {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 0 2px;
+  scrollbar-width: none;
+}
+.via-hubs-switcher::-webkit-scrollbar { display: none; }
+
+.via-hub-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.via-hub-tab:hover {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.via-hub-tab.active {
+  background: linear-gradient(135deg, #7c3aed, #9333ea);
+  border-color: #c084fc;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+}
+
+/* Scrollable Vertical Journey Timeline Container */
+.via-timeline-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  scrollbar-width: thin;
+}
+
+/* Timeline Nodes (Step 1, Step 2, Step 3) */
+.via-timeline-node {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.via-node-indicator {
+  width: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-top: 4px;
+  position: relative;
+}
+
+.node-bullet {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  z-index: 3;
+}
+
+.origin-bullet {
+  background: #22c55e;
+  color: #000000;
+  box-shadow: 0 0 10px #22c55e;
+}
+
+.transfer-bullet {
+  background: #f59e0b;
+  color: #000000;
+  box-shadow: 0 0 12px #f59e0b;
+  font-size: 0.85rem;
+}
+
+.dest-bullet {
+  background: #06b6d4;
+  color: #000000;
+  box-shadow: 0 0 12px #06b6d4;
+}
+
+/* Card Content Boxes */
+.via-node-content {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 6px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.via-node-tag {
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.origin-tag { color: #4ade80; }
+.dest-tag { color: #38bdf8; }
+
+.via-station-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.via-station-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.via-line-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.via-platform-cue {
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Transit Leg Connectors */
+.via-transit-leg {
+  display: flex;
+  gap: 12px;
+  padding: 4px 0 10px;
+  position: relative;
+}
+
+.via-track-line {
+  width: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.via-track-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3.5px;
+  background: linear-gradient(180deg, #a855f7, #6366f1);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.5);
+}
+
+.via-track-line.cr-track::before {
+  background: linear-gradient(180deg, #f59e0b, #ef4444);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.via-track-train-icon {
+  font-size: 0.8rem;
+  background: rgba(18, 10, 34, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  padding: 2px;
+  z-index: 2;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+}
+
+.via-transit-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vt-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.vt-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #d8b4fe;
+}
+
+.vt-time {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.vt-desc {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.3;
+}
+
+.btn-toggle-leg-stops {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  color: #c084fc;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 3px 0 0;
+}
+
+.btn-toggle-leg-stops:hover {
+  text-decoration: underline;
+}
+
+.via-leg-stops-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 8px;
+  border-left: 2px solid rgba(168, 85, 247, 0.6);
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.via-stop-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 2px 0;
+}
+
+.via-stop-row.terminal-stop {
+  font-weight: 700;
+  color: #fff;
+}
+
+.via-stop-row .vs-bullet {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a855f7;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.via-stop-row .vs-name {
+  flex: 1;
+}
+
+.via-stop-row .vs-time {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: monospace;
+}
+
+/* Transfer Highlight Node (Step 2 - The VIA Station) */
+.transfer-node .transfer-card {
+  background: linear-gradient(135deg, rgba(38, 20, 10, 0.85) 0%, rgba(32, 14, 52, 0.88) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  box-shadow: 0 10px 30px rgba(245, 158, 11, 0.18), 0 0 20px rgba(168, 85, 247, 0.2);
+}
+
+.transfer-alert-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.transfer-pill-tag {
+  font-size: 0.64rem;
+  font-weight: 800;
+  color: #fbbf24;
+  letter-spacing: 0.5px;
+}
+
+.transfer-buffer-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fef08a;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  padding: 2px 7px;
+  border-radius: 8px;
+}
+
+.transfer-title {
+  color: #fbbf24;
+  font-size: 1.25rem;
+}
+
+.via-switch-pill {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(245, 158, 11, 0.25);
+  color: #fde047;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+}
+
+.transfer-instructions-box {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.ti-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 0.73rem;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.35;
+}
+
+.ti-icon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Upcoming Departures Chips in Timeline Cards */
+.via-upcoming-box {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vu-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.vu-pills-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.vu-pills-row::-webkit-scrollbar { display: none; }
+
+.vu-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  white-space: nowrap;
+}
+
+.vu-chip.fast {
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+/* Final Destination Card */
+.dest-arrival-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-top: 4px;
+}
+
+.das-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.das-label {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.das-val {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.das-val.accent {
+  color: #38bdf8;
+}
+
+/* Bottom Action Buttons */
+.via-bottom-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  padding-bottom: 20px;
+}
+
+.btn-via-return {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.btn-via-return:hover {
+  background: rgba(168, 85, 247, 0.25);
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+.btn-via-direct-view {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #7c3aed, #9333ea);
+  border: none;
+  color: #FFFFFF;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.35);
+  transition: all 0.2s ease;
+}
+
+/* Connecting Route shortcut chips on Home Screen - unified simple gray */
+.route-shortcut-chip.connecting-chip {
+  background: #1E1E28;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #D1D5DB;
+  box-shadow: none !important;
+}
+
+body.theme-day .route-shortcut-chip.connecting-chip {
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  color: #334155;
+  box-shadow: none !important;
+}
+
+.filter-via-btn {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(168, 85, 247, 0.25));
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fbbf24 !important;
+  font-weight: 800;
+}
+
+/* Day Theme Support for Screen 7 */
+body.theme-day #screen-via-route {
+  background: #f8fafc;
+  color: #0f172a;
+}
+body.theme-day .via-header-glass {
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom-color: rgba(138, 43, 226, 0.2);
+}
+body.theme-day .via-route-marquee,
+body.theme-day .via-station-name,
+body.theme-day .vm-val {
+  color: #0f172a;
+}
+body.theme-day .via-metrics-bar {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+body.theme-day .via-node-content {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+body.theme-day .transfer-node .transfer-card {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #f59e0b;
+}
+body.theme-day .transfer-instructions-box,
+body.theme-day .via-upcoming-box,
+body.theme-day .dest-arrival-summary {
+  background: rgba(0, 0, 0, 0.04);
+}
+body.theme-day .ti-item {
+  color: #1e293b;
+}
+
 
 
 

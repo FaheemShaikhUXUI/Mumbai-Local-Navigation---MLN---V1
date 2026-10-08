@@ -61,7 +61,7 @@ Directional service patterns linking an origin and destination station.
 Canonical deduplicated railway station records.
 - `id` (TEXT, PK): e.g. `stn_ccg`, `stn_dr`, `stn_kyn`.
 - `station_code` (TEXT, UNIQUE): Official IR code e.g. `CCG`, `DR`, `KYN`, `CSMT`.
-- `station_name` (TEXT): Official display name e.g. `Chhatrapati Shivaji Maharaj Terminus`.
+- `station_name` (TEXT): Official display name e.g. `CSMT`.
 - `normalized_name` (TEXT): Lowercase, alphanumeric only for index searches.
 - `aliases` (TEXT): JSON array of historical names and abbreviations e.g. `["VT", "CST", "Victoria Terminus"]`.
 - `latitude` (REAL): Coordinates for distance/map calculations.

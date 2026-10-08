@@ -1,0 +1,123 @@
+/**
+ * ============================================================================
+ * COMPONENT: STATION DIRECTORY LIST & "YOU ARE HERE" BADGE
+ * Modular Component File - Self-contained & Easy to Edit
+ * ============================================================================
+ */
+
+.station-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+}
+
+.station-list-row:hover {
+  background: var(--bg-card);
+  padding-left: 0.85rem;
+}
+
+.station-list-row:last-child {
+  border-bottom: none;
+}
+
+.station-row-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.station-row-name {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.station-row-meta {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   "YOU ARE HERE" GOLD PILL BADGE (Exact User Reference Image)
+   ========================================================================== */
+.badge-you-are-here {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--badge-you-are-here-bg, rgba(234, 179, 8, 0.16));
+  border: 1px solid var(--badge-you-are-here-border, rgba(234, 179, 8, 0.45));
+  color: var(--badge-you-are-here-color, #FACC15);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2.5px 9px;
+  border-radius: 999px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 8px rgba(234, 179, 8, 0.2);
+  user-select: none;
+  animation: pulse-you-are-here 2.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.badge-you-are-here svg {
+  width: 11px;
+  height: 11px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+@keyframes pulse-you-are-here {
+  0%, 100% {
+    box-shadow: 0 1px 6px rgba(234, 179, 8, 0.15);
+    border-color: rgba(234, 179, 8, 0.45);
+  }
+  50% {
+    box-shadow: 0 2px 14px rgba(234, 179, 8, 0.35);
+    border-color: rgba(234, 179, 8, 0.85);
+  }
+}
+
+/* Active Highlight on the "You are Here" station row */
+.station-list-row.is-current-station {
+  background: rgba(234, 179, 8, 0.04);
+}
+
+.station-list-row.is-current-station:hover {
+  background: rgba(234, 179, 8, 0.09);
+}
+
+body.theme-day .station-list-row.is-current-station {
+  background: rgba(254, 240, 138, 0.25);
+}
+
+body.theme-day .station-list-row.is-current-station:hover {
+  background: rgba(254, 240, 138, 0.45);
+}
+
+/* Line Tag Badges (WR, CR, etc.) */
+.line-tag-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 5px;
+  color: #FFFFFF;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}

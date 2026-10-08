@@ -10,7 +10,7 @@ export const CR_OFFICIAL_STATIONS_DATA: Array<{
   // ==========================================
   // 1. Central Main Line (CSMT to Kalyan)
   // ==========================================
-  { code: 'CSMT', name: 'Chhatrapati Shivaji Maharaj Terminus', aliases: ['VT', 'CST', 'CSMT', 'Victoria Terminus', 'Mumbai CSMT'], lat: 18.9401, lng: 72.8354 },
+  { code: 'CSMT', name: 'CSMT', aliases: ['VT', 'CST', 'CSMT', 'Victoria Terminus', 'Mumbai CSMT', 'Chhatrapati Shivaji Maharaj Terminus', 'Chhatrapati Shivaji Terminus'], lat: 18.9401, lng: 72.8354 },
   { code: 'MSD', name: 'Masjid', aliases: ['MSD', 'Masjid Bunder'], lat: 18.9528, lng: 72.8394 },
   { code: 'SNRD', name: 'Sandhurst Road', aliases: ['SNRD'], lat: 18.9612, lng: 72.8398 },
   { code: 'BY', name: 'Byculla', aliases: ['BY'], lat: 18.9754, lng: 72.8358 },

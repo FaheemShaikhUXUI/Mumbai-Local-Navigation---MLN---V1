@@ -45,7 +45,7 @@ STATIONS_DATA = [
     # ==========================================
     # 2. CENTRAL MAIN LINE & BRANCHES (CSMT to Kalyan, Kasara & Khopoli)
     # ==========================================
-    {"code": "CSMT", "name": "Chhatrapati Shivaji Maharaj Terminus", "aliases": ["VT", "CST", "CSMT", "Victoria Terminus", "Mumbai CSMT"], "lat": 18.9401, "lng": 72.8354, "zone": "CR"},
+    {"code": "CSMT", "name": "CSMT", "aliases": ["VT", "CST", "CSMT", "Victoria Terminus", "Mumbai CSMT"], "lat": 18.9401, "lng": 72.8354, "zone": "CR"},
     {"code": "MSD", "name": "Masjid", "aliases": ["MSD", "Masjid Bunder"], "lat": 18.9528, "lng": 72.8394, "zone": "CR"},
     {"code": "SNRD", "name": "Sandhurst Road", "aliases": ["SNRD"], "lat": 18.9612, "lng": 72.8398, "zone": "CR"},
     {"code": "BY", "name": "Byculla", "aliases": ["BY"], "lat": 18.9754, "lng": 72.8358, "zone": "CR"},

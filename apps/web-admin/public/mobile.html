@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MumbaiLocal Super Intelligent — Official Navigation App</title>
-  <link rel="stylesheet" id="appStylesheet" href="mobile.css?v=20261003_35">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/components/search-box.css">
+  <link rel="stylesheet" href="css/components/station-list.css">
+  <link rel="stylesheet" id="appStylesheet" href="mobile.css?v=20261003_37">
 </head>
 <body class="theme-night">
 
@@ -44,14 +47,17 @@
       <div class="notch-speaker"></div>
     </div>
 
-    <!-- Status Bar -->
-    <div class="status-bar" id="phoneStatusBar">
+    <!-- Status Bar (Pull down from top to open Android Shutter) -->
+    <div class="status-bar" id="phoneStatusBar" title="Pull down from top to open Android Shutter">
       <div class="status-left">
         <span id="statusTime">14:36</span>
         <!-- Header Bar Pill (Dynamic width according to name: Arrived = Green till 18 sec, Upcoming = Orange after every 20 sec) -->
         <div id="headerNotifPill" class="header-notif-pill header-notif-hidden" aria-live="polite">
           <span class="header-notif-text" id="headerNotifText">Dadar</span>
         </div>
+      </div>
+      <div class="status-center-pull-cue" id="statusPullCue" title="Pull down for Android Shutter">
+        <span class="pull-cue-bar"></span>
       </div>
       <div class="status-icons">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"/></svg>
@@ -191,7 +197,7 @@
           </div>
 
           <!-- Journey Planner Component (From & To Tile) -->
-          <div class="journey-search-box" id="journeySearchBox">
+          <div class="journey-search-box active-from" id="journeySearchBox">
             <!-- From Input Row -->
             <div class="search-row search-row-from tile-active" id="fromInputBox">
               <span class="search-icon-prefix" id="fromSearchIconBtn" role="button" aria-label="Search or clear" title="Search station">
@@ -264,9 +270,12 @@
 
           <!-- Quick Route Suggestion Pills (Starred Routes) -->
           <div class="quick-routes-row" id="quickRoutesRow">
+            <button class="route-shortcut-chip connecting-chip" data-from="stn_ccg" data-to="stn_tna" title="Connecting route via Dadar"><span class="chip-star-icon">🔀</span>Churchgate – Thane (Via Dadar)</button>
+            <button class="route-shortcut-chip connecting-chip" data-from="stn_bvi" data-to="stn_kyn" title="Connecting route via Dadar"><span class="chip-star-icon">🔀</span>Borivali – Kalyan (Via Dadar)</button>
             <button class="route-shortcut-chip" data-from="stn_dr" data-to="stn_vr"><span class="chip-star-icon">★</span>Dadar – Virar</button>
             <button class="route-shortcut-chip" data-from="stn_bvi" data-to="stn_vr"><span class="chip-star-icon">★</span>Borivali – Virar</button>
             <button class="route-shortcut-chip" data-from="stn_ccg" data-to="stn_vr"><span class="chip-star-icon">★</span>Churchgate – Virar</button>
+            <button class="route-shortcut-chip connecting-chip" data-from="stn_vr" data-to="stn_csmt" title="Connecting route via Dadar"><span class="chip-star-icon">🔀</span>Virar – CSMT (Via Dadar)</button>
             <button class="route-shortcut-chip" data-from="stn_dr" data-to="stn_csmt"><span class="chip-star-icon">★</span>Dadar – CSMT</button>
             <button class="route-shortcut-chip" data-from="stn_tna" data-to="stn_pnvl"><span class="chip-star-icon">★</span>Thane – Panvel</button>
             <button class="route-shortcut-chip" data-from="stn_csmt" data-to="stn_pnvl"><span class="chip-star-icon">★</span>CSMT – Panvel</button>
@@ -290,14 +299,94 @@
 
         </div>
 
-        <!-- Floating Action Button (Voice Search Microphone) -->
-        <button id="btnVoiceFab" class="fab-voice-search" title="Voice Search / AI Assistant">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-            <line x1="12" y1="19" x2="12" y2="22"/>
-          </svg>
-        </button>
+        <!-- ==========================================
+             VOICE SEARCH SYSTEM (Reference Mockup Exact Match)
+             - Long Press 1s to record with audio waveform animation
+             - Supports English, Marathi & Hindi NLP intent extraction
+             - Expands from circular purple FAB to glowing capsule pill
+             ========================================== -->
+        <div class="voice-search-system" id="voiceSearchSystem">
+          
+          <!-- Live Transcript & Recognized Entity Floating HUD Bubble -->
+          <div class="voice-hud-bubble" id="voiceHudBubble">
+            <div class="voice-hud-header">
+              <span class="voice-hud-dot" id="voiceHudDot"></span>
+              <span class="voice-hud-lang-badge" id="voiceHudLangBadge">3 Languages: Hindi • मराठी • English</span>
+              <span class="voice-hud-hint" id="voiceHudHint">Hold 1s to speak</span>
+            </div>
+            <div class="voice-hud-transcript" id="voiceHudTranscript">
+              "Mujhe Dadar se Borivali jana hai"
+            </div>
+            <div class="voice-hud-chips" id="voiceHudChips">
+              <button type="button" class="voice-chip-btn" data-phrase="Churchgate to Thane" data-lang="English" title="Test Connecting Route via Dadar">
+                <span class="chip-lang-tag en">EN</span> Churchgate to Thane (Via Dadar)
+              </button>
+              <button type="button" class="voice-chip-btn" data-phrase="Borivali se Kalyan jana hai" data-lang="Hindi" title="Test Connecting Route via Dadar">
+                <span class="chip-lang-tag hi">HI</span> Borivali se Kalyan (Via Dadar)
+              </button>
+              <button type="button" class="voice-chip-btn" data-phrase="Mala Churchgate varun Thane la jaycha aahe" data-lang="Marathi" title="Test Marathi Connecting Route">
+                <span class="chip-lang-tag mr">MR</span> Churchgate varun Thane (Via Dadar)
+              </button>
+              <button type="button" class="voice-chip-btn" data-phrase="Mujhe Dadar se Borivali jana hai" data-lang="Hindi" title="Test Hindi direct search">
+                <span class="chip-lang-tag hi">HI</span> Dadar se Borivali
+              </button>
+              <button type="button" class="voice-chip-btn" data-phrase="Andheri to Panvel" data-lang="English" title="Test Harbour Connecting Route">
+                <span class="chip-lang-tag en">EN</span> Andheri to Panvel
+              </button>
+              <button type="button" class="voice-chip-btn" data-phrase="Virar se CSMT" data-lang="Hindi" title="Test WR to CR Connecting Route">
+                <span class="chip-lang-tag hi">HI</span> Virar se CSMT (Via Dadar)
+              </button>
+            </div>
+          </div>
+
+          <!-- Morphing Voice Capsule Pill (Expands to left on 1s Hold / Recording) -->
+          <div class="voice-capsule-bar" id="voiceCapsuleBar">
+            <!-- Animated Sound Waveform Visualizer Area -->
+            <div class="voice-waveform-area" id="voiceWaveformArea" aria-hidden="true">
+              <span class="wave-bar bar-1"></span>
+              <span class="wave-bar bar-2"></span>
+              <span class="wave-bar bar-3"></span>
+              <span class="wave-bar bar-4"></span>
+              <span class="wave-bar bar-5"></span>
+              <span class="wave-bar bar-6"></span>
+              <span class="wave-bar bar-7"></span>
+              <span class="wave-bar bar-8"></span>
+              <span class="wave-bar bar-9"></span>
+              <span class="wave-bar bar-10"></span>
+              <span class="wave-bar bar-11"></span>
+              <span class="wave-bar bar-12"></span>
+              <span class="wave-bar bar-13"></span>
+              <span class="wave-bar bar-14"></span>
+              <span class="wave-bar bar-15"></span>
+              <span class="wave-bar bar-16"></span>
+              <span class="wave-bar bar-17"></span>
+              <span class="wave-bar bar-18"></span>
+              <span class="wave-bar bar-19"></span>
+              <span class="wave-bar bar-20"></span>
+              <span class="wave-bar bar-21"></span>
+              <span class="wave-bar bar-22"></span>
+              <span class="wave-bar bar-23"></span>
+              <span class="wave-bar bar-24"></span>
+              <span class="wave-bar bar-25"></span>
+            </div>
+
+            <!-- The Circular Microphone Button -->
+            <button id="btnVoiceFab" class="fab-voice-search" title="Long press 1 sec to speak in Hindi, Marathi, or English" aria-label="Voice Search Microphone">
+              <!-- SVG Hold Progress Ring -->
+              <svg class="mic-hold-svg" viewBox="0 0 54 54" aria-hidden="true">
+                <circle class="hold-ring-bg" cx="27" cy="27" r="23"></circle>
+                <circle class="hold-ring-fill" id="micHoldRingFill" cx="27" cy="27" r="23"></circle>
+              </svg>
+              <!-- Mic Glyph SVG Icon -->
+              <svg class="mic-icon-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+              </svg>
+            </button>
+          </div>
+
+        </div>
       </section>
 
       <!-- ==========================================
@@ -317,7 +406,12 @@
             <div class="results-route-marquee-wrapper" id="resultsRouteWrapper">
               <div class="results-route-title" id="resultsRouteTitle">
                 <span id="resFromStation">Dadar</span>
-                <span class="route-arrow">→</span>
+                <span class="route-arrow">
+                  <svg class="header-route-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                    <polyline points="13 5 20 12 13 19"></polyline>
+                  </svg>
+                </span>
                 <span id="resToStation">Virar</span>
               </div>
             </div>
@@ -336,12 +430,13 @@
             </div>
           </div>
 
-          <!-- Filter Pills Row: All, Fast (Red), Slow (Green), AC (Blue) -->
+          <!-- Filter Pills Row: All, Fast (Red), Slow (Green), AC (Blue), Connecting Via -->
           <div class="timetable-filter-bar" id="timetableFilterBar">
             <button class="timetable-filter-pill active" data-filter="ALL">All</button>
             <button class="timetable-filter-pill filter-fast" data-filter="FAST">Fast</button>
             <button class="timetable-filter-pill filter-slow" data-filter="SLOW">Slow</button>
             <button class="timetable-filter-pill filter-ac" data-filter="AC">AC</button>
+            <button id="btnOpenViaPlanner" class="timetable-filter-pill filter-via-btn" title="View Connecting Via Route">🔀 Via Route</button>
           </div>
         </div>
 
@@ -404,6 +499,213 @@
         </div>
       </section>
 
+      <!-- ==========================================
+           SCREEN 7: "VIA" CONNECTING JOURNEY / INTERCHANGE ROUTE PLANNER
+           - Shows clean top-to-bottom vertical journey timeline
+           - Step 1: Start Station (XXX)
+           - Transit Leg 1
+           - Step 2: Transfer / VIA Station (Hub e.g. Dadar, Kurla, Thane)
+           - Transit Leg 2
+           - Step 3: Destination Station (YYY)
+           - Alternative VIA Hubs Switcher
+           ========================================== -->
+      <section id="screen-via-route" class="app-screen">
+        <!-- Top Glassmorphic Navigation Bar -->
+        <div class="via-header-glass">
+          <div class="via-topbar">
+            <button id="btnBackFromViaRoute" class="btn-via-back" title="Back to Timetable" aria-label="Back">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            
+            <div class="via-header-info">
+              <div class="via-badge-pill">
+                <span class="via-badge-dot"></span>
+                <span id="viaRouteBadgeText">Connecting Route (Via Hub)</span>
+              </div>
+              <div class="via-route-marquee" id="viaRouteMarquee">
+                <span id="viaFromText">Churchgate</span>
+                <span class="via-arrow">➔</span>
+                <span class="via-hub-highlight" id="viaHubText">VIA Dadar</span>
+                <span class="via-arrow">➔</span>
+                <span id="viaToText">Thane</span>
+              </div>
+            </div>
+
+            <div class="via-topbar-actions">
+              <button id="btnViaRouteFav" class="btn-fav-star" title="Save Route" aria-label="Favorite">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2.5 15.05 8.5 21.8 9.4 16.8 14.1 18.1 20.8 12 17.5 5.9 20.8 7.2 14.1 2.2 9.4 8.95 8.5"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Trip Quick Metrics Bar -->
+          <div class="via-metrics-bar">
+            <div class="via-metric-card">
+              <span class="vm-label">Est. Time</span>
+              <span class="vm-val" id="viaMetricTime">~50 min</span>
+            </div>
+            <div class="via-metric-divider"></div>
+            <div class="via-metric-card">
+              <span class="vm-label">Interchange</span>
+              <span class="vm-val accent" id="viaMetricTransfer">1 Transfer</span>
+            </div>
+            <div class="via-metric-divider"></div>
+            <div class="via-metric-card">
+              <span class="vm-label">Distance</span>
+              <span class="vm-val" id="viaMetricDist">~42 km</span>
+            </div>
+            <div class="via-metric-divider"></div>
+            <div class="via-metric-card">
+              <span class="vm-label">Fare</span>
+              <span class="vm-val" id="viaMetricFare">₹15 II</span>
+            </div>
+          </div>
+
+          <!-- Alternative Interchange Hubs Tabs (if more than 1 hub available) -->
+          <div class="via-hubs-switcher" id="viaHubsSwitcher">
+            <!-- Dynamically populated e.g. [ ★ Via Dadar (Recommended) ] [ Via Kurla ] -->
+          </div>
+        </div>
+
+        <!-- Scrollable Top-to-Bottom Vertical Timeline Container -->
+        <div class="via-timeline-scroll-container" id="viaTimelineContainer">
+          
+          <!-- STEP 1: ORIGIN BOARDING CARD -->
+          <div class="via-timeline-node origin-node">
+            <div class="via-node-indicator">
+              <span class="node-ring origin-ring"></span>
+              <span class="node-bullet origin-bullet"></span>
+            </div>
+            <div class="via-node-content">
+              <div class="via-node-tag origin-tag">STEP 1 • START BOARDING</div>
+              <div class="via-station-row">
+                <span class="via-station-name" id="viaStartStationName">Churchgate</span>
+                <span class="via-line-pill" id="viaStartLinePill">WR • Western Line</span>
+              </div>
+              <div class="via-platform-cue" id="viaStartPlatformCue">
+                Platform 1 / 2 • Towards Dadar / Borivali / Virar
+              </div>
+              
+              <!-- Next Upcoming Departures from Origin -->
+              <div class="via-upcoming-box" id="viaStartUpcomingBox">
+                <div class="vu-title">Upcoming Trains:</div>
+                <div class="vu-pills-row" id="viaStartUpcomingPills">
+                  <!-- e.g. 09:12 AM (Fast), 09:18 AM (Slow) -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LEG 1 TRANSIT CONNECTOR -->
+          <div class="via-transit-leg leg-1">
+            <div class="via-track-line wr-track">
+              <span class="via-track-train-icon">🚆</span>
+            </div>
+            <div class="via-transit-card">
+              <div class="vt-title-row">
+                <span class="vt-title" id="viaLeg1Title">Western Line Local</span>
+                <span class="vt-time" id="viaLeg1Duration">~16 min</span>
+              </div>
+              <div class="vt-desc" id="viaLeg1Desc">Ride 7 stops • Fast train skips minor stations</div>
+              <button class="btn-toggle-leg-stops" id="btnToggleLeg1Stops" data-leg="1">
+                <span>View 7 Stops</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="via-leg-stops-list" id="viaLeg1StopsList" style="display:none;"></div>
+            </div>
+          </div>
+
+          <!-- STEP 2: THE "VIA" INTERCHANGE TRANSFER CARD (Highlight!) -->
+          <div class="via-timeline-node transfer-node">
+            <div class="via-node-indicator">
+              <span class="node-ring transfer-ring"></span>
+              <span class="node-bullet transfer-bullet">🔄</span>
+            </div>
+            <div class="via-node-content transfer-card">
+              <div class="transfer-alert-header">
+                <span class="transfer-pill-tag">STEP 2 • INTERCHANGE HUB</span>
+                <span class="transfer-buffer-tag" id="viaTransferWaitTag">⏱️ 3-4 min walk</span>
+              </div>
+              <div class="via-station-row">
+                <span class="via-station-name transfer-title" id="viaHubStationName">Dadar Junction</span>
+                <span class="via-switch-pill" id="viaSwitchLinesPill">WR ➔ CR Switch</span>
+              </div>
+              <div class="transfer-instructions-box">
+                <div class="ti-item">
+                  <span class="ti-icon">🚶</span>
+                  <span class="ti-text" id="viaWalkInstruction">De-board train at Western Line Platform, walk over Middle Foot Overbridge (FOB) towards Central Railway side.</span>
+                </div>
+                <div class="ti-item">
+                  <span class="ti-icon">🚉</span>
+                  <span class="ti-text" id="viaPlatformInstruction">Head to Platform 3, 4 or 5 for Central Line Down trains heading towards Thane / Kalyan.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LEG 2 TRANSIT CONNECTOR -->
+          <div class="via-transit-leg leg-2">
+            <div class="via-track-line cr-track">
+              <span class="via-track-train-icon">🚆</span>
+            </div>
+            <div class="via-transit-card">
+              <div class="vt-title-row">
+                <span class="vt-title" id="viaLeg2Title">Central Line Local</span>
+                <span class="vt-time" id="viaLeg2Duration">~30 min</span>
+              </div>
+              <div class="vt-desc" id="viaLeg2Desc">Ride 8 stops (Fast: 3 stops) • Towards Thane / Kalyan</div>
+              
+              <!-- Next Departures from Interchange Hub -->
+              <div class="via-upcoming-box" id="viaHubUpcomingBox" style="margin-top: 8px;">
+                <div class="vu-title">Upcoming Connecting Departures from Dadar:</div>
+                <div class="vu-pills-row" id="viaHubUpcomingPills">
+                  <!-- e.g. 09:34 AM (Fast), 09:41 AM (Slow) -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: FINAL DESTINATION ARRIVAL CARD -->
+          <div class="via-timeline-node dest-node">
+            <div class="via-node-indicator">
+              <span class="node-ring dest-ring"></span>
+              <span class="node-bullet dest-bullet">🏁</span>
+            </div>
+            <div class="via-node-content dest-card">
+              <div class="via-node-tag dest-tag">STEP 3 • FINAL DESTINATION</div>
+              <div class="via-station-row">
+                <span class="via-station-name" id="viaDestStationName">Thane</span>
+                <span class="via-line-pill" id="viaDestLinePill">CR • Central Line</span>
+              </div>
+              <div class="dest-arrival-summary">
+                <div class="das-item">
+                  <span class="das-label">Platform:</span>
+                  <span class="das-val" id="viaDestPlatformVal">Platform 2 / 3</span>
+                </div>
+                <div class="das-item">
+                  <span class="das-label">Est. Arrival:</span>
+                  <span class="das-val accent" id="viaDestTimeVal">~09:58 AM</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons: Swap, Return, Share -->
+          <div class="via-bottom-actions">
+            <button id="btnViaReturnHome" class="btn-via-return">
+              <span>Back to Search</span>
+            </button>
+            <button id="btnViaDirectView" class="btn-via-direct-view" style="display:none;">
+              <span>View Direct Schedules</span>
+            </button>
+          </div>
+
+        </div>
+      </section>
 
     </div>
 
@@ -531,143 +833,123 @@
       </div>
     </div>
 
-    <!-- ============================================================
-         ANDROID SHUTTER NOTIFICATION CARD (Floating & in Shade)
-         Exact 1:1 precision match to user design mockup in Phone 1 & Phone 2
-         ============================================================ -->
-    <div id="shutterNotifCard" class="shutter-notif-card shutter-notif-hidden" role="alert">
-      <!-- Card Header: Icon + App Name + Close Button -->
-      <div class="shutter-notif-header">
-        <div class="shutter-notif-app-info">
-          <div class="shutter-notif-app-icon">
-            <img src="logo.svg" alt="ML" style="width:100%;height:100%;border-radius:4px;display:block;">
+    <!-- ==========================================
+         ANDROID NOTIFICATION SHUTTER / SHADE
+         (Pull down from top status bar/notch to open; drag up from bottom handle to close)
+         ========================================== -->
+    <div class="android-shutter-shade" id="androidShutterShade" aria-hidden="true">
+      <div class="shade-inner-scroll" id="shadeInnerScroll">
+
+        <!-- Shade Top Header: Time + Date + Settings Cog (Phone 1 & 2 mockup) -->
+        <div class="shade-top-header">
+          <div class="shade-time-group">
+            <span class="shade-clock" id="shadeClock">12:45</span>
+            <span class="shade-date" id="shadeDate">Wed, Dec 30</span>
           </div>
-          <span class="shutter-notif-app-name">Mumbai Local Navigation</span>
-        </div>
-        <button class="shutter-notif-close" id="btnShutterNotifClose" title="Dismiss notification" aria-label="Dismiss">✕</button>
-      </div>
-
-      <!-- Station Names Row (Above Track Line) -->
-      <div class="shutter-notif-stations-row" id="shutterNotifStationsRow">
-        <div class="shutter-stn-col stn-col-prev">
-          <span class="shutter-stn-name" id="shutterStnPrev">Prabhadevi</span>
-        </div>
-        <div class="shutter-stn-col stn-col-curr">
-          <span class="shutter-stn-name shutter-stn-curr-active" id="shutterStnCurrent">Dadar</span>
-        </div>
-        <div class="shutter-stn-col stn-col-next">
-          <span class="shutter-stn-name" id="shutterStnNext">Matunga Rd.</span>
-        </div>
-      </div>
-
-      <!-- Station Connected Timeline Track (3 Nodes & Connected Lines) -->
-      <div class="shutter-notif-track-row" id="shutterTrackRow">
-        <div class="shutter-node-dot node-prev" id="shutterNodePrev"></div>
-        <div class="shutter-track-segment seg-prev-curr" id="shutterSegPrevCurr"></div>
-        <div class="shutter-node-dot node-curr" id="shutterNodeCurr"></div>
-        <div class="shutter-track-segment seg-curr-next" id="shutterSegCurrNext">
-          <div class="shutter-orange-glow-bar" id="shutterOrangeGlowBar"></div>
-        </div>
-        <div class="shutter-node-dot node-next" id="shutterNodeNext"></div>
-      </div>
-
-      <!-- Status Subtext Row ("Arrived Dadar" or "in 2.5 min") -->
-      <div class="shutter-notif-subtext-row" id="shutterSubtextRow">
-        <div class="shutter-sub-col sub-col-prev"></div>
-        <div class="shutter-sub-col sub-col-curr">
-          <span class="shutter-arrived-badge" id="shutterArrivedBadge">Arrived Dadar</span>
-        </div>
-        <div class="shutter-sub-col sub-col-next">
-          <span class="shutter-eta-badge" id="shutterEtaBadge">in 2.5 min</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================
-         FULL ANDROID SHUTTER PULL-DOWN SHADE
-         Exact replica of Samsung / Android Notification Shade in mockups!
-         Toggle by clicking status bar or dragging down
-         ============================================================ -->
-    <div id="androidShutterShade" class="android-shutter-shade" aria-hidden="true">
-      <div class="android-shade-backdrop" id="androidShadeBackdrop"></div>
-      <div class="android-shade-panel" id="androidShadePanel">
-        <!-- Shade Top Status -->
-        <div class="shade-top-bar">
-          <div class="shade-clock-row">
-            <span class="shade-clock">12:45</span>
-            <span class="shade-date">Wed, Dec 30</span>
+          <div class="shade-top-actions">
+            <button type="button" class="shade-icon-btn" id="btnShadeSettings" title="Settings" aria-label="Settings">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+            </button>
           </div>
-          <button class="shade-btn-icon" id="btnShadeSettings" aria-label="Settings">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-          </button>
         </div>
 
-        <!-- Quick Toggles Row (Wi-Fi, Sound, Bluetooth, Airplane, Flashlight) -->
-        <div class="shade-quick-toggles">
-          <div class="quick-toggle-item active" title="Wi-Fi">
-            <div class="toggle-circle">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"/></svg>
+        <!-- Quick Settings Grid (Samsung OneUI / Android circular icons as in mockup) -->
+        <div class="shade-quick-grid">
+          <div class="shade-quick-btn active" title="Wi-Fi">
+            <div class="quick-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"/></svg>
             </div>
           </div>
-          <div class="quick-toggle-item active" title="Sound">
-            <div class="toggle-circle">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          <div class="shade-quick-btn active" title="Sound">
+            <div class="quick-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
             </div>
           </div>
-          <div class="quick-toggle-item active" title="Bluetooth">
-            <div class="toggle-circle">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/></svg>
+          <div class="shade-quick-btn active" title="Bluetooth">
+            <div class="quick-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"></polyline></svg>
             </div>
           </div>
-          <div class="quick-toggle-item" title="Flight Mode">
-            <div class="toggle-circle">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+          <div class="shade-quick-btn" title="Flight mode">
+            <div class="quick-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.8-.2-1.6.3-1.8 1.1-.2.8.3 1.6 1.1 1.8l6.2 3.1-3 3-2.3-.6c-.5-.1-1 .2-1.2.7-.2.5.1 1 .5 1.3l2.8 1.4 1.4 2.8c.3.5.8.7 1.3.5.5-.2.8-.7.7-1.2l-.6-2.3 3-3 3.1 6.2c.2.8 1 1.3 1.8 1.1.8-.2 1.3-1 1.1-1.8z"/></svg>
             </div>
           </div>
-          <div class="quick-toggle-item active" title="Torch">
-            <div class="toggle-circle">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h12v3l-4 4v11a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2V9L6 5V2zm2 2v.6L10.4 7h3.2L16 4.6V4H8z"/></svg>
+          <div class="shade-quick-btn active" title="Flashlight">
+            <div class="quick-icon-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
             </div>
           </div>
         </div>
 
-        <!-- Brightness Slider -->
+        <!-- Brightness Slider Row -->
         <div class="shade-brightness-row">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color:#f59e0b;"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1z"/></svg>
-          <div class="shade-brightness-track"><div class="shade-brightness-fill"></div></div>
-          <span style="font-size:0.75rem; color:#9ca3af; font-weight:700;">⋮</span>
-        </div>
-
-        <!-- Device control & Media output buttons -->
-        <div class="shade-device-row">
-          <button class="shade-pill-btn">Device control</button>
-          <button class="shade-pill-btn">Media output</button>
-        </div>
-
-        <!-- Rachel text message notification -->
-        <div class="shade-notif-rachel">
-          <div class="rachel-avatar">
-            <span>👩</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <div class="shade-brightness-track">
+            <div class="shade-brightness-fill" style="width: 72%;"></div>
+            <div class="shade-brightness-thumb" style="left: 72%;"></div>
           </div>
-          <div class="rachel-content">
-            <div class="rachel-top">
-              <span class="rachel-name">Rachel</span>
-              <span class="rachel-time">10:24 AM</span>
+        </div>
+
+        <!-- Quick Dual Buttons (Device control & Media output) -->
+        <div class="shade-ctrl-row">
+          <button type="button" class="shade-pill-btn">Device control</button>
+          <button type="button" class="shade-pill-btn">Media output</button>
+        </div>
+
+        <!-- Android Notifications Section -->
+        <div class="shade-notifications-list">
+          <!-- Background / Mock System Notification from Phone 1 & 2: "Rachel 10:24 AM" -->
+          <div class="shade-dummy-notif-card">
+            <div class="dummy-notif-avatar">👩</div>
+            <div class="dummy-notif-body">
+              <div class="dummy-notif-top">
+                <span class="dummy-notif-sender">Rachel</span>
+                <span class="dummy-notif-time">10:24 AM</span>
+              </div>
+              <div class="dummy-notif-text">Text me when you get here! I know you're probably having cravings. W...</div>
             </div>
-            <div class="rachel-msg">Text me when you get here! I know you're probably having cravings. W...</div>
           </div>
-          <span class="rachel-arrow">⌄</span>
+
+          <!-- Live Mumbai Local Navigation Card (1:1 with Phone 1 & Phone 2 mockups) -->
+          <!-- Live Mumbai Local Navigation Card (1:1 with Phone 1 & Phone 2 mockups) -->
+          <div id="shutterNotifCard" class="shutter-notif-card state-arrived" role="alert">
+            <!-- Card Header: Icon + App Name + Line Pill + Close/Reset Button -->
+            <div class="shutter-notif-header">
+              <div class="shutter-notif-app-info">
+                <div class="shutter-notif-app-icon">
+                  <img src="logo.svg" alt="ML" style="width:100%;height:100%;border-radius:4px;display:block;">
+                </div>
+                <span class="shutter-notif-app-name">Mumbai Local Navigation</span>
+                <span class="shutter-line-badge" id="shutterLineBadge">WR • Western Line</span>
+              </div>
+              <button type="button" class="shutter-notif-close" id="btnShutterNotifClose" title="Dismiss notification" aria-label="Dismiss">✕</button>
+            </div>
+
+            <!-- Horizontally Scrollable Timeline Track Viewport -->
+            <div class="shutter-scroll-viewport" id="shutterScrollViewport">
+              <div class="shutter-track-scroll-inner" id="shutterTrackScrollInner">
+                <!-- Continuous Base Track Line -->
+                <div class="shutter-timeline-base-track" id="shutterTimelineBaseTrack"></div>
+                <!-- Continuous Completed Track Line (Fills from start up to Orange Capsule) -->
+                <div class="shutter-timeline-completed-track" id="shutterTimelineCompletedTrack"></div>
+                <!-- The Glowing Vibrant Orange Train Capsule (Image 2) -->
+                <div class="shutter-timeline-train-capsule" id="shutterTimelineTrainCapsule"></div>
+                <!-- Stations Columns Strip -->
+                <div class="shutter-stations-strip" id="shutterStationsStrip"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Slot where Mumbai Local Notification Card is hosted in the Shade -->
-        <div class="shade-ml-card-host" id="shadeMlCardHost">
-          <!-- Mirrored or placed here inside shade -->
-        </div>
-
-        <!-- Bottom pull handle to swipe up -->
-        <div class="shade-pull-handle" id="shadePullHandle">
+        <!-- Bottom pull handle to swipe up and close -->
+        <div class="shade-pull-handle" id="shadePullHandle" title="Drag up to close shutter">
           <div class="shade-handle-bar"></div>
         </div>
+
       </div>
     </div>
 

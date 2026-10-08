@@ -10,7 +10,8 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "tsc --outDir dist && node setup-links.js && node -e \"require('fs').cpSync('apps/web-admin/public', 'public', {recursive: true})\"",
+    "build": "tsc --outDir dist && node setup-links.js && node scripts/sync-assets.js",
+    "sync:assets": "node scripts/sync-assets.js",
     "test": "node --test packages/**/__tests__/*.test.js services/**/__tests__/*.test.js",
     "dev:admin": "npm run dev --workspace=apps/web-admin",
     "dev:mobile": "npm run start --workspace=apps/mobile",

@@ -1,0 +1,186 @@
+/**
+ * ============================================================================
+ * MUMBAI LOCAL NAVIGATION - DESIGN SYSTEM TOKENS
+ * Single Source of Truth for all Colors, Strokes, Typography & Components.
+ * ============================================================================
+ * 
+ * To customize any part of the application:
+ * 1. Find the token below
+ * 2. Update its value
+ * 3. The entire application updates automatically!
+ */
+
+:root {
+  /* ==========================================================================
+     1. TYPOGRAPHY & TIMING
+     ========================================================================== */
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease-out;
+  --transition-bounce: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ==========================================================================
+     2. GLOBAL ACCENT COLORS
+     ========================================================================== */
+  --accent-purple-light: #C084FC;
+  --accent-purple: #8B5CF6;
+  --accent-purple-deep: #7C3AED;
+  --accent-purple-glow: rgba(168, 85, 247, 0.45);
+  --accent-purple-subtle: rgba(139, 92, 246, 0.15);
+
+  --accent-yellow-tag: #FFE600; /* Crisp yellow for From: and To: labels */
+  --accent-green-live: #10B981;  /* Real-time active train indicator */
+  --accent-orange-delay: #F59E0B; /* Train delay indicator */
+  --accent-red-alert: #EF4444;   /* Severe warning / cancel icon */
+  --accent-cyan-ac: #06B6D4;     /* AC Local indicator */
+}
+
+/* ============================================================================
+   NIGHT THEME (Default / Black & Deep Purple Glass)
+   ============================================================================ */
+body.theme-night {
+  /* Surface & Backgrounds */
+  --bg-page: #23242A;
+  --bg-shell: #000000;
+  --bg-card: #0F0E17;
+  --bg-card-elevated: #161526;
+  --bg-input: #121022;
+  --bg-chip: #18162B;
+  --bg-chip-active: #8B5CF6;
+
+  /* Global Borders & Strokes */
+  --border-subtle: #24213D;
+  --border-focus: #A855F7;
+  --border-input: #2E294E;
+
+  /* Typography Colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-note: #D8B4FE;
+
+  /* Shadows */
+  --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 25px rgba(168, 85, 247, 0.35);
+  --shadow-chip: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  /* ==========================================================================
+     COMPONENT: JOURNEY SEARCH BOX (FROM / TO TABS)
+     ========================================================================== */
+  --search-box-radius: 18px;
+  --search-box-height: 50px;
+  --search-box-shadow: 0 3px 16px rgba(0, 0, 0, 0.35);
+
+  /* Unactive Tab Tokens */
+  --search-tab-bg-unactive: #111116;
+  --search-tab-stroke-unactive: #444452;       /* Crisp dark gray stroke */
+  --search-tab-stroke-unactive-hover: #555566; /* Subtle hover brighten */
+  --search-tab-icon-unactive: #555562;
+
+  /* Active Tab Tokens */
+  --search-tab-bg-active: #2E1562;
+  --search-tab-stroke-active: #C084FC;         /* Vivid purple stroke */
+  --search-tab-icon-active: #A78BFA;
+  --search-tab-glow-active: 0 0 14px rgba(168, 85, 247, 0.25);
+
+  /* Divider Tokens */
+  --search-divider-stroke: #444452;
+  --search-divider-stroke-active: #C084FC;
+
+  /* Location Pin Pill */
+  --locate-pill-bg: #8438FF;
+  --locate-pill-bg-hover: #7328F0;
+  --locate-pill-shadow: 0 2px 8px rgba(132, 56, 255, 0.4);
+
+  /* ==========================================================================
+     COMPONENT: YOU ARE HERE BADGE (CURRENT STATION)
+     ========================================================================== */
+  --badge-you-are-here-bg: rgba(234, 179, 8, 0.16);
+  --badge-you-are-here-border: rgba(234, 179, 8, 0.45);
+  --badge-you-are-here-color: #FACC15;
+
+  /* ==========================================================================
+     COMPONENT: LINE CHIPS & FILTERS
+     ========================================================================== */
+  --chip-bg-default: #14131D;
+  --chip-stroke-default: rgba(255, 255, 255, 0.12);
+  --chip-text-default: #D1D5DB;
+  --chip-bg-active: #8B5CF6;
+  --chip-stroke-active: rgba(255, 255, 255, 0.35);
+  --chip-text-active: #FFFFFF;
+}
+
+/* ============================================================================
+   DAY THEME (White & Vibrant Purple)
+   ============================================================================ */
+body.theme-day {
+  /* Surface & Backgrounds */
+  --bg-page: #E5E7EB;
+  --bg-shell: #FFFFFF;
+  --bg-card: #F9F8FE;
+  --bg-card-elevated: #F3F0FF;
+  --bg-input: #F3F0FE;
+  --bg-chip: #EDE9FE;
+  --bg-chip-active: #7C3AED;
+
+  /* Global Borders & Strokes */
+  --border-subtle: #E2E8F0;
+  --border-focus: #7C3AED;
+  --border-input: #DDD6FE;
+
+  /* Typography Colors */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --text-note: #7C3AED;
+
+  /* Shadows */
+  --shadow-card: 0 10px 25px -5px rgba(124, 58, 237, 0.1);
+  --shadow-glow: 0 4px 20px rgba(124, 58, 237, 0.2);
+  --shadow-chip: 0 2px 8px rgba(124, 58, 237, 0.08);
+
+  /* ==========================================================================
+     COMPONENT: JOURNEY SEARCH BOX (FROM / TO TABS) - DAY THEME
+     ========================================================================== */
+  --search-box-radius: 18px;
+  --search-box-height: 50px;
+  --search-box-shadow: 0 2px 10px rgba(124, 58, 237, 0.08);
+
+  /* Unactive Tab Tokens */
+  --search-tab-bg-unactive: #FAF8FF;
+  --search-tab-stroke-unactive: #D1D5DB;       /* Neutral light gray stroke */
+  --search-tab-stroke-unactive-hover: #9CA3AF;
+  --search-tab-icon-unactive: #9CA3AF;
+
+  /* Active Tab Tokens */
+  --search-tab-bg-active: #EDE9FE;
+  --search-tab-stroke-active: #7C3AED;         /* Deep purple stroke */
+  --search-tab-icon-active: #7C3AED;
+  --search-tab-glow-active: 0 0 12px rgba(124, 58, 237, 0.2);
+
+  /* Divider Tokens */
+  --search-divider-stroke: #D1D5DB;
+  --search-divider-stroke-active: #7C3AED;
+
+  /* Location Pin Pill */
+  --locate-pill-bg: #7C3AED;
+  --locate-pill-bg-hover: #6D28D9;
+  --locate-pill-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+
+  /* ==========================================================================
+     COMPONENT: YOU ARE HERE BADGE (DAY THEME)
+     ========================================================================== */
+  --badge-you-are-here-bg: #FEF9C3;
+  --badge-you-are-here-border: #FACC15;
+  --badge-you-are-here-color: #854D0E;
+
+  /* ==========================================================================
+     COMPONENT: LINE CHIPS & FILTERS - DAY THEME
+     ========================================================================== */
+  --chip-bg-default: #F1F0F7;
+  --chip-stroke-default: #DDD6FE;
+  --chip-text-default: #4B5563;
+  --chip-bg-active: #7C3AED;
+  --chip-stroke-active: rgba(255, 255, 255, 0.4);
+  --chip-text-active: #FFFFFF;
+}

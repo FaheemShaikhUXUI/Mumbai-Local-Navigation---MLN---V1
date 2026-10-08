@@ -2226,9 +2226,11 @@
     {
       "id": "stn_csmt",
       "station_code": "CSMT",
-      "station_name": "Chhatrapati Shivaji Maharaj Terminus",
-      "normalized_name": "chhatrapatishivajimaharajterminus",
+      "station_name": "CSMT",
+      "normalized_name": "csmt",
       "aliases": [
+        "CSMT",
+        "Chhatrapati Shivaji Terminus",
         "VT",
         "CST",
         "CSMT",

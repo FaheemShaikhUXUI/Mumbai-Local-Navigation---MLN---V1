@@ -3,12 +3,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { SyncEngine } from '@mumbai-timetable/sync-engine';
 import { DatabaseManager } from '@mumbai-timetable/database';
-import { createStorageProviderFromEnv, CrowdEngine } from '@mumbai-timetable/shared';
+import { createStorageProviderFromEnv, CrowdEngine, DelayFusionEngine } from '@mumbai-timetable/shared';
 import { StationSearchEngine, TrainSearchEngine, LineExplorer } from '@mumbai-timetable/search';
 
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const syncEngine = new SyncEngine();
 const crowdEngine = new CrowdEngine();
+const delayFusionEngine = new DelayFusionEngine();
 
 let cachedDb: DatabaseManager | null = null;
 let cachedVersion: string | null = null;
@@ -273,8 +274,10 @@ const server = http.createServer(async (req, res) => {
                 ...report,
                 updatedAt: Date.now()
               });
+              delayFusionEngine.recordActiveCrowdReport(trainKey, report.delayMinutes || 15);
             } else {
               crowdReportsMap.delete(trainKey);
+              delayFusionEngine.clearActiveCrowdReport(trainKey);
             }
           }
           res.setHeader('Content-Type', 'application/json');
@@ -334,6 +337,7 @@ const server = http.createServer(async (req, res) => {
               speed: obs.speed,
               updatedAt: Date.now()
             });
+            delayFusionEngine.recordActiveCrowdReport(obs.trainKey, obs.delayMinutes || 0);
           }
 
           res.setHeader('Content-Type', 'application/json');
@@ -358,6 +362,96 @@ const server = http.createServer(async (req, res) => {
         freshnessWindowMinutes: 15,
         minContributorsForHighConfidence: 7
       }));
+      return;
+    }
+
+    // 10.7. API: /api/delay/estimate (6-Layer Smart Train Delay & Estimated Reach Time Engine)
+    if (pathname === '/api/delay/estimate' && req.method === 'GET') {
+      const trainKey = parsedUrl.searchParams.get('trainKey') || 'UNKNOWN';
+      const trainId = parsedUrl.searchParams.get('trainId') || undefined;
+      const trainNumber = parsedUrl.searchParams.get('trainNumber') || undefined;
+      const departureTime = parsedUrl.searchParams.get('departureTime') || '10:00:00';
+      const scheduledArrivalTime = parsedUrl.searchParams.get('scheduledArrivalTime') || undefined;
+      const direction = (parsedUrl.searchParams.get('direction') as 'UP' | 'DN') || 'DN';
+      const corridor = parsedUrl.searchParams.get('corridor') || 'WR_SUBURBAN';
+      const lineType = (parsedUrl.searchParams.get('lineType') as 'SLOW' | 'FAST') || 'SLOW';
+      const isAc = parsedUrl.searchParams.get('isAc') === 'true';
+
+      const delayResult = delayFusionEngine.evaluateTrain({
+        trainKey,
+        trainId,
+        trainNumber,
+        departureTime,
+        scheduledArrivalTime,
+        direction,
+        corridor,
+        lineType,
+        isAc,
+      });
+
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = 200;
+      res.end(JSON.stringify(delayResult));
+      return;
+    }
+
+    // 10.8. API: /api/incidents (Layer 3 Incident Snags Management)
+    if (pathname === '/api/incidents' && req.method === 'GET') {
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = 200;
+      res.end(JSON.stringify({ incidents: delayFusionEngine.getActiveIncidents() }));
+      return;
+    }
+
+    if (pathname === '/api/incidents' && req.method === 'POST') {
+      let bodyStr = '';
+      req.on('data', (chunk) => { bodyStr += chunk; });
+      req.on('end', () => {
+        try {
+          const inc = JSON.parse(bodyStr || '{}');
+          if (inc && inc.id && inc.delayMinutes !== undefined) {
+            delayFusionEngine.addIncident({
+              ...inc,
+              startTime: inc.startTime || Date.now(),
+              endTime: inc.endTime || (Date.now() + 3600000),
+              isActive: inc.isActive !== false,
+            });
+            res.setHeader('Content-Type', 'application/json');
+            res.statusCode = 200;
+            res.end(JSON.stringify({ success: true, count: delayFusionEngine.getActiveIncidents().length }));
+          } else {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: 'Missing required incident fields (id, delayMinutes)' }));
+          }
+        } catch (e: any) {
+          res.statusCode = 400;
+          res.end(JSON.stringify({ error: 'Invalid JSON' }));
+        }
+      });
+      return;
+    }
+
+    // 10.9. API: /api/telemetry/passive (Layer 5 Zero-Touch Passive Velocity/GPS Ingestion)
+    if (pathname === '/api/telemetry/passive' && req.method === 'POST') {
+      let bodyStr = '';
+      req.on('data', (chunk) => { bodyStr += chunk; });
+      req.on('end', () => {
+        try {
+          const ping = JSON.parse(bodyStr || '{}');
+          if (ping && ping.detectedTrainKey && ping.speed) {
+            delayFusionEngine.recordPassiveTelemetry(ping, ping.detectedDelayMinutes || 0);
+            res.setHeader('Content-Type', 'application/json');
+            res.statusCode = 200;
+            res.end(JSON.stringify({ success: true, trainKey: ping.detectedTrainKey }));
+          } else {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: 'Missing required telemetry fields' }));
+          }
+        } catch (e: any) {
+          res.statusCode = 400;
+          res.end(JSON.stringify({ error: 'Invalid JSON' }));
+        }
+      });
       return;
     }
 

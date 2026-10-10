@@ -101,12 +101,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     getTrainDelay(trainItem) {
       if (!trainItem) return 0;
+      if (typeof SmartDelayEngine !== 'undefined') {
+        return SmartDelayEngine.getTrainDelay(trainItem);
+      }
       const key = this.getTrainKey(trainItem);
       const rep = this.reports[key];
       if (rep && rep.isActive && rep.delayMinutes > 0) {
         return rep.delayMinutes;
       }
-      return 0; // Default is strictly 0 (On-Time) as requested!
+      return 0;
     },
 
     isUserInTrain(trainItem) {
@@ -232,6 +235,319 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   CrowdLiveEngine.init();
+
+  // ==============================================================================
+  // 1.5.5. 6-LAYER SMART TRAIN DELAY & ESTIMATED REACH TIME ENGINE
+  // Layer 1: Timetable Base (Scheduled Timetable Baseline)
+  // Layer 2: Diurnal Rush-Hour Congestion (Morning/Evening Organic Peak Dwell)
+  // Layer 3: Official Incident & Snag Ingestion (Corridor signal & OHE alerts)
+  // Layer 4: Corridor Rail ABS Queue Domino Ripple (3-minute headway propagation)
+  // Layer 5: Passive Zero-Touch GPS Telemetry (28-115 km/h train rail matching)
+  // Layer 6: Active Commuter Beacon Feedback (Direct toggle with trust priority)
+  // ==============================================================================
+  const SmartDelayEngine = {
+    incidents: [],
+    passiveTelemetryCache: new Map(), // trainKey -> { delayMinutes, timestamp }
+    dominoDelaysCache: new Map(), // trainKey -> delayMinutes
+    serverEstimatesCache: new Map(), // trainKey -> { result, timestamp }
+    inFlightEstimates: new Set(),
+    passiveGpsWatchId: null,
+    lastPassivePingTime: 0,
+
+    init() {
+      this.fetchActiveIncidents();
+      this.initPassiveZeroTouchGps();
+
+      // Periodically refresh incident snags every 60 seconds
+      setInterval(() => {
+        this.fetchActiveIncidents();
+      }, 60000);
+    },
+
+    // LAYER 2: Diurnal Rush-Hour Peak Dwell Delay Model
+    calculateDiurnalDelay(departureTime, direction = 'DN', corridor = 'WR_SUBURBAN', lineType = 'SLOW') {
+      const parts = (departureTime || '10:00:00').split(':');
+      const hours = parseInt(parts[0], 10) || 0;
+      const minutes = parseInt(parts[1], 10) || 0;
+      const totalMinutes = hours * 60 + minutes;
+
+      // Morning Peak (08:30 - 11:30): Southbound (UP) heavy crush
+      const isMorningPeak = totalMinutes >= 510 && totalMinutes <= 690;
+      // Evening Peak (17:30 - 21:00): Northbound (DN) heavy crush
+      const isEveningPeak = totalMinutes >= 1050 && totalMinutes <= 1260;
+
+      let delay = 0;
+      if (isMorningPeak) {
+        if (direction === 'UP') {
+          delay = lineType === 'FAST' ? 3 : 4;
+        } else {
+          delay = 1;
+        }
+      } else if (isEveningPeak) {
+        if (direction === 'DN') {
+          delay = lineType === 'FAST' ? 4 : 5;
+        } else {
+          delay = 1;
+        }
+      }
+      return delay;
+    },
+
+    // LAYER 3: Incident Snags Engine
+    async fetchActiveIncidents() {
+      try {
+        const res = await fetch('/api/incidents');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.incidents)) {
+            this.incidents = data.incidents;
+          }
+        }
+      } catch (e) {}
+    },
+
+    getIncidentDelayForTrain(trainItem) {
+      if (!this.incidents || this.incidents.length === 0) return 0;
+      const corridor = this.getCorridorKey(trainItem);
+      const now = Date.now();
+
+      for (const inc of this.incidents) {
+        if (!inc.isActive) continue;
+        if (inc.startTime && now < inc.startTime) continue;
+        if (inc.endTime && now > inc.endTime) continue;
+        if (inc.corridor && inc.corridor !== 'ALL' && inc.corridor !== corridor) continue;
+        return inc.delayMinutes || 0;
+      }
+      return 0;
+    },
+
+    // LAYER 4: ABS Headway Domino Ripple Propagation across train sequence
+    applyCorridorDomino(trains) {
+      if (!trains || trains.length < 2) return;
+      const queues = new Map();
+
+      trains.forEach(t => {
+        const corridor = this.getCorridorKey(t);
+        const isFast = isTrainFast(t);
+        const lineType = isFast ? 'FAST' : 'SLOW';
+        const dir = t.route?.direction || 'DN';
+        const qKey = `${corridor}_${lineType}_${dir}`;
+        if (!queues.has(qKey)) queues.set(qKey, []);
+        queues.get(qKey).push(t);
+      });
+
+      queues.forEach(q => {
+        // Sort by suburban service day seconds
+        q.sort((a, b) => {
+          const sa = getServiceDaySeconds(a.departureTime || a.fromStop?.departure_time || '00:00:00');
+          const sb = getServiceDaySeconds(b.departureTime || b.fromStop?.departure_time || '00:00:00');
+          return sa - sb;
+        });
+
+        const H_MIN_SEC = 180; // 3.0 min ABS headway in seconds
+        let prevActualDepSec = 0;
+
+        for (let i = 0; i < q.length; i++) {
+          const train = q[i];
+          const trainKey = CrowdLiveEngine.getTrainKey(train);
+          const schedSec = getServiceDaySeconds(train.departureTime || train.fromStop?.departure_time || '00:00:00');
+
+          const activeDelay = CrowdLiveEngine.reports[trainKey]?.isActive ? (CrowdLiveEngine.reports[trainKey].delayMinutes || 0) : 0;
+          const incDelay = this.getIncidentDelayForTrain(train);
+          const passDelay = this.passiveTelemetryCache.get(trainKey)?.delayMinutes || 0;
+          const diurnDelay = this.calculateDiurnalDelay(train.departureTime || train.fromStop?.departure_time);
+
+          let initialDelay = Math.max(activeDelay, incDelay, passDelay, diurnDelay);
+          let actualDepSec = schedSec + initialDelay * 60;
+
+          if (i > 0) {
+            const minAllowedDepSec = prevActualDepSec + H_MIN_SEC;
+            if (actualDepSec < minAllowedDepSec) {
+              const dominoDelayMin = Math.ceil((minAllowedDepSec - schedSec) / 60);
+              if (dominoDelayMin > initialDelay) {
+                this.dominoDelaysCache.set(trainKey, dominoDelayMin);
+                actualDepSec = schedSec + dominoDelayMin * 60;
+              }
+            }
+          }
+          prevActualDepSec = actualDepSec;
+        }
+      });
+    },
+
+    // LAYER 5: Passive Zero-Touch GPS Telemetry
+    initPassiveZeroTouchGps() {
+      if (typeof navigator === 'undefined' || !('geolocation' in navigator)) return;
+      try {
+        this.passiveGpsWatchId = navigator.geolocation.watchPosition(
+          (pos) => {
+            this.handlePassivePosition(pos);
+          },
+          () => {},
+          { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
+        );
+      } catch (e) {}
+    },
+
+    handlePassivePosition(pos) {
+      if (!pos || !pos.coords) return;
+      const { latitude, longitude, speed } = pos.coords;
+      const now = Date.now();
+
+      // Throttle pings to once every 15 seconds
+      if (now - this.lastPassivePingTime < 15000) return;
+
+      const speedKmh = (speed || 0) * 3.6;
+      // Filter: speed >= 25 km/h and inside Mumbai suburban railway bounding box
+      const isInMumbaiRail = latitude >= 18.89 && latitude <= 19.55 && longitude >= 72.75 && longitude <= 73.20;
+
+      if (speedKmh >= 25 && isInMumbaiRail) {
+        this.lastPassivePingTime = now;
+        fetch('/api/telemetry/passive', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            latitude,
+            longitude,
+            speed: speedKmh,
+            heading: pos.coords.heading || 0,
+            timestamp: now,
+            detectedTrainKey: CrowdLiveEngine.activeTrackingKey || 'PASSIVE_AUTO_CORRIDOR'
+          })
+        }).catch(() => {});
+      }
+    },
+
+    getCorridorKey(trainItem) {
+      const lineName = (trainItem?.line?.name || '').toLowerCase();
+      const orig = (trainItem?.originStation?.station_name || '').toLowerCase();
+      const dest = (trainItem?.destinationStation?.station_name || '').toLowerCase();
+
+      if (lineName.includes('harbour') || orig.includes('panvel') || dest.includes('panvel')) {
+        return 'CR_HARBOUR';
+      }
+      if (lineName.includes('central') || orig.includes('kalyan') || dest.includes('kalyan') || orig.includes('thane') || dest.includes('thane') || orig.includes('csmt') || dest.includes('csmt')) {
+        return 'CR_MAIN';
+      }
+      return 'WR_SUBURBAN';
+    },
+
+    // 6-LAYER UNIFIED DELAY & ESTIMATED REACH TIME ARBITRATION
+    getTrainDelayResult(trainItem) {
+      if (!trainItem) {
+        return {
+          delayMinutes: 0,
+          estimatedReachTime: '00:00:00',
+          confidence: 'SCHEDULED_ONLY',
+          primarySource: 'LAYER1_TIMETABLE',
+          breakdown: { layer1Timetable: 0, layer2Diurnal: 0, layer3Incidents: 0, layer4Domino: 0, layer5PassiveTelemetry: 0, layer6ActiveCommuter: 0 }
+        };
+      }
+
+      const key = CrowdLiveEngine.getTrainKey(trainItem);
+      const depTime = trainItem.departureTime || trainItem.fromStop?.departure_time || '10:00:00';
+      const isFast = isTrainFast(trainItem);
+      const lineType = isFast ? 'FAST' : 'SLOW';
+      const direction = trainItem.route?.direction || 'DN';
+      const corridor = this.getCorridorKey(trainItem);
+
+      // Layer 1: Timetable Base
+      const l1Delay = 0;
+
+      // Layer 2: Diurnal congestion
+      const l2Delay = this.calculateDiurnalDelay(depTime, direction, corridor, lineType);
+
+      // Layer 3: Incident snags
+      const l3Delay = this.getIncidentDelayForTrain(trainItem);
+
+      // Layer 4: Domino queue
+      const l4Delay = this.dominoDelaysCache.get(key) || 0;
+
+      // Layer 5: Passive telemetry
+      const l5Delay = this.passiveTelemetryCache.get(key)?.delayMinutes || 0;
+
+      // Layer 6: Active commuter feedback
+      const activeRep = CrowdLiveEngine.reports[key];
+      const l6Active = Boolean(activeRep && activeRep.isActive && activeRep.delayMinutes !== undefined);
+      const l6Delay = l6Active ? activeRep.delayMinutes : 0;
+
+      // Priority arbitration: Layer 6 > Layer 5 > Layer 4 > Layer 3 > Layer 2 > Layer 1
+      let finalDelay = 0;
+      let primarySource = 'LAYER1_TIMETABLE';
+      let confidence = 'SCHEDULED_ONLY';
+
+      if (l6Active) {
+        finalDelay = l6Delay;
+        primarySource = 'LAYER6_COMMUTER_BEACON';
+        confidence = 'CONFIRMED_LIVE';
+      } else if (l5Delay > 0) {
+        finalDelay = l5Delay;
+        primarySource = 'LAYER5_PASSIVE_GPS';
+        confidence = 'HIGH';
+      } else if (l4Delay > 0) {
+        finalDelay = l4Delay;
+        primarySource = 'LAYER4_DOMINO_QUEUE';
+        confidence = 'MEDIUM';
+      } else if (l3Delay > 0) {
+        finalDelay = l3Delay;
+        primarySource = 'LAYER3_OPERATIONAL_ALERT';
+        confidence = 'MEDIUM';
+      } else if (l2Delay > 0) {
+        finalDelay = l2Delay;
+        primarySource = 'LAYER2_DIURNAL_RUSH_HOUR';
+        confidence = 'ESTIMATED_STATISTICAL';
+      } else {
+        finalDelay = 0;
+        primarySource = 'LAYER1_TIMETABLE';
+        confidence = 'SCHEDULED_ONLY';
+      }
+
+      // Calculate Estimated Reach Time (ETA = Scheduled Time + Delay)
+      const depSec = parseTimeToSeconds(depTime);
+      const etaSec = (depSec + finalDelay * 60) % 86400;
+      const etaHh = Math.floor(etaSec / 3600);
+      const etaMm = Math.floor((etaSec % 3600) / 60);
+      const etaSs = etaSec % 60;
+      const etaTimeStr = `${String(etaHh).padStart(2, '0')}:${String(etaMm).padStart(2, '0')}:${String(etaSs).padStart(2, '0')}`;
+
+      // Asynchronous background server synchronization
+      if (!this.serverEstimatesCache.has(key) && !this.inFlightEstimates.has(key)) {
+        this.inFlightEstimates.add(key);
+        fetch(`/api/delay/estimate?trainKey=${encodeURIComponent(key)}&departureTime=${encodeURIComponent(depTime)}&direction=${direction}&corridor=${corridor}&lineType=${lineType}&isAc=${isTrainAc(trainItem)}`)
+          .then(res => res.json())
+          .then(serverData => {
+            if (serverData && serverData.finalDelayMinutes !== undefined) {
+              this.serverEstimatesCache.set(key, { result: serverData, timestamp: Date.now() });
+            }
+          })
+          .catch(() => {})
+          .finally(() => {
+            this.inFlightEstimates.delete(key);
+          });
+      }
+
+      return {
+        delayMinutes: finalDelay,
+        estimatedReachTime: etaTimeStr,
+        confidence,
+        primarySource,
+        breakdown: {
+          layer1Timetable: l1Delay,
+          layer2Diurnal: l2Delay,
+          layer3Incidents: l3Delay,
+          layer4Domino: l4Delay,
+          layer5PassiveTelemetry: l5Delay,
+          layer6ActiveCommuter: l6Delay
+        }
+      };
+    },
+
+    getTrainDelay(trainItem) {
+      return this.getTrainDelayResult(trainItem).delayMinutes;
+    }
+  };
+
+  SmartDelayEngine.init();
 
   // ==========================================
   // 1.6. DYNAMIC GPS-BASED TRAIN CROWD STRENGTH ENGINE
@@ -2843,7 +3159,9 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < trains.length; i++) {
       const rawTime = trains[i].departureTime || trains[i].fromStop?.departure_time;
       const tSec = getServiceDaySeconds(rawTime);
-      const diffSec = tSec - currentServiceSec;
+      const delayMin = SmartDelayEngine.getTrainDelay(trains[i]);
+      const effectiveSec = tSec + delayMin * 60;
+      const diffSec = effectiveSec - currentServiceSec;
 
       // Exact match / arrival window (between -59s and 0s): Train is Arrived
       if (diffSec <= 0 && diffSec >= -59 && arrivedIdx === -1) {
@@ -2872,11 +3190,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return { arrivedIdx, arrivingSoonIdx, nextUpcomingIdx, activeIdx, scrollIdx: activeIdx };
   }
 
-  // Real-time Train Delay Detection Logic (Phase 1 & 2 Crowdsourced Live Tracking)
-  // By default, every train is on-time (delay = 0). ONLY when someone toggles ON is late info displayed!
+  // Real-time Train Delay Detection Logic (6-Layer Smart Architecture)
   function getTrainDelayMinutes(item, idx, hasArrivalAnimation) {
     if (!item) return 0;
-    return CrowdLiveEngine.getTrainDelay(item);
+    return SmartDelayEngine.getTrainDelay(item);
   }
 
   function getFilteredTrains() {
@@ -2910,7 +3227,9 @@ document.addEventListener('DOMContentLoaded', () => {
           const item = sortedCurrentTrains[idx];
           const rawTime = item.departureTime || item.fromStop?.departure_time;
           const tSec = getServiceDaySeconds(rawTime);
-          const diffSec = tSec - currentSec;
+          const delayMin = SmartDelayEngine.getTrainDelay(item);
+          const effectiveSec = tSec + delayMin * 60;
+          const diffSec = effectiveSec - currentSec;
           if (diffSec > 0 && diffSec <= 900) {
             needsFullRefresh = true;
           }
@@ -3066,8 +3385,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const { hhmm, ampm } = formatTime12(rawTime);
     const trainSeconds = parseTimeToSeconds(rawTime);
     const currentSeconds = getActiveCurrentSeconds();
-    const diffSec = getTimeDifferenceSeconds(trainSeconds, currentSeconds);
     const trainServiceSec = getServiceDaySeconds(trainSeconds);
+
+    // 6-Layer Real-time Delay & Estimated Reach Time Detection
+    const delayResult = SmartDelayEngine.getTrainDelayResult(item);
+    const delayMinutes = delayResult.delayMinutes;
+    const hasDelay = delayMinutes > 0;
+    const effectiveDepSec = trainServiceSec + delayMinutes * 60;
+    const diffSec = effectiveDepSec - getServiceDaySeconds(currentSeconds);
 
     // Arrival Status:
     // 1. Frameless: without frame, only Dot + MM:SS time or Dot + Arrived
@@ -3086,7 +3411,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let arrivalBadgeHtml = '';
     if (isArrived) {
       arrivalBadgeHtml = `
-        <div class="arrival-pill-container arrival-arrived" data-dep-sec="${trainServiceSec}">
+        <div class="arrival-pill-container arrival-arrived" data-dep-sec="${effectiveDepSec}">
           <span class="arrival-pill-dot dot-green"></span>
           <span class="arrival-pill-text">Arrived</span>
         </div>
@@ -3096,7 +3421,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const remS = diffSec % 60;
       const mmss = `${String(remM).padStart(2, '0')}:${String(remS).padStart(2, '0')}`;
       arrivalBadgeHtml = `
-        <div class="arrival-pill-container arrival-arriving" data-dep-sec="${trainServiceSec}">
+        <div class="arrival-pill-container arrival-arriving" data-dep-sec="${effectiveDepSec}">
           <span class="arrival-pill-dot dot-yellow"></span>
           <span class="arrival-pill-text arrival-pill-time">${mmss}</span>
         </div>
@@ -3133,10 +3458,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const pfStr = `PF: ${String(pf).padStart(2, '0')}`;
 
-    // 5. Real-time Delay Detection (Late by 15 mnts in orange, small text below Platform)
-    const delayMinutes = getTrainDelayMinutes(item, idx, isArrived || isArriving);
-    const hasDelay = delayMinutes > 0;
-    const delayText = `Late by ${delayMinutes} mnts`;
+    // 5. Real-time Delay Detection & Estimated Reach Time Display
+    let delayText = '';
+    if (hasDelay) {
+      const eta12 = formatTime12(delayResult.estimatedReachTime);
+      delayText = `Late by ${delayMinutes}m • Exp ${eta12.hhmm} ${eta12.ampm}`;
+    }
     const speedColorClass = isFast ? 'color-fast' : 'color-slow';
 
     let arrivalClass = '';
@@ -3221,6 +3548,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Always sort trains in Suburban Service Day sequence (03:30 AM through late night 02:30 AM)
     const sortedTrains = sortTrainsByServiceDay(trains);
+    SmartDelayEngine.applyCorridorDomino(sortedTrains);
     sortedCurrentTrains = sortedTrains;
 
     const currentMinutes = getActiveCurrentMinutes();
@@ -5242,9 +5570,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const isSkip = (stop.doesStop === false);
 
-      // 12-hour AM/PM Time
+      // 12-hour AM/PM Estimated Reach Time & Scheduled Time
       const stopRaw = stop.departure_time || stop.arrival_time || '05:45:00';
-      const stopTime = formatTime12(stopRaw);
+      const stopSec = parseTimeToSeconds(stopRaw);
+      const estReachSec = (stopSec + delayMinutes * 60) % 86400;
+      const estHh = Math.floor(estReachSec / 3600);
+      const estMm = Math.floor((estReachSec % 3600) / 60);
+      const estRaw = `${String(estHh).padStart(2, '0')}:${String(estMm).padStart(2, '0')}:00`;
+      const stopTime = formatTime12(delayMinutes > 0 ? estRaw : stopRaw);
+      const schedTime = formatTime12(stopRaw);
 
       // Platform: populated for stops
       const pfStr = getStopPlatform(stop, isMajor, isFast, trainItem, idx);
@@ -5254,7 +5588,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="stop-time">
             <span class="stop-time-val ${isSkip ? 'is-skipped' : ''}">${stopTime.hhmm}</span>
             <span class="stop-time-ampm ${isSkip ? 'is-skipped' : ''}">${stopTime.ampm}</span>
-            ${(!isSkip && delayMinutes > 0) ? `<span class="stop-delay-badge">+${delayMinutes}m</span>` : ''}
+            ${(!isSkip && delayMinutes > 0) ? `<span class="stop-delay-badge" title="Scheduled ${schedTime.hhmm}">+${delayMinutes}m</span>` : ''}
           </div>
 
           <div class="stop-track">

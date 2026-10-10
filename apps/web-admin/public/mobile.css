@@ -3515,6 +3515,29 @@ body.theme-day .tile-delay-text {
   text-shadow: none;
 }
 
+/* Stop Delay Badge on Screen 6 Journey Stops List */
+.stop-delay-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #FF6600;
+  background: rgba(255, 102, 0, 0.16);
+  border: 1px solid rgba(255, 102, 0, 0.45);
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 6px rgba(255, 102, 0, 0.3);
+}
+
+body.theme-day .stop-delay-badge {
+  color: #EA580C;
+  background: rgba(234, 88, 12, 0.12);
+  border-color: rgba(234, 88, 12, 0.4);
+  text-shadow: none;
+}
+
 /* ==========================================================================
    DYNAMIC CROWD STRENGTH FEATURE (Image Match)
    - Activated via 5-second long-press on any train schedule tile

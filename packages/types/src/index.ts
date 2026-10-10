@@ -393,3 +393,76 @@ export function formatCrowdDisplay(rawScore: number): {
   return { displayPercentage, visualPercentage, color };
 }
 
+/**
+ * ==============================================================================
+ * 6-LAYER SMART DELAY & ESTIMATED REACH TIME ARCHITECTURE MODELS
+ * ==============================================================================
+ */
+
+export type DelaySource = 
+  | 'SCHEDULED'             // Layer 1: Official Timetable Schedule
+  | 'DIURNAL_STATISTICAL'   // Layer 2: Time-of-day peak congestion model
+  | 'INCIDENT_ALERT'        // Layer 3: Official incident / technical snag ingestion
+  | 'CORRIDOR_DOMINO'       // Layer 4: Automatic Block Signaling physics queue cascade
+  | 'PASSIVE_GPS'           // Layer 5: Zero-touch speed & track polygon snap detection
+  | 'ACTIVE_CROWD';         // Layer 6: Commuter toggle report with trust scoring
+
+export type DelayConfidence = 
+  | 'SCHEDULED'
+  | 'PREDICTED_LOW'
+  | 'PREDICTED_HIGH'
+  | 'CORROBORATED'
+  | 'REALTIME_VERIFIED';
+
+export interface CorridorIncident {
+  id: string;
+  corridor: string;                // e.g. 'WR_SUBURBAN', 'CR_MAIN', 'CR_HARBOUR'
+  sectionFromStationId?: string;   // e.g. 'stn_ba' (Bandra)
+  sectionToStationId?: string;     // e.g. 'stn_adh' (Andheri)
+  direction: 'UP' | 'DN' | 'BOTH';
+  trackType: 'SLOW' | 'FAST' | 'ALL';
+  delayMinutes: number;            // e.g. 15
+  title: string;
+  description?: string;
+  startTime: number;               // Epoch ms
+  endTime: number;                 // Epoch ms
+  isActive: boolean;
+}
+
+export interface PassiveTelemetryPing {
+  contributorId: string;
+  latitude: number;
+  longitude: number;
+  speed: number;                   // In km/h
+  heading?: number;
+  accuracy?: number;
+  timestamp: number;
+  lineId?: string;
+  detectedTrainKey?: string;
+}
+
+export interface LayeredDelayBreakdown {
+  l1_baseScheduled: number;        // 0
+  l2_diurnalOffset: number;        // Statistical congestion offset
+  l3_incidentOffset: number;       // Official snag offset
+  l4_dominoCascaded: number;       // Train ahead queue blockage offset
+  l5_passiveGps: number;           // Autonomous GPS velocity offset
+  l6_activeCrowd: number;          // Commuter beacon reports
+}
+
+export interface TrainDelayResult {
+  trainKey: string;
+  trainId?: string;
+  trainNumber?: string;
+  delayMinutes: number;
+  source: DelaySource;
+  confidence: DelayConfidence;
+  breakdown: LayeredDelayBreakdown;
+  scheduledDeparture: string;      // HH:MM:SS
+  estimatedDeparture: string;      // HH:MM:SS with delay incorporated
+  scheduledArrival?: string;       // Terminus HH:MM:SS
+  estimatedArrival?: string;       // Terminus HH:MM:SS with delay incorporated
+  statusDescription: string;
+  updatedAt: number;
+}
+

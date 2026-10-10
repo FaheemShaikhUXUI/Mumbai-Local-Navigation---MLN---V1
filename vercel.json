@@ -13,6 +13,9 @@
     }
   ],
   "rewrites": [
+    { "source": "/api/delay/estimate", "destination": "/api/delay?endpoint=estimate" },
+    { "source": "/api/incidents", "destination": "/api/delay?endpoint=incidents" },
+    { "source": "/api/telemetry/passive", "destination": "/api/delay?endpoint=passive" },
     { "source": "/mobile", "destination": "/mobile.html" }
   ]
 }

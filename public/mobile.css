@@ -966,7 +966,8 @@ body.theme-day .journey-search-box:has(.search-row-to.tile-active) .search-row-d
 }
 
 .tile-center-extension.expanded {
-  max-height: 380px;
+  max-height: 480px;
+  overflow-y: auto;
   opacity: 1;
   border-bottom: 1px solid rgba(139, 92, 246, 0.65);
   padding: 4px 0;
@@ -3093,11 +3094,41 @@ body.theme-day .btn-time-step {
   );
 }
 
-/* Arriving tiles do NOT flash - strictly non-flashing */
+/* Arriving tiles: Highlighted with slightly more gray by 20% while showing remaining arrival time */
 .train-timetable-tile.tile-arriving {
   position: relative;
   flex-shrink: 0 !important;
   min-height: 76px !important;
+  background: #202024 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16) !important;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.train-timetable-tile.tile-arriving:hover {
+  background: #27272C !important;
+}
+
+.train-timetable-tile.tile-arriving.tile-ac {
+  background: #122852 !important;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.3) !important;
+}
+
+.train-timetable-tile.tile-arriving.tile-ac:hover {
+  background: #183366 !important;
+}
+
+body.theme-day .train-timetable-tile.tile-arriving {
+  background: #F1F5F9 !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.12) !important;
+}
+
+body.theme-day .train-timetable-tile.tile-arriving:hover {
+  background: #E2E8F0 !important;
+}
+
+body.theme-day .train-timetable-tile.tile-arriving.tile-ac {
+  background: #E0EDFE !important;
+  border-bottom: 1px solid #93C5FD !important;
 }
 
 .train-timetable-tile.tile-arriving::after {
@@ -3484,6 +3515,177 @@ body.theme-day .tile-delay-text {
   text-shadow: none;
 }
 
+/* ==========================================================================
+   DYNAMIC CROWD STRENGTH FEATURE (Image Match)
+   - Activated via 5-second long-press on any train schedule tile
+   - Smoothly extends tile with dark card, thin bar, dynamic %, 5s auto-close
+   - Exact color grading: 05% (Blue), 25% (Green), 50% (Amber), 75% (Orange), 100%+ (Red)
+   ========================================================================== */
+
+/* 1-Second Long Press Hold Progress Indicator */
+.train-timetable-tile {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.train-timetable-tile::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, #38bdf8 0%, #22c55e 35%, #f97316 70%, #ef4444 100%);
+  opacity: 0;
+  pointer-events: none;
+  border-radius: 999px;
+  transition: opacity 0.25s ease;
+}
+
+.train-timetable-tile.is-holding::after {
+  opacity: 1;
+  animation: tileHoldCharge 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tileHoldCharge {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.train-timetable-tile.is-holding {
+  background: #09090f !important;
+}
+
+body.theme-day .train-timetable-tile.is-holding {
+  background: #F1F5F9 !important;
+}
+
+/* Ultra-Smooth Extending Crowd Drawer */
+.tile-crowd-drawer {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-top: 0;
+  transform: translateY(-4px) scale(0.985);
+  transform-origin: top center;
+  transition: max-height 0.48s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 0.42s cubic-bezier(0.16, 1, 0.3, 1), 
+              margin-top 0.48s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: max-height, opacity, margin-top, transform;
+}
+
+.train-timetable-tile.crowd-expanded .tile-crowd-drawer {
+  max-height: 48px;
+  opacity: 1;
+  margin-top: 11px;
+  transform: translateY(0) scale(1);
+}
+
+
+.tile-crowd-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 0 2px 0;
+  min-height: 20px;
+}
+
+.tile-crowd-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  transition: color 0.3s ease;
+  flex-shrink: 0;
+}
+
+.tile-crowd-track {
+  flex: 1;
+  height: 3.5px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+body.theme-day .tile-crowd-track {
+  background: rgba(15, 23, 42, 0.14);
+}
+
+.tile-crowd-fill {
+  height: 100%;
+  border-radius: 999px;
+  width: 0%;
+  max-width: 100% !important;
+  box-sizing: border-box;
+  transition: width 0.7s cubic-bezier(0.2, 0.9, 0.3, 1), 
+              background-color 0.3s ease, 
+              box-shadow 0.3s ease;
+}
+
+.tile-crowd-pct {
+  font-size: 0.76rem;
+  font-weight: 700;
+  min-width: 42px;
+  text-align: right;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.3s ease;
+  flex-shrink: 0;
+}
+
+.tile-crowd-fill.fill-extreme {
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.8), 0 0 16px rgba(220, 38, 38, 0.4);
+}
+
+.tile-crowd-empty-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 3px 0 2px 0;
+  min-height: 20px;
+}
+
+.tile-crowd-empty-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #94A3B8;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  padding: 2.5px 9px;
+  border-radius: 6px;
+  line-height: 1.35;
+  user-select: none;
+}
+
+body.theme-day .tile-crowd-empty-badge {
+  color: #64748B;
+  background: rgba(100, 116, 139, 0.1);
+  border-color: rgba(100, 116, 139, 0.22);
+}
+
+.tile-crowd-empty-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #94A3B8;
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+body.theme-day .tile-crowd-empty-dot {
+  background-color: #64748B;
+}
+
+
 /* Empty State / Loading State */
 .timetable-empty-box {
   text-align: center;
@@ -3784,22 +3986,20 @@ body.theme-day #screen-train-journey {
 
 /* Glassmorphic Top Header */
 .journey-header-glass {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: relative;
+  flex-shrink: 0;
   z-index: 50;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(8px) saturate(140%);
-  -webkit-backdrop-filter: blur(8px) saturate(140%);
-  border-bottom: none;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
 }
 
 body.theme-day .journey-header-glass {
-  background: rgba(255, 255, 255, 0.65);
-  border-bottom: none;
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* Primary Top Bar (< Train Name in Center   FAST badge) */
@@ -3846,7 +4046,7 @@ body.theme-day .btn-journey-back:hover {
 }
 
 .journey-train-name {
-  font-size: 1.08rem;
+  font-size: 1.15rem; /* Decreased by 15% */
   font-weight: 800;
   color: #FFFFFF;
   letter-spacing: -0.01em;
@@ -3860,7 +4060,7 @@ body.theme-day .journey-train-name {
 }
 
 .journey-train-meta {
-  font-size: 0.72rem;
+  font-size: 0.76rem; /* Decreased by 15% */
   font-weight: 500;
   color: #94A3B8;
   letter-spacing: 0.01em;
@@ -3878,10 +4078,10 @@ body.theme-day .journey-train-meta {
 }
 
 .journey-type-pill {
-  font-size: 0.68rem;
+  font-size: 0.72rem; /* Decreased by 15% */
   font-weight: 800;
   letter-spacing: 0.04em;
-  padding: 2px 7px;
+  padding: 2.5px 7px;
   border-radius: 6px;
   text-transform: uppercase;
   background: rgba(239, 68, 68, 0.18);
@@ -4089,11 +4289,12 @@ body.theme-day .journey-toggle-slider {
 
 /* Stops Timeline Scrollable Container */
 .journey-stops-container {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   position: relative;
   overflow-y: auto;
-  padding-top: 102px; /* Clears top header + subbar */
-  padding-bottom: 84px; /* Clears bottom return button */
+  padding-top: 14px;
+  padding-bottom: 24px;
   padding-left: 10px; /* Equal breathing space from left screen edge */
   padding-right: 10px; /* Equal breathing space from right screen edge */
   box-sizing: border-box;
@@ -4110,14 +4311,14 @@ body.theme-day .journey-toggle-slider {
 
 /* Single Stop Timeline Row */
 .journey-stop-row {
-  display: flex;
-  align-items: stretch;
-  min-height: 64px; /* Increased station spacing by 20%+ (from 52px to 64px) */
-  padding: 2px 16px;
-  border-radius: 12px;
-  box-sizing: border-box;
+  display: flex !important;
+  align-items: stretch !important;
+  min-height: 43px !important; /* Reduced by 15% (was 51px) */
+  padding: 0 16px !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
   transition: background 0.15s ease;
-  position: relative;
+  position: relative !important;
 }
 
 .journey-stop-row:hover {
@@ -4128,19 +4329,24 @@ body.theme-day .journey-stop-row:hover {
   background: rgba(0, 0, 0, 0.02);
 }
 
-/* Stop Time Column (Left) */
+/* Stop Time Column (Left) - Locked to exactly 70px to guarantee single straight track line */
 .stop-time {
-  width: 66px;
+  width: 70px !important;
+  min-width: 70px !important;
+  max-width: 70px !important;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 3px;
-  padding-right: 12px;
-  flex-shrink: 0;
+  padding-right: 12px !important;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
 }
 
 .stop-time-val {
-  font-size: 0.94rem;
+  font-size: 1.00rem; /* Decreased by 15% */
   font-weight: 700;
   color: #FFFFFF;
   letter-spacing: -0.01em;
@@ -4151,42 +4357,70 @@ body.theme-day .stop-time-val {
 }
 
 .stop-time-ampm {
-  font-size: 0.68rem;
+  font-size: 0.72rem; /* Decreased by 15% */
   font-weight: 600;
   color: #64748B;
 }
 
-/* Stop Track Column (Middle: Vertical Line + Dot directly on line) */
+/* Stop Track Column (Middle: Vertical Line + Dot directly on line) - Locked to 24px full height */
 .stop-track {
-  width: 24px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  width: 24px !important;
+  min-width: 24px !important;
+  max-width: 24px !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  align-self: stretch !important;
+  height: 100% !important;
 }
 
+/* Stop Track Line: Uncompleted Future Track is Simple Thin Gray Line with 70% opacity */
 .stop-track-line {
-  position: absolute;
-  width: 2.5px;
-  background: rgba(255, 255, 255, 0.22);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1;
+  position: absolute !important;
+  width: 2px !important;
+  background: rgba(148, 163, 184, 0.70) !important;
+  box-shadow: none;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 1 !important;
+  box-sizing: border-box !important;
 }
 
 body.theme-day .stop-track-line {
-  background: rgba(15, 23, 42, 0.16);
+  background: rgba(100, 116, 139, 0.70) !important;
+  box-shadow: none;
+}
+
+/* Completed Traveled Track Line behind the capsule: Full Solid Vibrant Purple without breaks */
+.stop-track-line.is-completed-track {
+  background: #A855F7 !important;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.75) !important;
+}
+
+body.theme-day .stop-track-line.is-completed-track {
+  background: #9333EA !important;
+  box-shadow: none !important;
+}
+
+/* Full unbroken line through station rows with vertical overlap */
+.stop-track-line.line-full {
+  top: -2px !important;
+  bottom: -2px !important;
+  height: calc(100% + 4px) !important;
 }
 
 .stop-track-line.line-top {
-  top: 0;
-  height: 50%;
+  top: -2px !important;
+  height: calc(50% + 2px) !important;
 }
 
 .stop-track-line.line-bottom {
-  bottom: 0;
-  height: 50%;
+  top: 50% !important;
+  bottom: -2px !important;
+  height: calc(50% + 2px) !important;
 }
 
 .stop-track-line.hidden {
@@ -4196,12 +4430,13 @@ body.theme-day .stop-track-line {
 .stop-dot-anchor {
   position: relative;
   z-index: 2;
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 
 /* Minor Station Dot */
 .stop-dot {
@@ -4573,45 +4808,66 @@ body.theme-day .stop-arrived-text {
 
 /* 5. In-Between Row & Orange Text centered between stations */
 .journey-between-row {
-  display: flex;
-  align-items: center;
-  min-height: 48px; /* Stable consistent spacing across all stops without layout jumps */
-  padding: 0 16px;
-  box-sizing: border-box;
-  position: relative;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 32px !important; /* Reduced by 15% (was 38px) */
+  padding: 0 16px !important;
+  box-sizing: border-box !important;
+  position: relative !important;
 }
 
 .between-time-spacer {
-  width: 66px;
-  padding-right: 12px;
-  flex-shrink: 0;
+  width: 70px !important;
+  min-width: 70px !important;
+  max-width: 70px !important;
+  padding-right: 12px !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
 }
 
 .between-track {
-  width: 24px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  height: 100%;
-  flex-shrink: 0;
-  overflow: visible;
+  width: 24px !important;
+  min-width: 24px !important;
+  max-width: 24px !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 32px !important; /* Reduced by 15% (was 38px) */
+  height: 100% !important;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
 }
 
 .between-track-line {
-  position: absolute;
-  width: 2.5px;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.22);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1;
-  transition: background 0.3s ease;
+  position: absolute !important;
+  width: 2px !important;
+  top: -2px !important;
+  bottom: -2px !important;
+  height: calc(100% + 4px) !important;
+  background: rgba(148, 163, 184, 0.70) !important;
+  box-shadow: none;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 1 !important;
+  box-sizing: border-box !important;
 }
 
 body.theme-day .between-track-line {
-  background: rgba(15, 23, 42, 0.16);
+  background: rgba(100, 116, 139, 0.70) !important;
+  box-shadow: none;
+}
+
+/* Completed between line: Solid Vibrant Purple without breaks */
+.between-track-line.is-completed-track {
+  background: #A855F7 !important;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.75) !important;
+}
+
+body.theme-day .between-track-line.is-completed-track {
+  background: #9333EA !important;
+  box-shadow: none !important;
 }
 
 .between-content {
@@ -4678,51 +4934,37 @@ body.theme-day .between-text {
   transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Completed & Passed Station Track Line - Bright Electric Purple */
-.journey-stop-row.is-passed .stop-track-line {
+.journey-stop-row.is-passed:not(.is-skip-station) .stop-dot {
   background: #A855F7 !important;
-  box-shadow: 0 0 8px rgba(168, 85, 247, 0.65);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.95) !important;
   opacity: 1 !important;
 }
 
-/* Completed track leading into the currently arrived station */
-.journey-stop-row.is-current .stop-track-line.line-top {
+.journey-stop-row.is-passed.is-major:not(.is-skip-station) .stop-dot {
   background: #A855F7 !important;
-  box-shadow: 0 0 8px rgba(168, 85, 247, 0.65);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.95) !important;
+  border-color: #000000 !important;
   opacity: 1 !important;
 }
 
-.journey-stop-row.is-passed .stop-dot {
-  background: #A855F7 !important;
-  box-shadow: 0 0 8px rgba(168, 85, 247, 0.9);
-  opacity: 1 !important;
-}
-
-.journey-stop-row.is-passed.is-major .stop-dot {
-  background: #C084FC !important;
-  box-shadow: 0 0 10px rgba(192, 132, 252, 0.95);
-  border-color: #000000;
-  opacity: 1 !important;
-}
-
-body.theme-day .journey-stop-row.is-passed .stop-track-line,
-body.theme-day .journey-stop-row.is-current .stop-track-line.line-top {
+body.theme-day .journey-stop-row.is-passed:not(.is-skip-station) .stop-dot {
   background: #9333EA !important;
-  box-shadow: none;
-}
-
-body.theme-day .journey-stop-row.is-passed .stop-dot {
-  background: #9333EA !important;
-  box-shadow: none;
+  box-shadow: none !important;
 }
 
 .journey-stop-row.is-passed .stop-time-val {
   color: #64748B;
 }
 
-.journey-stop-row.is-passed .stop-station-name {
-  color: #94A3B8;
+.journey-stop-row.is-passed.is-skip-station .stop-station-name {
+  color: #FFFFFF !important;
 }
+
+.journey-stop-row.is-passed:not(.is-skip-station) .stop-station-name {
+  color: #FFFFFF !important;
+  opacity: 0.85;
+}
+
 
 /* Stop Info Column (Right: Station Name & Meta) */
 .stop-content {
@@ -4742,10 +4984,10 @@ body.theme-day .journey-stop-row.is-passed .stop-dot {
   min-width: 0;
 }
 
-/* 2. Show Main big Station in Bold and other small station in thin font */
+/* 2. Show Main big Station in Bold and other small station in thin font - Decreased by 15% */
 .journey-stop-row.is-major .stop-station-name {
   font-weight: 800; /* Bold as explicitly instructed */
-  font-size: 1.15rem;
+  font-size: 1.22rem; /* Decreased by 15% */
   color: #FFFFFF;
   letter-spacing: -0.01em;
 }
@@ -4756,8 +4998,8 @@ body.theme-day .journey-stop-row.is-major .stop-station-name {
 
 .journey-stop-row.is-minor .stop-station-name {
   font-weight: 350; /* Thin font as explicitly instructed */
-  font-size: 0.96rem;
-  color: #94A3B8;
+  font-size: 1.02rem; /* Decreased by 15% */
+  color: #FFFFFF;
   letter-spacing: 0.01em;
 }
 
@@ -4778,15 +5020,16 @@ body.theme-day .journey-stop-row.is-minor .stop-station-name {
 }
 
 .stop-pf-badge {
-  font-size: 0.82rem;
+  font-size: 0.88rem; /* Decreased by 15% */
   font-weight: 500;
-  color: #8E8E93;
+  color: #FFFFFF;
   letter-spacing: 0.02em;
 }
 
 .journey-stop-row.is-major .stop-pf-badge {
   font-weight: 700;
-  color: #CBD5E1;
+  font-size: 0.92rem; /* Decreased by 15% */
+  color: #FFFFFF;
 }
 
 body.theme-day .stop-pf-badge {
@@ -4797,22 +5040,35 @@ body.theme-day .journey-stop-row.is-major .stop-pf-badge {
   color: #1E293B;
 }
 
-/* Skipped / Non-Stopping Station UI on Fast Routes */
+/* Skipped / Non-Stopping Station UI on Fast Routes:
+   - Reduced opacity by 40% (0.60) along with icon
+   - Station name in Orange color, decreased by 15%
+   - Will not stop & No Stop removed
+*/
 .journey-stop-row.is-skip-station {
-  opacity: 0.8;
+  opacity: 1 !important; /* Row container keeps full opacity so track line is 100% full vibrant without breaks */
+}
+
+.journey-stop-row.is-skip-station .stop-time,
+.journey-stop-row.is-skip-station .stop-content {
+  opacity: 0.40 !important; /* White color with 40% opacity as requested */
+}
+
+.journey-stop-row.is-skip-station .stop-track {
+  opacity: 1 !important;
 }
 
 .journey-stop-row.is-skip-station .stop-dot {
-  width: 8px !important;
-  height: 8px !important;
+  width: 7.5px !important;
+  height: 7.5px !important;
   background: transparent !important;
-  border: 1.8px solid #64748B !important;
+  border: 1.8px solid rgba(255, 255, 255, 0.4) !important;
   box-shadow: none !important;
   box-sizing: border-box;
 }
 
 body.theme-day .journey-stop-row.is-skip-station .stop-dot {
-  border-color: #94A3B8 !important;
+  border-color: rgba(15, 23, 42, 0.4) !important;
 }
 
 /* Passed skip station dot - hollow purple ring */
@@ -4827,59 +5083,252 @@ body.theme-day .journey-stop-row.is-skip-station.is-passed .stop-dot {
 }
 
 .journey-stop-row.is-skip-station .stop-station-name {
-  color: #94A3B8 !important;
-  font-weight: 400 !important;
+  color: #FFFFFF !important; /* White color */
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6.5px !important;
+  font-weight: 500 !important;
+  font-size: 1.04rem !important; /* Decreased by 15% */
+  letter-spacing: -0.01em;
+  line-height: 1 !important;
 }
 
 body.theme-day .journey-stop-row.is-skip-station .stop-station-name {
-  color: #64748B !important;
+  color: #0F172A !important;
 }
 
-.station-skip-pill {
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 0.16rem 0.5rem;
-  border-radius: 999px;
-  background: rgba(239, 68, 68, 0.12);
-  color: #F87171;
-  border: 1px solid rgba(239, 68, 68, 0.32);
-  letter-spacing: 0.02em;
+.stop-skip-cross-icon {
+  color: #FFFFFF !important; /* White color matching text */
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 14px !important;
+  height: 14px !important;
+  vertical-align: middle !important;
+  transform: translateY(-0.5px) !important; /* Perfect horizontal center axis alignment between icon and text */
+}
+
+body.theme-day .stop-skip-cross-icon {
+  color: #0F172A !important;
+}
+
+.journey-stop-row.is-skip-station.is-passed .stop-station-name {
+  color: #FFFFFF !important;
+}
+
+/* Halting Stations (where train is stopping):
+   - Make all fonts white wherever the train is stopping
+   - Dot remains prominent vibrant green with white checkmark
+*/
+.journey-stop-row:not(.is-skip-station):not(.is-current) .stop-station-name,
+.stop-station-name.is-halt-text:not(.is-current-station) {
+  color: #FFFFFF !important; /* White as instructed */
   display: inline-flex;
   align-items: center;
-  white-space: nowrap;
 }
 
-body.theme-day .station-skip-pill {
-  background: rgba(239, 68, 68, 0.08);
-  color: #DC2626;
-  border-color: rgba(239, 68, 68, 0.24);
+body.theme-day .journey-stop-row:not(.is-skip-station):not(.is-current) .stop-station-name,
+body.theme-day .stop-station-name.is-halt-text:not(.is-current-station) {
+  color: #0F172A !important;
 }
 
-.station-will-not-stop-tag {
-  font-size: 0.72rem;
-  color: #F87171;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  margin-top: 2px;
-  display: flex;
-  align-items: center;
-  gap: 3px;
+.journey-stop-row.is-major:not(.is-skip-station):not(.is-current) .stop-station-name {
+  font-weight: 800 !important;
+  font-size: 1.22rem !important; /* Decreased by 15% */
+  letter-spacing: -0.01em;
+  color: #FFFFFF !important; /* White font */
+  text-shadow: none;
 }
 
-body.theme-day .station-will-not-stop-tag {
-  color: #DC2626;
+.journey-stop-row.is-minor:not(.is-skip-station):not(.is-current) .stop-station-name {
+  font-size: 1.02rem !important; /* Decreased by 15% */
+  color: #FFFFFF !important; /* White font */
 }
+
+/* Arrived / Current Station Name: Vibrant Green with Shiny Diamond Flash Moving Left to Right in a Loop */
+.journey-stop-row.is-current .stop-station-name,
+.journey-stop-row.is-current.is-major .stop-station-name,
+.journey-stop-row.is-current.is-minor .stop-station-name,
+.journey-stop-row.is-current:not(.is-skip-station) .stop-station-name {
+  color: transparent !important;
+}
+
+.journey-stop-row.is-current .stop-name-text,
+.stop-name-text.is-current-station,
+.stop-station-name.is-current-station .stop-name-text,
+.journey-stop-row.is-current .stop-station-name span.stop-name-text,
+.journey-stop-row.is-current.is-major .stop-name-text,
+.journey-stop-row.is-current.is-minor .stop-name-text,
+.journey-stop-row.is-current:not(.is-skip-station) .stop-name-text {
+  display: inline-block !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  background-image: linear-gradient(
+    105deg,
+    #15803D 0%,
+    #22C55E 28%,
+    #6EE7B7 42%,
+    #C6F6D5 50%,
+    #C6F6D5 54%,
+    #6EE7B7 60%,
+    #22C55E 72%,
+    #15803D 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  background-repeat: repeat-x !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  animation: shinyFlashLeftToRight 1.5s linear infinite !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+body.theme-day .journey-stop-row.is-current .stop-name-text,
+body.theme-day .stop-name-text.is-current-station,
+body.theme-day .stop-station-name.is-current-station .stop-name-text,
+body.theme-day .journey-stop-row.is-current .stop-station-name span.stop-name-text,
+body.theme-day .journey-stop-row.is-current.is-major .stop-name-text,
+body.theme-day .journey-stop-row.is-current.is-minor .stop-name-text,
+body.theme-day .journey-stop-row.is-current:not(.is-skip-station) .stop-name-text {
+  display: inline-block !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  background-image: linear-gradient(
+    105deg,
+    #166534 0%,
+    #16A34A 28%,
+    #4ADE80 42%,
+    #BBF7D0 50%,
+    #BBF7D0 54%,
+    #4ADE80 60%,
+    #16A34A 72%,
+    #166534 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  background-repeat: repeat-x !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  animation: shinyFlashLeftToRight 1.5s linear infinite !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+@keyframes shinyFlashLeftToRight {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+
+/* All fonts white wherever the train is stopping (Time + Platform) */
+.journey-stop-row:not(.is-skip-station) .stop-time-val {
+  color: #FFFFFF !important;
+  font-size: 1.00rem !important; /* Decreased by 15% */
+}
+
+.journey-stop-row:not(.is-skip-station) .stop-time-ampm {
+  color: #FFFFFF !important;
+  font-size: 0.72rem !important; /* Decreased by 15% */
+  opacity: 0.95;
+}
+
+.journey-stop-row:not(.is-skip-station) .stop-pf-badge {
+  color: #FFFFFF !important; /* White font */
+  font-size: 0.88rem !important; /* Decreased by 15% */
+}
+
+.journey-stop-row.is-major:not(.is-skip-station) .stop-pf-badge {
+  color: #FFFFFF !important; /* White font */
+  font-size: 0.92rem !important; /* Decreased by 15% */
+  font-weight: 700;
+}
+
+/* Halting Stations upcoming ahead (where train is stopping) - Increased by 25% */
+.journey-stop-row:not(.is-skip-station):not(.is-passed) .stop-dot {
+  width: 15px !important; /* Increased by 25% (was 12px) */
+  height: 15px !important;
+  background: #22C55E !important;
+  box-shadow: 0 0 9px rgba(34, 197, 94, 0.85) !important;
+  border: 1.5px solid #000000 !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  overflow: hidden;
+}
+
+body.theme-day .journey-stop-row:not(.is-skip-station):not(.is-passed) .stop-dot {
+  background: #16A34A !important;
+  border-color: #FFFFFF !important;
+  box-shadow: 0 0 7px rgba(22, 163, 74, 0.65) !important;
+}
+
+.journey-stop-row.is-major:not(.is-skip-station):not(.is-passed) .stop-dot {
+  width: 17px !important; /* Increased by 25% (was 13.5px) */
+  height: 17px !important;
+  box-shadow: 0 0 11px rgba(34, 197, 94, 0.95) !important;
+}
+
+/* ALL Completed Stopping Stations: Keep all completed in Vibrant Purple - Increased by 25% */
+.journey-stop-row.is-passed:not(.is-skip-station) .stop-dot {
+  width: 15px !important; /* Increased by 25% (was 12px) */
+  height: 15px !important;
+  background: #A855F7 !important;
+  box-shadow: 0 0 11px rgba(168, 85, 247, 0.95) !important;
+  border: 1.5px solid #000000 !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  overflow: hidden;
+}
+
+body.theme-day .journey-stop-row.is-passed:not(.is-skip-station) .stop-dot {
+  background: #9333EA !important;
+  box-shadow: none !important;
+  border-color: #FFFFFF !important;
+}
+
+.journey-stop-row.is-passed.is-major:not(.is-skip-station) .stop-dot {
+  width: 17px !important; /* Increased by 25% (was 13.5px) */
+  height: 17px !important;
+  background: #A855F7 !important;
+  box-shadow: 0 0 13px rgba(168, 85, 247, 0.95) !important;
+}
+
+/* White Right Check Icon inside Halting Stop Dot - Scaled by 25% */
+.stop-dot-check-icon {
+  width: 8.2px !important;
+  height: 8.2px !important;
+  stroke: #FFFFFF !important;
+  display: block;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.journey-stop-row.is-major .stop-dot-check-icon {
+  width: 9.5px !important;
+  height: 9.5px !important;
+}
+
 
 .stop-time-val.is-skipped,
 .stop-time-ampm.is-skipped {
-  color: #475569 !important;
-  opacity: 0.65;
+  color: #64748B !important;
+  opacity: 0.60 !important; /* Reduced opacity by 40% */
 }
 
 body.theme-day .stop-time-val.is-skipped,
 body.theme-day .stop-time-ampm.is-skipped {
   color: #94A3B8 !important;
 }
+
 
 /* Loading / Empty state in stops container */
 .journey-loading-box {
@@ -4905,39 +5354,113 @@ body.theme-day .stop-time-ampm.is-skipped {
   to { transform: rotate(360deg); }
 }
 
-/* Bottom Action Footer with "Return" button - Completely transparent wrapper without blur behind */
-.journey-bottom-footer {
+/* Floating Glassmorphic Reset (Repeat) Button on Left Side at Bottom:
+   Appears smoothly only when live train capsule is outside the visible viewport.
+   Takes user immediately back to their current train capsule area.
+*/
+/* Floating Glassmorphic Reset (Repeat) Button on Right Side at Bottom:
+   - Positioned on bottom-right (right: 18px; bottom: 22px)
+   - Borderless glassmorphism (no stroke) with smooth backdrop blur
+   - Full white rotating icon
+*/
+.btn-journey-reset {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 22px;
+  right: 18px; /* Positioned on right side */
+  left: auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   z-index: 50;
-  padding: 8px 18px 16px;
-  background: transparent !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: none !important; /* No stroke as requested */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
+  color: #FFFFFF;
   display: flex;
+  align-items: center;
   justify-content: center;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+  cursor: pointer;
+  opacity: 0;
   pointer-events: none;
+  transform: scale(0.75);
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease;
+  user-select: none;
+  padding: 0;
 }
 
-body.theme-day .journey-bottom-footer {
-  background: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
+.btn-journey-reset.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.btn-journey-reset:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
+}
+
+.btn-journey-reset:active {
+  transform: scale(0.92);
+}
+
+body.theme-day .btn-journey-reset {
+  background: rgba(15, 23, 42, 0.65) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+  color: #FFFFFF;
+}
+
+/* Rotating Icon in Full White Color */
+.btn-journey-reset .reset-icon {
+  color: #FFFFFF !important; /* Full white color */
+  stroke: #FFFFFF !important;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+  transition: transform 0.3s ease;
+}
+
+.btn-journey-reset.visible .reset-icon {
+  animation: resetIconSmoothSpin 3.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+@keyframes resetIconSmoothSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  65% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Return Button rendered at the very end of the scrollable stops timeline */
+.journey-end-return-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 16px 48px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.journey-bottom-footer {
+  display: none !important;
 }
 
 .btn-journey-return {
   pointer-events: auto;
   width: auto;
   min-width: 130px;
-  height: 36px;
+  height: 38px;
   padding: 0 24px;
   background: rgba(30, 30, 36, 0.68);
   backdrop-filter: blur(14px) saturate(160%);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
   color: #A1A1AA;
-  font-size: 0.88rem;
+  font-size: 0.94rem; /* Decreased by 15% */
   font-weight: 600;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -4988,16 +5511,44 @@ body.theme-day .btn-journey-return:hover {
   width: 100%;
 }
 
-/* Sub-accordion container — collapses height via max-height transition */
+.drawer-item-accordion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.18s ease;
+}
+
+.drawer-accordion-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94A3B8;
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+}
+
+.drawer-notif-wrapper.open .drawer-accordion-arrow {
+  transform: rotate(180deg);
+  color: var(--accent-purple, #8B5CF6);
+}
+
+body.theme-night .drawer-notif-wrapper.open .drawer-accordion-arrow {
+  color: #A78BFA;
+}
+
+/* Sub-accordion container — collapses height via smooth cubic-bezier max-height transition */
 .notif-accordion {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: max-height;
+  opacity: 0;
+  transition: max-height 0.36s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.28s ease;
+  will-change: max-height, opacity;
 }
 
 .notif-accordion.open {
-  max-height: 380px;
+  max-height: 440px;
+  opacity: 1;
 }
 
 .notif-accordion-inner {
@@ -5013,27 +5564,14 @@ body.theme-day .btn-journey-return:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 11px 22px 11px 36px;
+  padding: 11px 22px;
   gap: 12px;
   cursor: pointer;
   user-select: none;
   transition: background 0.15s ease;
-  border-radius: 0;
+  border-radius: 8px;
   position: relative;
-}
-
-/* Left inset accent line */
-.notif-option-row::before {
-  content: '';
-  position: absolute;
-  left: 22px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 2px;
-  height: 60%;
-  background: var(--accent-purple);
-  border-radius: 2px;
-  opacity: 0.5;
+  margin: 2px 8px;
 }
 
 .notif-option-row:hover {
@@ -5547,9 +6085,29 @@ body.theme-night .btn-prev-inbetween:hover {
 }
 
 .shutter-timeline-col.is-current.is-arrived .shutter-col-name {
-  color: #22C55E;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
   font-weight: 800;
   font-size: 0.76rem;
+  display: inline-block;
+  background-image: linear-gradient(
+    105deg,
+    #15803D 0%,
+    #22C55E 28%,
+    #6EE7B7 42%,
+    #C6F6D5 50%,
+    #C6F6D5 54%,
+    #6EE7B7 60%,
+    #22C55E 72%,
+    #15803D 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  background-repeat: repeat-x !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  animation: shinyFlashLeftToRight 1.5s linear infinite !important;
+  filter: none !important;
+  text-shadow: none !important;
 }
 
 .shutter-timeline-col.is-upcoming .shutter-col-name {

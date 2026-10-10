@@ -9,11 +9,14 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
   const from = url.searchParams.get('from');
   const to = url.searchParams.get('to');
+  const direction = url.searchParams.get('direction');
+  const lineId = url.searchParams.get('lineId') || undefined;
+  const corridor = url.searchParams.get('corridor') || undefined;
   const trainType = (url.searchParams.get('type') || 'ALL') as any;
 
-  if (!from || !to) {
+  if (!from || (!to && !direction)) {
     res.statusCode = 400;
-    res.end(JSON.stringify({ error: "Missing required query parameters 'from' and 'to' station IDs" }));
+    res.end(JSON.stringify({ error: "Missing required query parameters 'from' and ('to' or 'direction')" }));
     return;
   }
 
@@ -31,7 +34,19 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     await db.importFullDataset(dataset);
 
     const trainSearch = new TrainSearchEngine(db.getAdapter());
-    const trains = await trainSearch.findTrainsBetweenStations(from, to, { trainType });
+    let trains: any[] = [];
+    if (direction) {
+      trains = await trainSearch.findTrainsInDirection(from, direction, {
+        lineId,
+        corridor,
+        trainType,
+      });
+    } else if (to) {
+      trains = await trainSearch.findTrainsBetweenStations(from, to, {
+        lineId,
+        trainType,
+      });
+    }
 
     res.statusCode = 200;
     res.end(JSON.stringify(trains));

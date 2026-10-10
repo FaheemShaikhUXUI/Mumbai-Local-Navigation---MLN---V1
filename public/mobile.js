@@ -233,6 +233,274 @@ document.addEventListener('DOMContentLoaded', () => {
 
   CrowdLiveEngine.init();
 
+  // ==========================================
+  // 1.6. DYNAMIC GPS-BASED TRAIN CROWD STRENGTH ENGINE
+  // ==========================================
+  const CrowdStrengthManager = {
+    cache: new Map(), // trainKey -> { estimate, timestamp }
+    inFlight: new Map(), // trainKey -> Promise
+    expandedTileEl: null,
+    autoCloseTimer: null,
+
+    // Anonymous Pseudonymous Contributor ID (Privacy-first)
+    getContributorId() {
+      let id = localStorage.getItem('ML_CONTRIBUTOR_ID');
+      if (!id) {
+        id = 'contrib_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36);
+        try { localStorage.setItem('ML_CONTRIBUTOR_ID', id); } catch (e) {}
+      }
+      return id;
+    },
+
+    // Format crowd display according to specification:
+    // 0% -> 0%
+    // < 100% -> rounded e.g. 05%, 25%, 50%, 75%
+    // == 100% -> 100%
+    // > 100% -> 100%+ (never numbers above 100%)
+    // Bar width clamped 0..100% (never overflows)
+    formatCrowdDisplay(rawScore) {
+      const rounded = Math.round(rawScore);
+      let displayPercentage = '0%';
+      let visualPercentage = 0;
+      let color = '#38bdf8'; // Blue (< 20%)
+
+      if (rounded <= 0) {
+        displayPercentage = '0%';
+        visualPercentage = 0;
+        color = '#38bdf8';
+      } else if (rounded < 100) {
+        displayPercentage = rounded < 10 ? `0${rounded}%` : `${rounded}%`;
+        visualPercentage = rounded;
+        if (rounded < 20) color = '#38bdf8'; // 05% Cyan/Blue
+        else if (rounded < 50) color = '#22c55e'; // 25% Green
+        else if (rounded < 75) color = '#f97316'; // 50% Amber/Orange
+        else color = '#ea580c'; // 75% Red-Orange
+      } else if (rounded === 100) {
+        displayPercentage = '100%';
+        visualPercentage = 100;
+        color = '#dc2626'; // 100% Crimson Red
+      } else {
+        // Exceeds 100%
+        displayPercentage = '100%+';
+        visualPercentage = 100; // Never overflow container
+        color = '#dc2626'; // Red glow
+      }
+
+      return { displayPercentage, visualPercentage, color };
+    },
+
+    // Deterministic diurnal rush-hour curve baseline (for instantaneous UI responsiveness)
+    getDiurnalBaseline(depTime, direction = 'DN', isFast = false, isAc = false) {
+      const parts = (depTime || '10:18:00').split(':');
+      const hours = parseInt(parts[0], 10) || 0;
+      const minutes = parseInt(parts[1], 10) || 0;
+      const totalMinutes = hours * 60 + minutes;
+
+      let score = 25;
+      if (totalMinutes >= 60 && totalMinutes < 240) {
+        score = 5; // 05%
+      } else if (totalMinutes >= 240 && totalMinutes < 420) {
+        score = 15;
+      } else if (totalMinutes >= 480 && totalMinutes < 690) {
+        // Morning Peak: Southbound/UP crush
+        score = direction === 'UP' ? (96 + (isFast ? 18 : 6)) : 45;
+      } else if (totalMinutes >= 690 && totalMinutes < 990) {
+        score = 30 + (isFast ? 10 : 0);
+      } else if (totalMinutes >= 1050 && totalMinutes < 1290) {
+        // Evening Peak: Northbound/DN crush (100%+)
+        score = direction === 'DN' ? (98 + (isFast ? 22 : 8)) : 52;
+      } else {
+        score = 25;
+      }
+
+      if (isAc) {
+        score = Math.round(score * 0.7);
+      }
+
+      return score;
+    },
+
+    // Synchronous immediate calculation + async backend refresh
+    getEstimate(trainItem, onServerUpdate) {
+      if (!trainItem) {
+        return { displayPercentage: '0%', visualPercentage: 0, color: '#38bdf8', rawScore: 0 };
+      }
+
+      const key = CrowdLiveEngine.getTrainKey(trainItem);
+      const now = Date.now();
+      const cached = this.cache.get(key);
+
+      if (cached && (now - cached.timestamp < 30000)) {
+        return cached.estimate;
+      }
+
+      const depTime = trainItem.departureTime || trainItem.fromStop?.departure_time || '10:18:00';
+      const isFast = isTrainFast(trainItem);
+      const isAc = isTrainAc(trainItem);
+      const direction = trainItem.route?.direction || 'DN';
+
+      const baseScore = this.getDiurnalBaseline(depTime, direction, isFast, isAc);
+      const { displayPercentage, visualPercentage, color } = this.formatCrowdDisplay(baseScore);
+
+      const localEstimate = {
+        trainKey: key,
+        rawScore: baseScore,
+        displayPercentage,
+        visualPercentage,
+        color,
+        state: 'AVAILABLE',
+        contributorsCount: 0,
+        confidence: 'LOW'
+      };
+
+      if (!cached) {
+        this.cache.set(key, { estimate: localEstimate, timestamp: now });
+      }
+
+      // Asynchronous non-blocking background fetch
+      if (!this.inFlight.has(key)) {
+        const fetchPromise = fetch(`/api/crowd/estimate?trainKey=${encodeURIComponent(key)}&departureTime=${encodeURIComponent(depTime)}&isFast=${isFast}&isAc=${isAc}&direction=${direction}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.displayPercentage) {
+              this.cache.set(key, { estimate: data, timestamp: Date.now() });
+              if (typeof onServerUpdate === 'function') {
+                onServerUpdate(data);
+              }
+            }
+          })
+          .catch(() => {})
+          .finally(() => {
+            this.inFlight.delete(key);
+          });
+        this.inFlight.set(key, fetchPromise);
+      }
+
+      return cached ? cached.estimate : localEstimate;
+    },
+
+    // Smoothly expand a tile with crowd data or "Not Schedulled - Currently Empty"
+    expandTile(tileEl, trainItem) {
+      if (!tileEl) return;
+
+      // Close previously expanded tile smoothly
+      if (this.expandedTileEl && this.expandedTileEl !== tileEl) {
+        this.collapseTile(this.expandedTileEl);
+      }
+
+      this.expandedTileEl = tileEl;
+      tileEl.classList.remove('is-holding');
+      tileEl.classList.add('crowd-expanded');
+
+      // Haptic feedback
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate([40, 30, 40]); } catch (e) {}
+      }
+
+      const opStatus = typeof getTrainOperationalStatus === 'function'
+        ? getTrainOperationalStatus(trainItem)
+        : { isOperational: true, displayText: '' };
+
+      const crowdRow = tileEl.querySelector('.tile-crowd-row');
+      const emptyRow = tileEl.querySelector('.tile-crowd-empty-row');
+
+      if (!opStatus.isOperational) {
+        // Train is NOT running and NOT set for departure:
+        // Hide crowd bar, show "Not Schedulled - Currently Empty"
+        if (crowdRow) crowdRow.style.display = 'none';
+        if (emptyRow) {
+          emptyRow.style.display = 'flex';
+          const badgeEl = emptyRow.querySelector('.tile-crowd-empty-badge');
+          if (badgeEl) {
+            badgeEl.innerHTML = `<span class="tile-crowd-empty-dot"></span>Not Schedulled - Currently Empty`;
+          }
+        }
+      } else {
+        // Train IS currently running or set for departure:
+        if (emptyRow) emptyRow.style.display = 'none';
+        if (crowdRow) crowdRow.style.display = 'flex';
+
+        // Animate progress bar fill smoothly
+        const fillEl = tileEl.querySelector('.tile-crowd-fill');
+
+        // Get or refresh estimate
+        const est = this.getEstimate(trainItem, (serverEst) => {
+          if (tileEl.classList.contains('crowd-expanded')) {
+            this.applyEstimateToTile(tileEl, serverEst);
+          }
+        });
+
+        this.applyEstimateToTile(tileEl, est);
+
+        // Trigger width animation on next animation frame
+        if (fillEl) {
+          fillEl.style.width = '0%';
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              fillEl.style.width = `${est.visualPercentage}%`;
+            }, 40);
+          });
+        }
+      }
+
+      // Automatically close in 5 seconds
+      if (this.autoCloseTimer) {
+        clearTimeout(this.autoCloseTimer);
+      }
+      this.autoCloseTimer = setTimeout(() => {
+        this.collapseTile(tileEl);
+      }, 5000);
+    },
+
+    collapseTile(tileEl) {
+      if (!tileEl) return;
+      tileEl.classList.remove('crowd-expanded');
+      tileEl.classList.remove('is-holding');
+      if (this.expandedTileEl === tileEl) {
+        this.expandedTileEl = null;
+      }
+      if (this.autoCloseTimer) {
+        clearTimeout(this.autoCloseTimer);
+        this.autoCloseTimer = null;
+      }
+      // Wait for drawer collapse CSS animation to complete before resetting fill width
+      setTimeout(() => {
+        if (!tileEl.classList.contains('crowd-expanded')) {
+          const fillEl = tileEl.querySelector('.tile-crowd-fill');
+          if (fillEl) fillEl.style.width = '0%';
+        }
+      }, 500);
+    },
+
+    applyEstimateToTile(tileEl, est) {
+      if (!tileEl || !est) return;
+      const fillEl = tileEl.querySelector('.tile-crowd-fill');
+      const valEl = tileEl.querySelector('.tile-crowd-pct');
+      const lblEl = tileEl.querySelector('.tile-crowd-label');
+
+      if (valEl) {
+        valEl.textContent = est.displayPercentage;
+        valEl.style.color = est.color;
+      }
+      if (lblEl) {
+        lblEl.style.color = est.color;
+      }
+      if (fillEl) {
+        fillEl.setAttribute('data-target-pct', est.visualPercentage);
+        fillEl.style.backgroundColor = est.color;
+        fillEl.style.width = `${est.visualPercentage}%`;
+        if (est.visualPercentage >= 100) {
+          fillEl.classList.add('fill-extreme');
+          fillEl.style.boxShadow = `0 0 8px ${est.color}CC`;
+        } else {
+          fillEl.classList.remove('fill-extreme');
+          fillEl.style.boxShadow = `0 0 5px ${est.color}88`;
+        }
+      }
+    }
+  };
+
+
   const MOON_ICON_SVG = `<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
   const SUN_ICON_SVG = `<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
 
@@ -581,126 +849,117 @@ document.addEventListener('DOMContentLoaded', () => {
   // -- Read saved state and restore UI --
   function restoreNotifUI() {
     const prefs = getNotifPrefs();
-    const enabled = prefs.enabled || false;
-    if (toggleNotif) toggleNotif.checked = enabled;
-    if (accordion) accordion.classList.toggle('open', enabled);
+    // Default accordion to CLOSED (simple accordion, not always open)
+    if (accordion) accordion.classList.remove('open');
+    const wrapper = document.getElementById('stopsNotifWrapper');
+    if (wrapper) wrapper.classList.remove('open');
+    if (menuItemStopsNotif) menuItemStopsNotif.setAttribute('aria-expanded', 'false');
+
     if (chkShutter)  chkShutter.checked  = Boolean(prefs.shutter);
     if (chkHeader)   chkHeader.checked   = Boolean(prefs.header);
     if (chkVibrate)  chkVibrate.checked  = Boolean(prefs.vibrate);
-    if (chkAllowAll) chkAllowAll.checked = Boolean(prefs.allowAll);
+    if (chkAllowAll) chkAllowAll.checked = Boolean(prefs.allowAll || (prefs.shutter && prefs.header && prefs.vibrate));
   }
 
-  // -- Toggle main switch → open/close accordion --
-  if (toggleNotif) {
-    toggleNotif.addEventListener('change', (e) => {
-      const enabled = e.target.checked;
-      const prefs = getNotifPrefs();
-      prefs.enabled = enabled;
+  // Toggle accordion open/close on header click (without toggle switch)
+  function toggleStopsAccordion(forceState) {
+    if (!accordion) return;
+    const wrapper = document.getElementById('stopsNotifWrapper');
+    const willOpen = typeof forceState === 'boolean'
+      ? forceState
+      : !accordion.classList.contains('open');
 
-      // When first enabled, default to "Allow All"
-      if (enabled && !prefs.shutter && !prefs.header && !prefs.allowAll) {
-        prefs.allowAll = true;
-        prefs.shutter  = true;
-        prefs.header   = true;
-        prefs.vibrate  = true;
-      }
-      saveNotifPrefs(prefs);
-
-      if (accordion) accordion.classList.toggle('open', enabled);
-
-      if (chkShutter)  chkShutter.checked  = Boolean(prefs.shutter);
-      if (chkHeader)   chkHeader.checked   = Boolean(prefs.header);
-      if (chkVibrate)  chkVibrate.checked  = Boolean(prefs.vibrate);
-      if (chkAllowAll) chkAllowAll.checked = Boolean(prefs.allowAll);
-
-      if (!enabled) {
-        notifEngine.stopAll();
-        showToast('🔕 Stops Notification Disabled');
-      } else {
-        showToast('🔔 Stops Notification Active (Checking every 3 mins)');
-        notifEngine.startActiveTracking();
-      }
-    });
+    accordion.classList.toggle('open', willOpen);
+    wrapper?.classList.toggle('open', willOpen);
+    menuItemStopsNotif?.setAttribute('aria-expanded', String(willOpen));
   }
 
-  // Clicking anywhere on the drawer menu item row toggles the switch
-  if (menuItemStopsNotif) {
-    menuItemStopsNotif.addEventListener('click', (e) => {
-      if (e.target.closest('.drawer-toggle-switch')) return;
-      if (toggleNotif) {
-        toggleNotif.checked = !toggleNotif.checked;
-        toggleNotif.dispatchEvent(new Event('change'));
-      }
-    });
+  menuItemStopsNotif?.addEventListener('click', (e) => {
+    // If click was on a checkbox or inside the open accordion, do not toggle header
+    if (e.target.closest('.notif-accordion')) return;
+    toggleStopsAccordion();
+  });
+
+  // Smoothly close accordion after a selection (smooth transition)
+  let closeAccordionTimer = null;
+  function scheduleSmoothAccordionClose() {
+    if (closeAccordionTimer) clearTimeout(closeAccordionTimer);
+    closeAccordionTimer = setTimeout(() => {
+      toggleStopsAccordion(false);
+    }, 420);
   }
 
   // ========================================================
   // Accordion 4 Options Logic:
-  // 1. Show Only in Shutter (Check Box)
-  // 2. Show only in header (Check Box)
-  // 3. Vibrat before 1 mnts (Check Box)
-  // 4. Allow All (Check Box)
+  // Multi-select enabled: NO radio button logic!
+  // User can check Shutter, Header, Vibrate, or any combination.
   // ========================================================
 
-  // 1. Show Only in Shutter
+  function updateNotifEngineState() {
+    const prefs = getNotifPrefs();
+    const hasAny = Boolean(prefs.shutter || prefs.header || prefs.vibrate);
+    prefs.enabled = hasAny;
+
+    // Auto-update Allow All checkmark if all 3 are checked
+    if (prefs.shutter && prefs.header && prefs.vibrate) {
+      prefs.allowAll = true;
+      if (chkAllowAll) chkAllowAll.checked = true;
+    } else {
+      prefs.allowAll = false;
+      if (chkAllowAll) chkAllowAll.checked = false;
+    }
+
+    saveNotifPrefs(prefs);
+
+    if (hasAny) {
+      notifEngine.startActiveTracking();
+    } else {
+      notifEngine.stopAll();
+      hideShutterCard();
+      hideHeaderPill();
+    }
+
+    // Smoothly close the accordion after selection
+    scheduleSmoothAccordionClose();
+  }
+
+  // 1. Show Only in Shutter (Check Box - Multi-select, NO radio logic)
   chkShutter?.addEventListener('change', (e) => {
     const isChecked = e.target.checked;
     const prefs = getNotifPrefs();
-
-    if (isChecked) {
-      prefs.shutter  = true;
-      prefs.header   = false;
-      prefs.allowAll = false;
-      if (chkHeader)   chkHeader.checked   = false;
-      if (chkAllowAll) chkAllowAll.checked = false;
-      hideHeaderPill();
-      showToast('📱 Stops Notification: Show Only in Shutter');
-    } else {
-      prefs.shutter = false;
-      hideShutterCard();
-    }
+    prefs.shutter = isChecked;
     saveNotifPrefs(prefs);
-    if (prefs.enabled) notifEngine.startActiveTracking();
+
+    if (!isChecked) hideShutterCard();
+    showToast(isChecked ? '📱 Shutter Notification Enabled' : '📱 Shutter Notification Disabled');
+    updateNotifEngineState();
   });
 
-  // 2. Show only in header
+  // 2. Show only in header (Check Box - Multi-select, NO radio logic)
   chkHeader?.addEventListener('change', (e) => {
     const isChecked = e.target.checked;
     const prefs = getNotifPrefs();
-
-    if (isChecked) {
-      prefs.header   = true;
-      prefs.shutter  = false;
-      prefs.allowAll = false;
-      if (chkShutter)  chkShutter.checked  = false;
-      if (chkAllowAll) chkAllowAll.checked = false;
-      hideShutterCard();
-      showToast('📌 Stops Notification: Show Only in Header Bar');
-    } else {
-      prefs.header = false;
-      hideHeaderPill();
-    }
+    prefs.header = isChecked;
     saveNotifPrefs(prefs);
-    if (prefs.enabled) notifEngine.startActiveTracking();
+
+    if (!isChecked) hideHeaderPill();
+    showToast(isChecked ? '📌 Header Bar Notification Enabled' : '📌 Header Bar Notification Disabled');
+    updateNotifEngineState();
   });
 
-  // 3. Vibrat before 1 mnts
+  // 3. Vibrat before 1 mnts (Check Box)
   chkVibrate?.addEventListener('change', (e) => {
     const isChecked = e.target.checked;
     const prefs = getNotifPrefs();
     prefs.vibrate = isChecked;
-
-    if (isChecked) {
-      if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
-      showToast('📳 Vibrate Before 1 Minute Enabled');
-    } else {
-      prefs.allowAll = false;
-      if (chkAllowAll) chkAllowAll.checked = false;
-    }
     saveNotifPrefs(prefs);
+
+    if (isChecked && navigator.vibrate) navigator.vibrate([80, 40, 80]);
+    showToast(isChecked ? '📳 Vibrate Before 1 Minute Enabled' : '📳 Vibration Notification Disabled');
+    updateNotifEngineState();
   });
 
-  // 4. Allow All
+  // 4. Allow All (Check Box - sets all or unsets all)
   chkAllowAll?.addEventListener('change', (e) => {
     const isChecked = e.target.checked;
     const prefs = getNotifPrefs();
@@ -709,6 +968,7 @@ document.addEventListener('DOMContentLoaded', () => {
     prefs.shutter  = isChecked;
     prefs.header   = isChecked;
     prefs.vibrate  = isChecked;
+    prefs.enabled  = isChecked;
 
     if (chkShutter)  chkShutter.checked  = isChecked;
     if (chkHeader)   chkHeader.checked   = isChecked;
@@ -718,11 +978,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (isChecked) {
       showToast('✨ All Notifications Enabled (Shutter + Header + Vibration)');
-      if (prefs.enabled) notifEngine.startActiveTracking();
+      notifEngine.startActiveTracking();
     } else {
       notifEngine.stopAll();
+      hideShutterCard();
+      hideHeaderPill();
       showToast('🔕 All Notification options cleared');
     }
+    scheduleSmoothAccordionClose();
   });
 
   // -- Full Android Shutter Pull-down Shade handling --
@@ -1517,12 +1780,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedDirectionFilter = null;
 
   const SPECIAL_JUNCTIONS = {
-    // Borivali (Exact Match to User Reference Image 2!)
+    // Borivali (Western Line)
     stn_bvi: [
       { label: 'Virar / Dahanu', destName: 'Virar / Dahanu', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' },
       { label: 'Andheri / Bandra / Churchgate', destName: 'Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' }
     ],
-    // Dadar (Major WR & CR interchange - User Specification: "Borivali/Virar/Dahanu")
+    // Dadar (Major WR & CR interchange)
     stn_dr: [
       { label: 'Borivali / Virar / Dahanu (Western)', destName: 'Borivali / Virar / Dahanu', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' },
       { label: 'Churchgate (Western)', destName: 'Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' },
@@ -1554,18 +1817,34 @@ document.addEventListener('DOMContentLoaded', () => {
       { label: 'Vashi / Belapur / Panvel (Harbour Line)', destName: 'Vashi / Belapur / Panvel', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_PANVEL' },
       { label: 'Bandra / Andheri / Goregaon (Harbour Line)', destName: 'Bandra / Andheri / Goregaon', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_GOREGAON' }
     ],
+    // Masjid (Central Main & Harbour)
+    stn_msd: [
+      { label: 'Thane / Kalyan / Kasara / Karjat (Central Main)', destName: 'Thane / Kalyan / Kasara / Karjat', direction: 'DN', lineId: 'line_cr_main', corridor: 'CR_NORTH' },
+      { label: 'CSMT (Central Main)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_main', corridor: 'CR_SOUTH' },
+      { label: 'Vashi / Belapur / Panvel (Harbour Line)', destName: 'Vashi / Belapur / Panvel', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_PANVEL' },
+      { label: 'Bandra / Andheri / Goregaon (Harbour Line)', destName: 'Bandra / Andheri / Goregaon', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_GOREGAON' },
+      { label: 'CSMT (Harbour Line)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_harbour', corridor: 'HB_CSMT' }
+    ],
+    // Sandhurst Road (Central Main & Harbour junction)
+    stn_snrd: [
+      { label: 'Thane / Kalyan / Kasara / Karjat (Central Main)', destName: 'Thane / Kalyan / Kasara / Karjat', direction: 'DN', lineId: 'line_cr_main', corridor: 'CR_NORTH' },
+      { label: 'CSMT (Central Main)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_main', corridor: 'CR_SOUTH' },
+      { label: 'Vashi / Belapur / Panvel (Harbour Line)', destName: 'Vashi / Belapur / Panvel', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_PANVEL' },
+      { label: 'Bandra / Andheri / Goregaon (Harbour Line)', destName: 'Bandra / Andheri / Goregaon', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_GOREGAON' },
+      { label: 'CSMT (Harbour Line)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_harbour', corridor: 'HB_CSMT' }
+    ],
     // Churchgate (Western Line Southern Terminal)
     stn_ccg: [
-      { label: 'Borivali / Virar / Dahanu', destName: 'Borivali / Virar / Dahanu', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' }
+      { label: 'Borivali / Virar / Dahanu (Western Line)', destName: 'Borivali / Virar / Dahanu', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' }
     ],
     // Virar
     stn_vr: [
-      { label: 'Dahanu Road', destName: 'Dahanu Road', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' },
-      { label: 'Borivali / Churchgate', destName: 'Borivali / Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' }
+      { label: 'Dahanu Road (Western Line)', destName: 'Dahanu Road', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' },
+      { label: 'Borivali / Churchgate (Western Line)', destName: 'Borivali / Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' }
     ],
     // Dahanu Road
     stn_drd: [
-      { label: 'Virar / Churchgate', destName: 'Virar / Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' }
+      { label: 'Virar / Churchgate (Western Line)', destName: 'Virar / Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' }
     ],
     // Andheri (Western & Harbour)
     stn_adh: [
@@ -1578,6 +1857,24 @@ document.addEventListener('DOMContentLoaded', () => {
       { label: 'Borivali / Virar / Dahanu (Western)', destName: 'Borivali / Virar / Dahanu', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' },
       { label: 'Churchgate (Western)', destName: 'Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' },
       { label: 'Vadala / CSMT / Panvel (Harbour)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_harbour', corridor: 'HB_CSMT' }
+    ],
+    // Mahim (Western & Harbour)
+    stn_mm: [
+      { label: 'Borivali / Virar / Dahanu (Western)', destName: 'Borivali / Virar / Dahanu', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' },
+      { label: 'Churchgate (Western)', destName: 'Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' },
+      { label: 'Bandra / Andheri / Goregaon (Harbour)', destName: 'Bandra / Andheri / Goregaon', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_GOREGAON' },
+      { label: 'Vadala / CSMT (Harbour)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_harbour', corridor: 'HB_CSMT' }
+    ],
+    // Goregaon (Western & Harbour)
+    stn_gmn: [
+      { label: 'Borivali / Virar / Dahanu (Western)', destName: 'Borivali / Virar / Dahanu', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' },
+      { label: 'Andheri / Bandra / Churchgate (Western)', destName: 'Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' },
+      { label: 'Vadala / CSMT (Harbour Line)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_harbour', corridor: 'HB_CSMT' }
+    ],
+    // King's Circle (Harbour branch)
+    stn_kce: [
+      { label: 'Bandra / Andheri / Goregaon (Harbour)', destName: 'Bandra / Andheri / Goregaon', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_GOREGAON' },
+      { label: 'Vadala / CSMT (Harbour)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_harbour', corridor: 'HB_CSMT' }
     ],
     // Panvel (Harbour, Trans-Harbour, Vasai-Diva terminal)
     stn_pnvl: [
@@ -1618,10 +1915,44 @@ document.addEventListener('DOMContentLoaded', () => {
       { label: 'Thane (Trans-Harbour Line)', destName: 'Thane', direction: 'UP', lineId: 'line_cr_trans_harbour' },
       { label: 'Uran / Dronagiri', destName: 'Uran / Dronagiri', direction: 'DN', lineId: 'line_cr_uran' }
     ],
+    // Vashi (Harbour & Trans-Harbour)
+    stn_vsh: [
+      { label: 'Belapur / Panvel (Harbour / Trans-Harbour)', destName: 'Belapur / Panvel', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_PANVEL' },
+      { label: 'Vadala / CSMT (Harbour Line)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_harbour', corridor: 'HB_CSMT' },
+      { label: 'Thane (Trans-Harbour Line)', destName: 'Thane', direction: 'UP', lineId: 'line_cr_trans_harbour' }
+    ],
+    // Sanpada & Juinagar
+    stn_sncr: [
+      { label: 'Belapur / Panvel (Harbour / Trans-Harbour)', destName: 'Belapur / Panvel', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_PANVEL' },
+      { label: 'Vashi / Vadala / CSMT (Harbour)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_harbour', corridor: 'HB_CSMT' },
+      { label: 'Thane (Trans-Harbour)', destName: 'Thane', direction: 'UP', lineId: 'line_cr_trans_harbour' }
+    ],
+    stn_jnj: [
+      { label: 'Belapur / Panvel (Harbour / Trans-Harbour)', destName: 'Belapur / Panvel', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_PANVEL' },
+      { label: 'Vashi / Vadala / CSMT (Harbour)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_harbour', corridor: 'HB_CSMT' },
+      { label: 'Thane (Trans-Harbour)', destName: 'Thane', direction: 'UP', lineId: 'line_cr_trans_harbour' }
+    ],
+    // Seawoods - Darave
+    stn_swdv: [
+      { label: 'Belapur / Panvel (Harbour Line)', destName: 'Panvel', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_PANVEL' },
+      { label: 'Uran / Dronagiri (Uran Line)', destName: 'Uran / Dronagiri', direction: 'DN', lineId: 'line_cr_uran' },
+      { label: 'Vashi / CSMT (Harbour Line)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_harbour', corridor: 'HB_CSMT' },
+      { label: 'Thane (Trans-Harbour Line)', destName: 'Thane', direction: 'UP', lineId: 'line_cr_trans_harbour' }
+    ],
+    // Dombivli
+    stn_di: [
+      { label: 'Kalyan / Kasara / Karjat (Central)', destName: 'Kalyan / Kasara / Karjat', direction: 'DN', lineId: 'line_cr_main', corridor: 'CR_NORTH' },
+      { label: 'Thane / Dadar / CSMT (Central)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_main', corridor: 'CR_SOUTH' }
+    ],
+    // Ghatkopar
+    stn_gc: [
+      { label: 'Thane / Kalyan / Kasara / Karjat (Central)', destName: 'Thane / Kalyan / Kasara / Karjat', direction: 'DN', lineId: 'line_cr_main', corridor: 'CR_NORTH' },
+      { label: 'Dadar / CSMT (Central)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_main', corridor: 'CR_SOUTH' }
+    ],
     // Neral (Central Main & Matheran)
     stn_nrl: [
-      { label: 'Karjat / Khopoli', destName: 'Karjat / Khopoli', direction: 'DN', lineId: 'line_cr_main', corridor: 'CR_KARJAT' },
-      { label: 'Kalyan / CSMT', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_main', corridor: 'CR_SOUTH' },
+      { label: 'Karjat / Khopoli (Central Main)', destName: 'Karjat / Khopoli', direction: 'DN', lineId: 'line_cr_main', corridor: 'CR_KARJAT' },
+      { label: 'Kalyan / CSMT (Central Main)', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_main', corridor: 'CR_SOUTH' },
       { label: 'Matheran (Toy Train)', destName: 'Matheran', direction: 'DN', lineId: 'line_cr_neral_matheran' }
     ],
     // Matheran
@@ -1661,85 +1992,257 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!station) return [];
     const code = (station.station_code || '').toUpperCase();
 
-    const wrIdx = WR_CODES.indexOf(code);
-    if (wrIdx !== -1) {
-      if (wrIdx === 0) return [
-        { label: 'Borivali / Virar / Dahanu', destName: 'Borivali / Virar / Dahanu', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' }
-      ];
-      if (wrIdx < 21) return [
-        { label: 'Borivali / Virar / Dahanu', destName: 'Borivali / Virar / Dahanu', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' },
-        { label: 'Churchgate', destName: 'Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' }
-      ];
-      if (wrIdx < 28) return [
-        { label: 'Virar / Dahanu', destName: 'Virar / Dahanu', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' },
-        { label: 'Borivali / Churchgate', destName: 'Borivali / Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' }
-      ];
-      if (wrIdx === 36) return [
-        { label: 'Virar / Churchgate', destName: 'Virar / Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' }
-      ];
-      return [
-        { label: 'Dahanu Road', destName: 'Dahanu Road', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' },
-        { label: 'Virar / Churchgate', destName: 'Virar / Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' }
-      ];
+    const results = [];
+    const seenKeys = new Set();
+
+    function addPossibility(p) {
+      const key = `${p.direction}_${p.lineId}_${p.corridor || ''}_${p.label}`;
+      if (!seenKeys.has(key)) {
+        seenKeys.add(key);
+        results.push(p);
+      }
     }
 
+    // 1. Central Main Line
     const crIdx = CR_MAIN_CODES.indexOf(code);
     if (crIdx !== -1) {
-      if (crIdx === 0) return [
-        { label: 'Thane / Kalyan / Kasara / Karjat', destName: 'Thane / Kalyan / Kasara / Karjat', direction: 'DN', lineId: 'line_cr_main', corridor: 'CR_NORTH' }
-      ];
-      if (crIdx <= 25) return [
-        { label: 'Thane / Kalyan / Kasara / Karjat', destName: 'Thane / Kalyan / Kasara / Karjat', direction: 'DN', lineId: 'line_cr_main', corridor: 'CR_NORTH' },
-        { label: 'CSMT', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_main', corridor: 'CR_SOUTH' }
-      ];
-      if (crIdx <= 36) return [
-        { label: 'Asangaon / Kasara', destName: 'Asangaon / Kasara', direction: 'DN', lineId: 'line_cr_main', corridor: 'CR_KASARA' },
-        { label: 'Kalyan / CSMT', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_main', corridor: 'CR_SOUTH' }
-      ];
-      return [
-        { label: 'Karjat / Khopoli', destName: 'Karjat / Khopoli', direction: 'DN', lineId: 'line_cr_main', corridor: 'CR_KARJAT' },
-        { label: 'Kalyan / CSMT', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_main', corridor: 'CR_SOUTH' }
-      ];
+      if (crIdx <= 25) { // CSMT to Kalyan
+        addPossibility({
+          label: 'Thane / Kalyan / Kasara / Karjat (Central Main)',
+          destName: 'Thane / Kalyan / Kasara / Karjat',
+          direction: 'DN',
+          lineId: 'line_cr_main',
+          corridor: 'CR_NORTH'
+        });
+        if (crIdx > 0) {
+          addPossibility({
+            label: 'Dadar / CSMT (Central Main)',
+            destName: 'CSMT',
+            direction: 'UP',
+            lineId: 'line_cr_main',
+            corridor: 'CR_SOUTH'
+          });
+        }
+      } else if (crIdx <= 36) { // Shahad to Kasara
+        if (crIdx < 36) {
+          addPossibility({
+            label: 'Asangaon / Kasara (Central Main)',
+            destName: 'Asangaon / Kasara',
+            direction: 'DN',
+            lineId: 'line_cr_main',
+            corridor: 'CR_KASARA'
+          });
+        }
+        addPossibility({
+          label: 'Kalyan / CSMT (Central Main)',
+          destName: 'CSMT',
+          direction: 'UP',
+          lineId: 'line_cr_main',
+          corridor: 'CR_SOUTH'
+        });
+      } else { // Vithalwadi to Khopoli
+        if (crIdx < 50) {
+          addPossibility({
+            label: 'Karjat / Khopoli (Central Main)',
+            destName: 'Karjat / Khopoli',
+            direction: 'DN',
+            lineId: 'line_cr_main',
+            corridor: 'CR_KARJAT'
+          });
+        }
+        addPossibility({
+          label: 'Kalyan / CSMT (Central Main)',
+          destName: 'CSMT',
+          direction: 'UP',
+          lineId: 'line_cr_main',
+          corridor: 'CR_SOUTH'
+        });
+      }
     }
 
+    // 2. Western Line
+    const wrIdx = WR_CODES.indexOf(code);
+    if (wrIdx !== -1) {
+      if (wrIdx < 21) { // Churchgate to Kandivali
+        addPossibility({
+          label: 'Borivali / Virar / Dahanu (Western Line)',
+          destName: 'Borivali / Virar / Dahanu',
+          direction: 'DN',
+          lineId: 'line_wr_suburban',
+          corridor: 'WR_NORTH'
+        });
+        if (wrIdx > 0) {
+          addPossibility({
+            label: 'Churchgate (Western Line)',
+            destName: 'Churchgate',
+            direction: 'UP',
+            lineId: 'line_wr_suburban',
+            corridor: 'WR_SOUTH'
+          });
+        }
+      } else if (wrIdx < 28) { // Borivali to Nallasopara
+        addPossibility({
+          label: 'Virar / Dahanu Road (Western Line)',
+          destName: 'Virar / Dahanu Road',
+          direction: 'DN',
+          lineId: 'line_wr_suburban',
+          corridor: 'WR_NORTH'
+        });
+        addPossibility({
+          label: 'Borivali / Churchgate (Western Line)',
+          destName: 'Borivali / Churchgate',
+          direction: 'UP',
+          lineId: 'line_wr_suburban',
+          corridor: 'WR_SOUTH'
+        });
+      } else { // Virar to Dahanu Road
+        if (wrIdx < 36) {
+          addPossibility({
+            label: 'Dahanu Road (Western Line)',
+            destName: 'Dahanu Road',
+            direction: 'DN',
+            lineId: 'line_wr_suburban',
+            corridor: 'WR_NORTH'
+          });
+        }
+        addPossibility({
+          label: 'Virar / Churchgate (Western Line)',
+          destName: 'Virar / Churchgate',
+          direction: 'UP',
+          lineId: 'line_wr_suburban',
+          corridor: 'WR_SOUTH'
+        });
+      }
+    }
+
+    // 3. Harbour Line
     if (HARBOUR_CODES.includes(code)) {
-      return [
-        { label: 'Vashi / Belapur / Panvel', destName: 'Vashi / Belapur / Panvel', direction: 'DN', lineId: 'line_cr_harbour', corridor: 'HB_PANVEL' },
-        { label: 'Vadala / CSMT', destName: 'CSMT', direction: 'UP', lineId: 'line_cr_harbour', corridor: 'HB_CSMT' }
-      ];
+      const hbWest = ['KCE', 'MM', 'BA', 'KHAR', 'STC', 'VLP', 'ADH', 'JOS', 'RMAR', 'GMN'].includes(code);
+      if (hbWest) {
+        if (code !== 'GMN') {
+          addPossibility({
+            label: 'Bandra / Andheri / Goregaon (Harbour Line)',
+            destName: 'Bandra / Andheri / Goregaon',
+            direction: 'DN',
+            lineId: 'line_cr_harbour',
+            corridor: 'HB_GOREGAON'
+          });
+        }
+        addPossibility({
+          label: 'Vadala / CSMT (Harbour Line)',
+          destName: 'CSMT',
+          direction: 'UP',
+          lineId: 'line_cr_harbour',
+          corridor: 'HB_CSMT'
+        });
+      } else {
+        if (code !== 'PNVL') {
+          addPossibility({
+            label: 'Vashi / Belapur / Panvel (Harbour Line)',
+            destName: 'Vashi / Belapur / Panvel',
+            direction: 'DN',
+            lineId: 'line_cr_harbour',
+            corridor: 'HB_PANVEL'
+          });
+        }
+        if (code !== 'CSMT') {
+          addPossibility({
+            label: 'Vadala / CSMT (Harbour Line)',
+            destName: 'CSMT',
+            direction: 'UP',
+            lineId: 'line_cr_harbour',
+            corridor: 'HB_CSMT'
+          });
+        }
+      }
     }
 
+    // 4. Trans-Harbour Line
     if (TRANS_HARBOUR_CODES.includes(code)) {
-      return [
-        { label: 'Vashi / Belapur / Panvel', destName: 'Vashi / Belapur / Panvel', direction: 'DN', lineId: 'line_cr_trans_harbour' },
-        { label: 'Thane', destName: 'Thane', direction: 'UP', lineId: 'line_cr_trans_harbour' }
-      ];
+      if (code !== 'PNVL' && code !== 'VSH') {
+        addPossibility({
+          label: 'Vashi / Belapur / Panvel (Trans-Harbour)',
+          destName: 'Vashi / Belapur / Panvel',
+          direction: 'DN',
+          lineId: 'line_cr_trans_harbour'
+        });
+      }
+      if (code !== 'TNA') {
+        addPossibility({
+          label: 'Thane (Trans-Harbour)',
+          destName: 'Thane',
+          direction: 'UP',
+          lineId: 'line_cr_trans_harbour'
+        });
+      }
     }
 
+    // 5. Uran Line
     if (URAN_CODES.includes(code)) {
-      return [
-        { label: 'Uran / Dronagiri', destName: 'Uran / Dronagiri', direction: 'DN', lineId: 'line_cr_uran' },
-        { label: 'Nerul / Belapur', destName: 'Nerul / Belapur', direction: 'UP', lineId: 'line_cr_uran' }
-      ];
+      if (code !== 'URAN') {
+        addPossibility({
+          label: 'Uran / Dronagiri (Uran Line)',
+          destName: 'Uran / Dronagiri',
+          direction: 'DN',
+          lineId: 'line_cr_uran'
+        });
+      }
+      if (code !== 'NEU' && code !== 'BEPR') {
+        addPossibility({
+          label: 'Nerul / Belapur (Uran Line)',
+          destName: 'Nerul / Belapur',
+          direction: 'UP',
+          lineId: 'line_cr_uran'
+        });
+      }
     }
 
+    // 6. Vasai-Diva-Panvel MEMU
     if (VASAI_DIVA_CODES.includes(code)) {
-      return [
-        { label: 'Vasai Road', destName: 'Vasai Road', direction: 'UP', lineId: 'line_cr_vasai_diva_panvel' },
-        { label: 'Panvel / Diva', destName: 'Panvel / Diva', direction: 'DN', lineId: 'line_cr_vasai_diva_panvel' }
-      ];
+      if (code !== 'PNVL') {
+        addPossibility({
+          label: 'Diva / Panvel (MEMU)',
+          destName: 'Panvel',
+          direction: 'DN',
+          lineId: 'line_cr_vasai_diva_panvel'
+        });
+      }
+      if (code !== 'BSR') {
+        addPossibility({
+          label: 'Diva / Vasai Road (MEMU)',
+          destName: 'Vasai Road',
+          direction: 'UP',
+          lineId: 'line_cr_vasai_diva_panvel'
+        });
+      }
     }
 
+    // 7. Pune Suburban
     if (PUNE_CODES.includes(code)) {
-      return [
-        { label: 'Shivajinagar / Pune', destName: 'Pune Junction', direction: 'DN', lineId: 'line_cr_pune_suburban' },
-        { label: 'Lonavala / Talegaon', destName: 'Lonavala', direction: 'UP', lineId: 'line_cr_pune_suburban' }
-      ];
+      if (code !== 'PUNE' && code !== 'KND') {
+        addPossibility({
+          label: 'Shivajinagar / Pune Junction',
+          destName: 'Pune Junction',
+          direction: 'DN',
+          lineId: 'line_cr_pune_suburban'
+        });
+      }
+      if (code !== 'LNL') {
+        addPossibility({
+          label: 'Talegaon / Lonavala',
+          destName: 'Lonavala',
+          direction: 'UP',
+          lineId: 'line_cr_pune_suburban'
+        });
+      }
     }
 
+    if (results.length > 0) return results;
+
+    // Fallback default
     return [
-      { label: 'Borivali / Virar / Dahanu', destName: 'Borivali / Virar / Dahanu', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' },
-      { label: 'Churchgate / CSMT', destName: 'Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' }
+      { label: 'Borivali / Virar / Dahanu (Western Line)', destName: 'Borivali / Virar / Dahanu', direction: 'DN', lineId: 'line_wr_suburban', corridor: 'WR_NORTH' },
+      { label: 'Churchgate (Western Line)', destName: 'Churchgate', direction: 'UP', lineId: 'line_wr_suburban', corridor: 'WR_SOUTH' }
     ];
   }
 
@@ -1942,16 +2445,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target.closest('#btnSwapOrLocate') || e.target.closest('#fromSearchIconBtn')) return;
     setActiveSearchTile('from');
     fromInput?.focus();
-    if (selectedFromStation && tileCenterExtension && !tileCenterExtension.classList.contains('expanded') && !selectedToStation) {
+    if (selectedFromStation && tileCenterExtension && !tileCenterExtension.classList.contains('expanded')) {
       showTileCenterDirections(selectedFromStation.id);
-    } else {
+    } else if (!selectedFromStation) {
       renderStationDirectory(getStationsForDisplay(fromInput?.value?.trim() || ''));
     }
   });
 
   fromInput?.addEventListener('focus', () => {
     setActiveSearchTile('from');
-    if (!selectedFromStation) {
+    if (selectedFromStation && tileCenterExtension && !tileCenterExtension.classList.contains('expanded')) {
+      showTileCenterDirections(selectedFromStation.id);
+    } else if (!selectedFromStation) {
       renderStationDirectory(getStationsForDisplay(fromInput?.value?.trim() || ''));
     }
   });
@@ -1961,8 +2466,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target.closest('#toSearchIconBtn')) return;
     setActiveSearchTile('to');
     toInput?.focus();
-    if (tileCenterExtension) {
-      tileCenterExtension.classList.remove('expanded');
+    // KEEP the suggestions drawer open! (User requirement: even user touches the below "To" still keep the suggestions drawer open)
+    if (selectedFromStation && tileCenterExtension && !tileCenterExtension.classList.contains('expanded')) {
+      showTileCenterDirections(selectedFromStation.id);
     }
     const currentQuery = (toInput?.value || '').trim();
     const filtered = selectedFromStation 
@@ -1973,8 +2479,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   toInput?.addEventListener('focus', () => {
     setActiveSearchTile('to');
-    if (tileCenterExtension) {
-      tileCenterExtension.classList.remove('expanded');
+    // KEEP suggestions drawer open when touching or focusing To!
+    if (selectedFromStation && tileCenterExtension && !tileCenterExtension.classList.contains('expanded')) {
+      showTileCenterDirections(selectedFromStation.id);
     }
     const currentQuery = (toInput?.value || '').trim();
     const filtered = selectedFromStation 
@@ -2342,8 +2849,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (diffSec <= 0 && diffSec >= -59 && arrivedIdx === -1) {
         arrivedIdx = i;
       }
-      // Under 10 minutes remaining before train arrives/departs (1s to 600s): Arriving soon
-      if (diffSec > 0 && diffSec <= 600 && arrivingSoonIdx === -1) {
+      // Under 15 minutes remaining before train arrives/departs (1s to 900s): Arriving soon
+      if (diffSec > 0 && diffSec <= 900 && arrivingSoonIdx === -1) {
         arrivingSoonIdx = i;
       }
       // Next upcoming train
@@ -2398,13 +2905,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const pill = tile.querySelector('.arrival-pill-container');
       const idx = tile.getAttribute('data-train-idx');
       if (!pill) {
-        // If this tile doesn't have an arrival pill yet, check if it just entered the <= 10 minute window!
+        // If this tile doesn't have an arrival pill yet, check if it just entered the <= 15 minute window!
         if (idx !== null && sortedCurrentTrains && sortedCurrentTrains[idx]) {
           const item = sortedCurrentTrains[idx];
           const rawTime = item.departureTime || item.fromStop?.departure_time;
           const tSec = getServiceDaySeconds(rawTime);
           const diffSec = tSec - currentSec;
-          if (diffSec > 0 && diffSec <= 600) {
+          if (diffSec > 0 && diffSec <= 900) {
             needsFullRefresh = true;
           }
         }
@@ -2427,8 +2934,12 @@ document.addEventListener('DOMContentLoaded', () => {
           tile.classList.add('tile-arrived', 'tile-arrival-active');
           tile.classList.remove('tile-arriving');
         }
-      } else if (diffSec > 0 && diffSec <= 600) {
-        // Under 10 minutes: live countdown MM:SS (e.g. 10:00, 09:59...)
+      } else if (diffSec > 0 && diffSec <= 900) {
+        // Under 15 minutes: live countdown MM:SS (e.g. 15:00, 14:59...)
+        if (!tile.classList.contains('tile-arriving')) {
+          tile.classList.add('tile-arriving');
+        }
+        tile.classList.remove('tile-arrived', 'tile-arrival-active');
         const timeEl = pill.querySelector('.arrival-pill-time');
         if (timeEl) {
           const remM = Math.floor(diffSec / 60);
@@ -2446,6 +2957,105 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // ==============================================================================
+  // 6.2. TRAIN OPERATIONAL RUNNING STATUS ENGINE
+  // Intelligently determines if a train is:
+  // 1. SET FOR DEPARTURE: Berthed on PF within 15m of origin departure, or arriving/at PF
+  // 2. CURRENTLY RUNNING: Departed origin, moving along the corridor before terminus
+  // 3. NOT STARTED / NOT SCHEDULED - CURRENTLY EMPTY: More than 15m before origin departure
+  // 4. DEPARTED: Train has already departed this station long ago
+  // ==============================================================================
+  function getTrainOperationalStatus(trainItem) {
+    if (!trainItem) {
+      return {
+        isOperational: false,
+        statusReason: 'NOT_SCHEDULED',
+        displayText: 'Not Schedulled - Currently Empty'
+      };
+    }
+
+    const rawTime = trainItem.departureTime || trainItem.fromStop?.departure_time || '05:45:00';
+    const trainSeconds = parseTimeToSeconds(rawTime);
+    const currentSeconds = getActiveCurrentSeconds();
+    const currDepSec = getServiceDaySeconds(trainSeconds);
+    const nowSec = getServiceDaySeconds(currentSeconds);
+
+    // Start point (origin station) departure time
+    let originDepSec = currDepSec;
+    if (trainItem.originDepartureTime) {
+      originDepSec = getServiceDaySeconds(parseTimeToSeconds(trainItem.originDepartureTime));
+    } else if (trainItem.originStation && trainItem.fromStop && trainItem.originStation.id === trainItem.fromStop.station_id) {
+      originDepSec = currDepSec;
+    } else if (trainItem.fromStop?.sequence && trainItem.fromStop.sequence > 1) {
+      // Average suburban inter-station travel ~2.5 mins (150s) per stop
+      const stopsBefore = trainItem.fromStop.sequence - 1;
+      originDepSec = Math.max(0, currDepSec - stopsBefore * 150);
+    }
+
+    // Destination arrival time
+    let destArrSec = currDepSec + 45 * 60;
+    if (trainItem.destinationArrivalTime) {
+      destArrSec = getServiceDaySeconds(parseTimeToSeconds(trainItem.destinationArrivalTime));
+    } else if (trainItem.arrivalTime) {
+      destArrSec = getServiceDaySeconds(parseTimeToSeconds(trainItem.arrivalTime));
+    }
+
+    // Delay adjustment
+    const delayMinutes = CrowdLiveEngine.getTrainDelay(trainItem);
+    const delaySec = delayMinutes * 60;
+    const originDepSecAdj = originDepSec + delaySec;
+    const currDepSecAdj = currDepSec + delaySec;
+    const destArrSecAdj = destArrSec + delaySec;
+
+    // Time differences
+    const diffOriginSec = originDepSecAdj - nowSec;   // > 0 if start departure is in future
+    const diffCurrSec = currDepSecAdj - nowSec;       // > 0 if current station departure is in future
+    const diffDestSec = destArrSecAdj - nowSec;       // > 0 if terminus arrival is in future
+
+    // 1. Train has already departed this station long ago (more than 59 seconds in past)
+    if (diffCurrSec < -59) {
+      return {
+        isOperational: false,
+        statusReason: 'DEPARTED',
+        displayText: 'Not Schedulled - Currently Empty'
+      };
+    }
+
+    // 2. Set for Departure:
+    // - At origin station or within 15 minutes of origin departure (train placed on PF, boarding active)
+    // - Or within 15 minutes of departure from current station (arriving or arrived on PF)
+    const isSetAtOrigin = (diffOriginSec <= 15 * 60 && diffOriginSec > 0);
+    const isSetAtCurrentStation = (diffCurrSec <= 15 * 60 && diffCurrSec >= -59);
+
+    if (isSetAtOrigin || isSetAtCurrentStation) {
+      return {
+        isOperational: true,
+        statusReason: 'SET_FOR_DEPARTURE',
+        displayText: ''
+      };
+    }
+
+    // 3. Currently Running:
+    // Train has departed its start point / origin (nowSec >= originDepSecAdj)
+    // AND has not completed its terminus run (diffDestSec >= -300)
+    // AND has not departed current station (diffCurrSec >= -59)
+    if (nowSec >= originDepSecAdj && diffDestSec >= -300 && diffCurrSec >= -59) {
+      return {
+        isOperational: true,
+        statusReason: 'CURRENTLY_RUNNING',
+        displayText: ''
+      };
+    }
+
+    // 4. Train has NOT started its schedule from its start point departure place:
+    // (diffOriginSec > 15 * 60)
+    return {
+      isOperational: false,
+      statusReason: 'NOT_STARTED',
+      displayText: 'Not Schedulled - Currently Empty'
+    };
+  }
+
   function renderSingleTrainTileHtml(item, idx, currentMinutes) {
     const isFast = isTrainFast(item);
     const isAc = isTrainAc(item);
@@ -2461,10 +3071,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Arrival Status:
     // 1. Frameless: without frame, only Dot + MM:SS time or Dot + Arrived
-    // 2. Under 10 minutes: only Dot and remaining arrival time in format "10:00" (diffSec <= 600 && > 0)
+    // 2. Under 15 minutes: only Dot and remaining arrival time in format "15:00" (diffSec <= 900 && > 0)
     // 3. Reached station: diffSec <= 0 && diffSec >= -59 -> flashes & green dot "Arrived"
     const isArrived = (diffSec <= 0 && diffSec >= -59) || (diffSec <= 0 && Math.floor(diffSec / 60) === 0);
-    const isArriving = (diffSec > 0 && diffSec <= 600);
+    const isArriving = (diffSec > 0 && diffSec <= 900);
     const isPast = (diffSec < -59);
 
     // 2. Destination / Speed label
@@ -2472,7 +3082,7 @@ document.addEventListener('DOMContentLoaded', () => {
     destName = destName.replace(' Road', '').replace(' Suburban', '');
     const hasDot = !isArrived && !isArriving && (destName.toLowerCase() === 'nalasopara' || destName.toLowerCase() === 'andheri');
 
-    // Arrival Notification (Frameless: only Dot and time in MM:SS under 10m, or Dot and Arrived when arrived)
+    // Arrival Notification (Frameless: only Dot and time in MM:SS under 15m, or Dot and Arrived when arrived)
     let arrivalBadgeHtml = '';
     if (isArrived) {
       arrivalBadgeHtml = `
@@ -2536,9 +3146,16 @@ document.addEventListener('DOMContentLoaded', () => {
       arrivalClass = 'tile-arriving';
     }
 
+    // 6. Dynamic Crowd Strength Calculation & Operational Status
+    const opStatus = getTrainOperationalStatus(item);
+    const crowdEst = CrowdStrengthManager.getEstimate(item);
+
     // Layout:
     // Row 1: [Time (07:17 PM) + Station Name (Churchgate)]             [Platform (PF: 03)]
     // Row 2: [Route (Virar - Churchgate)]                               [Below PF: Arrival pill / Delay]
+    // Row 3 (Extends on Long-Press): 
+    //   - If Running / Set for Departure: [Crowd] [===----] [25% / 100%+]
+    //   - If Not started schedule / Empty: [⚪ Not Schedulled - Currently Empty]
     return `
       <div class="train-timetable-tile ${isAc ? 'tile-ac' : ''} ${arrivalClass} ${hasDelay ? 'tile-has-delay' : ''} ${isPast ? 'tile-past-schedule' : ''}" data-train-idx="${idx}" id="train-tile-${idx}">
         <div class="tile-top-row">
@@ -2558,6 +3175,23 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="tile-below-pf">
             ${arrivalBadgeHtml}
             ${hasDelay ? `<span class="tile-delay-text">${delayText}</span>` : ''}
+          </div>
+        </div>
+        <div class="tile-crowd-drawer" id="tile-crowd-drawer-${idx}">
+          <div class="tile-crowd-row" ${!opStatus.isOperational ? 'style="display: none;"' : ''}>
+            <span class="tile-crowd-label" style="color: ${crowdEst.color};">Crowd</span>
+            <div class="tile-crowd-track">
+              <div class="tile-crowd-fill ${crowdEst.visualPercentage >= 100 ? 'fill-extreme' : ''}" 
+                   style="width: 0%; background-color: ${crowdEst.color};" 
+                   data-target-pct="${crowdEst.visualPercentage}"></div>
+            </div>
+            <span class="tile-crowd-pct" style="color: ${crowdEst.color};">${crowdEst.displayPercentage}</span>
+          </div>
+          <div class="tile-crowd-empty-row" ${opStatus.isOperational ? 'style="display: none;"' : ''}>
+            <span class="tile-crowd-empty-badge">
+              <span class="tile-crowd-empty-dot"></span>
+              Not Schedulled - Currently Empty
+            </span>
           </div>
         </div>
       </div>
@@ -2664,16 +3298,93 @@ document.addEventListener('DOMContentLoaded', () => {
       container.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // Click on tile -> Open Train Journey / Route Stops View (Design Screen 6)
+    // Long-Press (5s) to reveal Crowd Strength + Single Click to open Train Journey
     container.querySelectorAll('.train-timetable-tile').forEach(tile => {
-      tile.addEventListener('click', () => {
-        const idx = parseInt(tile.getAttribute('data-train-idx'), 10);
-        const t = sortedTrains[idx];
+      let holdTimer = null;
+      let isLongPressCompleted = false;
+      let startX = 0;
+      let startY = 0;
+      const idx = parseInt(tile.getAttribute('data-train-idx'), 10);
+      const t = sortedTrains[idx];
+
+      const cancelHold = () => {
+        if (holdTimer) {
+          clearTimeout(holdTimer);
+          holdTimer = null;
+        }
+        tile.classList.remove('is-holding');
+      };
+
+      tile.addEventListener('pointerdown', (e) => {
+        // Only primary mouse button or touch
+        if (e.button !== 0 && e.pointerType === 'mouse') return;
+        startX = e.clientX;
+        startY = e.clientY;
+        isLongPressCompleted = false;
+        tile.classList.add('is-holding');
+
+        // Preload fresh estimate in background only if operational
+        if (t && getTrainOperationalStatus(t).isOperational) {
+          CrowdStrengthManager.getEstimate(t, (serverEst) => {
+            if (tile.classList.contains('crowd-expanded')) {
+              CrowdStrengthManager.applyEstimateToTile(tile, serverEst);
+            }
+          });
+        }
+
+        // Long press of 1 second (1000ms)
+        holdTimer = setTimeout(() => {
+          isLongPressCompleted = true;
+          cancelHold();
+          if (t) {
+            CrowdStrengthManager.expandTile(tile, t);
+          }
+        }, 1000);
+      });
+
+      tile.addEventListener('pointermove', (e) => {
+        if (!holdTimer) return;
+        // Cancel long press if moved more than 10px (user is scrolling)
+        const dist = Math.hypot(e.clientX - startX, e.clientY - startY);
+        if (dist > 10) {
+          cancelHold();
+        }
+      });
+
+      tile.addEventListener('pointerup', (e) => {
+        cancelHold();
+        if (isLongPressCompleted) {
+          e.preventDefault();
+          e.stopPropagation();
+          setTimeout(() => { isLongPressCompleted = false; }, 350);
+          return;
+        }
+      });
+
+      tile.addEventListener('pointercancel', cancelHold);
+      tile.addEventListener('pointerleave', cancelHold);
+
+      // Single Click Handler: opens train journey screen (works both when closed and when open for crowd!)
+      tile.addEventListener('click', (e) => {
+        if (isLongPressCompleted) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
         if (t) {
           openTrainJourneyScreen(t, idx);
         }
       });
+
+      // Accessibility fallback: Contextmenu (Right click on desktop) or double-click to preview crowd
+      tile.addEventListener('contextmenu', (e) => {
+        if (t) {
+          e.preventDefault();
+          CrowdStrengthManager.expandTile(tile, t);
+        }
+      });
     });
+
 
     syncScrollIndicator(container);
 
@@ -4547,30 +5258,30 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
 
           <div class="stop-track">
-            <div class="stop-track-line line-top ${idx === 0 ? 'hidden' : ''}"></div>
+            ${idx === 0 ? `
+              <div class="stop-track-line line-bottom"></div>
+            ` : idx === total - 1 ? `
+              <div class="stop-track-line line-top"></div>
+            ` : `
+              <div class="stop-track-line line-full"></div>
+            `}
             <div class="stop-dot-anchor">
-              <div class="stop-dot ${isSkip ? 'is-skip-dot' : ''}" id="journey-dot-${idx}"></div>
+              <div class="stop-dot ${isSkip ? 'is-skip-dot' : 'is-halt-dot'}" id="journey-dot-${idx}">
+                ${!isSkip ? `
+                  <svg class="stop-dot-check-icon" width="8.2" height="8.2" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                ` : ''}
+              </div>
             </div>
-            <div class="stop-track-line line-bottom ${idx === total - 1 ? 'hidden' : ''}"></div>
           </div>
 
           <div class="stop-content">
             <div class="stop-station-col">
-              <span class="stop-station-name">${sName}</span>
-              ${isSkip ? `
-                <span class="station-will-not-stop-tag">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
-                  </svg>
-                  Will not stop
-                </span>
-              ` : ''}
+              <span class="stop-station-name ${isSkip ? 'is-skip-text' : 'is-halt-text'}">${isSkip ? `<svg class="stop-skip-cross-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"></circle><line x1="5.28" y1="5.28" x2="18.72" y2="18.72"></line></svg>` : ''}<span class="stop-name-text">${sName}</span></span>
             </div>
             <div class="stop-meta-right">
-              ${isSkip ? `
-                <span class="station-skip-pill">No Stop</span>
-              ` : (pfStr ? `<span class="stop-pf-badge">PF: ${pfStr}</span>` : '')}
+              ${!isSkip && pfStr ? `<span class="stop-pf-badge">PF: ${pfStr}</span>` : ''}
             </div>
           </div>
         </div>
@@ -4592,6 +5303,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // Return button rendered at the very end of stops timeline (visible when user scrolls to bottom)
+    html += `
+      <div class="journey-end-return-box">
+        <button id="btnJourneyReturn" class="btn-journey-return" title="Return">
+          <span>Return</span>
+        </button>
+      </div>
+    `;
+
     // Single persistent moving capsule along the entire route track
     html += `
       <div class="train-capsule-orange is-orange is-moving" id="journeyLiveCapsule">
@@ -4602,6 +5322,11 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     stopsContainer.innerHTML = html;
+
+    // Attach click listener for Return button rendered inside stops container
+    stopsContainer.querySelector('#btnJourneyReturn')?.addEventListener('click', () => {
+      showToast('Return button clicked');
+    });
 
     // Immediately calculate dynamic dot offset synchronously so capsule lands precisely without initial jerk
     refreshJourneyCurrentStop(shouldScroll, true);
@@ -4709,7 +5434,10 @@ document.addEventListener('DOMContentLoaded', () => {
     liveCapsule.classList.toggle('is-green', shouldCapsuleBeGreen);
     liveCapsule.classList.toggle('is-orange', !shouldCapsuleBeGreen);
 
-    // 5. Update Station Rows (Passed, Arrived here, Touched)
+    // Uncompleted route track: simple thin gray line with 70% opacity
+    const uncompletedGray = isDay ? 'rgba(100, 116, 139, 0.70)' : 'rgba(148, 163, 184, 0.70)';
+
+    // 5. Update Station Rows (Passed, Arrived here, Touched, Track Line Completed/Thin Gray)
     for (let idx = 0; idx < total; idx++) {
       const row = document.getElementById(`journey-stop-${idx}`);
       if (!row) continue;
@@ -4731,6 +5459,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
+      const stnNameEl = row.querySelector('.stop-station-name');
+      const stnNameText = row.querySelector('.stop-name-text');
+      if (stnNameEl) stnNameEl.classList.toggle('is-current-station', isThisTouched);
+      if (stnNameText) stnNameText.classList.toggle('is-current-station', isThisTouched);
+
       if (stnCol) {
         let arrivedEl = stnCol.querySelector('.stop-arrived-text');
         if (isThisTouched) {
@@ -4744,31 +5477,69 @@ document.addEventListener('DOMContentLoaded', () => {
           arrivedEl.remove();
         }
       }
+
+      // Station Track Line: Completed behind capsule = Solid Vibrant Purple without breaks; Ahead = Thin Gray 70% opacity only
+      const lineEl = row.querySelector('.stop-track-line');
+      if (lineEl) {
+        let segStart = row.offsetTop;
+        let segEnd = segStart + row.offsetHeight;
+        if (idx === 0) {
+          segStart = row.offsetTop + (row.offsetHeight / 2);
+        } else if (idx === total - 1) {
+          segEnd = row.offsetTop + (row.offsetHeight / 2);
+        }
+
+        if (currentY >= segEnd) {
+          // Strictly behind capsule: Full Solid Vibrant Purple without break
+          lineEl.classList.add('is-completed-track');
+          lineEl.style.background = '';
+          lineEl.style.boxShadow = '';
+        } else if (currentY <= segStart) {
+          // Strictly ahead of capsule: Thin Gray 70% opacity only
+          lineEl.classList.remove('is-completed-track');
+          lineEl.style.background = '';
+          lineEl.style.boxShadow = 'none';
+        } else {
+          // Capsule is spanning this station row
+          lineEl.classList.remove('is-completed-track');
+          const fillPx = Math.max(0, currentY - segStart);
+          lineEl.style.background = `linear-gradient(180deg, ${purpleColor} 0px, ${purpleColor} ${fillPx.toFixed(1)}px, ${uncompletedGray} ${fillPx.toFixed(1)}px, ${uncompletedGray} 100%)`;
+          lineEl.style.boxShadow = (!isDay && fillPx > 3) ? '0 0 8px rgba(168, 85, 247, 0.75)' : 'none';
+        }
+      }
     }
 
-    // 6. Update Between Rows (Track fill line & 'Between' label)
+    // 6. Update Between Rows (Completed behind capsule: Solid Vibrant Purple without break; Ahead: Thin Gray 70% opacity only)
     for (let idx = 0; idx < total - 1; idx++) {
+      const bRow = document.getElementById(`journey-between-${idx}`);
       const bLine = document.getElementById(`between-line-${idx}`);
       const bText = document.getElementById(`between-text-${idx}`);
-      const bRow = document.getElementById(`journey-between-${idx}`);
 
-      if (idx < livePos.fromIdx) {
-        // Fully completed past track
-        if (bLine) bLine.style.background = purpleColor;
-        if (bText) bText.style.display = 'none';
-      } else if (idx === livePos.fromIdx) {
-        // Active transit segment
-        if (bLine && bRow) {
-          const fillY = Math.max(0, currentY - bRow.offsetTop);
-          bLine.style.background = `linear-gradient(180deg, ${purpleColor} 0px, ${purpleColor} ${fillY.toFixed(1)}px, ${grayColor} ${fillY.toFixed(1)}px, ${grayColor} 100%)`;
+      if (bRow && bLine) {
+        const segStart = bRow.offsetTop;
+        const segEnd = segStart + bRow.offsetHeight;
+
+        if (currentY >= segEnd) {
+          // Strictly behind capsule: Full Solid Vibrant Purple without break
+          bLine.classList.add('is-completed-track');
+          bLine.style.background = '';
+          bLine.style.boxShadow = '';
+        } else if (currentY <= segStart) {
+          // Strictly ahead of capsule: Thin Gray 70% opacity only
+          bLine.classList.remove('is-completed-track');
+          bLine.style.background = '';
+          bLine.style.boxShadow = 'none';
+        } else {
+          // Capsule is spanning this between row
+          bLine.classList.remove('is-completed-track');
+          const fillPx = Math.max(0, currentY - segStart);
+          bLine.style.background = `linear-gradient(180deg, ${purpleColor} 0px, ${purpleColor} ${fillPx.toFixed(1)}px, ${uncompletedGray} ${fillPx.toFixed(1)}px, ${uncompletedGray} 100%)`;
+          bLine.style.boxShadow = (!isDay && fillPx > 3) ? '0 0 8px rgba(168, 85, 247, 0.75)' : 'none';
         }
-        if (bText) {
-          bText.style.display = isTouchingDot ? 'none' : 'block';
-        }
-      } else {
-        // Future upcoming track
-        if (bLine) bLine.style.background = '';
-        if (bText) bText.style.display = 'none';
+      }
+
+      if (bText) {
+        bText.style.display = (idx === livePos.fromIdx && !isTouchingDot) ? 'block' : 'none';
       }
     }
 
@@ -4792,22 +5563,36 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         if (stopsContainer) {
           stopsContainer.scrollTo({
-            top: Math.max(0, currentY - 140),
+            top: Math.max(0, currentY - Math.round(stopsContainer.clientHeight / 2)),
             behavior: 'smooth'
           });
         }
       }, 80);
-    } else {
-      // Keep capsule inside visible scroll window if train nears bottom
-      const viewTop = stopsContainer.scrollTop;
-      const viewBottom = viewTop + stopsContainer.clientHeight;
-      if (currentY > viewBottom - 110) {
-        stopsContainer.scrollTo({
-          top: Math.max(0, currentY - 140),
-          behavior: 'smooth'
-        });
-      }
     }
+    // Allow user to freely scroll anywhere from top to bottom without forced auto-jumps!
+    // Dynamically update Reset button visibility
+    updateJourneyResetButtonVisibility();
+  }
+
+  function updateJourneyResetButtonVisibility() {
+    const resetBtn = document.getElementById('btnJourneyReset');
+    const stopsContainer = document.getElementById('journeyStopsContainer');
+    const liveCapsule = document.getElementById('journeyLiveCapsule');
+    if (!resetBtn || !stopsContainer) return;
+
+    if (!liveCapsule) {
+      resetBtn.classList.remove('visible');
+      return;
+    }
+
+    const capsuleTop = parseFloat(liveCapsule.style.top) || 0;
+    const viewTop = stopsContainer.scrollTop;
+    const viewBottom = viewTop + stopsContainer.clientHeight;
+
+    // Capsule is considered visible if it is comfortably inside the scroll window
+    const isCapsuleVisible = (capsuleTop >= viewTop + 30) && (capsuleTop <= viewBottom - 30);
+
+    resetBtn.classList.toggle('visible', !isCapsuleVisible);
   }
 
   function onCrowdReportsUpdated() {
@@ -4927,6 +5712,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // User requested: "in bottom show one button called Return (just keep that button as of now and i'll let you know the logic of it afterword)"
     showToast('Return button clicked');
   });
+
+  // Small Glassmorphic Reset Button: Smoothly returns user to the live train capsule position
+  document.getElementById('btnJourneyReset')?.addEventListener('click', () => {
+    const stopsContainer = document.getElementById('journeyStopsContainer');
+    const liveCapsule = document.getElementById('journeyLiveCapsule');
+    if (stopsContainer && liveCapsule) {
+      const capsuleTop = parseFloat(liveCapsule.style.top) || 0;
+      stopsContainer.scrollTo({
+        top: Math.max(0, capsuleTop - Math.round(stopsContainer.clientHeight / 2)),
+        behavior: 'smooth'
+      });
+    }
+  });
+
+  // Track user scroll position in stops container to toggle Reset button visibility
+  const journeyStopsScrollContainer = document.getElementById('journeyStopsContainer');
+  if (journeyStopsScrollContainer) {
+    journeyStopsScrollContainer.addEventListener('scroll', () => {
+      updateJourneyResetButtonVisibility();
+    }, { passive: true });
+  }
 
   document.getElementById('toggleInTrain')?.addEventListener('change', async (e) => {
     const isChecked = e.target.checked;
@@ -5613,31 +6419,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // F. CONTROLLER EVENT LISTENERS & USER INTERACTION
     // ----------------------------------------------------
     function initListeners() {
-      // Toggle Switch: Stops Notification
-      if (toggleStopsNotif) {
-        toggleStopsNotif.addEventListener('change', (e) => {
-          const isChecked = e.target.checked;
-          if (stopsNotifWrapper) {
-            stopsNotifWrapper.classList.toggle('is-open', isChecked);
-          }
-          if (isChecked) {
-            startActiveTracking();
-          } else {
-            stopActiveTracking();
-          }
-        });
-      }
-
-      // Checkbox Preferences
-      if (chkAllowAll) {
-        chkAllowAll.addEventListener('change', (e) => {
-          const checked = e.target.checked;
-          if (chkShutter) chkShutter.checked = checked;
-          if (chkHeader) chkHeader.checked = checked;
-          if (chkVibrate) chkVibrate.checked = checked;
-        });
-      }
-
       // Test Preview Button 1: "Test 'Arrived At' (18s)"
       if (btnPrevArrived) {
         btnPrevArrived.addEventListener('click', (e) => {
@@ -5750,5 +6531,79 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize Stops Notification Controller
   StopsNotificationController.init();
+
+  // ==========================================================================
+  // 10. SILENT 2-HOUR BACKGROUND OVER-THE-AIR (OTA) TIMETABLE SYNC WORKER
+  //     (Checks every 2 hours silently, zero loading modal, always accurate)
+  // ==========================================================================
+  const SilentOTASyncWorker = (() => {
+    const SYNC_INTERVAL_MS = 2 * 60 * 60 * 1000; // 2 hours
+    const STORAGE_KEY_VER = 'mumbai_local_timetable_version';
+    const STORAGE_KEY_LAST_CHECK = 'mumbai_local_last_sync_check';
+    let localVersion = localStorage.getItem(STORAGE_KEY_VER) || '2026.10.02.011';
+    let isChecking = false;
+
+    async function checkForUpdatesSilently(isManual = false) {
+      if (isChecking) return;
+      if (!navigator.onLine) return; // Silent skip if offline
+
+      try {
+        isChecking = true;
+        const res = await fetch('/api/timetable/manifest', {
+          headers: { 'Cache-Control': 'no-cache' }
+        });
+        if (!res.ok) return;
+
+        const manifest = await res.json();
+        const latestVer = manifest.latestVersion;
+        localStorage.setItem(STORAGE_KEY_LAST_CHECK, String(Date.now()));
+
+        if (latestVer && latestVer !== localVersion) {
+          console.log(`[Silent OTA Sync] New timetable version detected: ${latestVer} (Local: ${localVersion}). Hot-patching silently...`);
+          localVersion = latestVer;
+          localStorage.setItem(STORAGE_KEY_VER, latestVer);
+
+          // If results screen is active, refresh the trains silently in background without a blocking modal!
+          const resultsScreen = document.getElementById('screen-train-results');
+          if (resultsScreen && resultsScreen.classList.contains('active') && fromStation && toStation) {
+            const trainsRes = await fetch(`/api/trains?from=${fromStation.id}&to=${toStation.id}`);
+            if (trainsRes.ok) {
+              const freshTrains = await trainsRes.json();
+              currentTrains = freshTrains;
+              renderTimetableTiles(getFilteredTrains(), false);
+            }
+          }
+        }
+      } catch (e) {
+        // Silent catch: never disrupt the user with network errors
+      } finally {
+        isChecking = false;
+      }
+    }
+
+    function init() {
+      // 1. Initial silent check on app startup (if > 2 hours or version check needed)
+      const lastCheck = parseInt(localStorage.getItem(STORAGE_KEY_LAST_CHECK) || '0', 10);
+      const elapsed = Date.now() - lastCheck;
+      if (elapsed > SYNC_INTERVAL_MS || !localStorage.getItem(STORAGE_KEY_VER)) {
+        setTimeout(() => checkForUpdatesSilently(false), 2000);
+      }
+
+      // 2. Periodic 2-hour interval
+      setInterval(() => {
+        checkForUpdatesSilently(false);
+      }, SYNC_INTERVAL_MS);
+
+      // 3. Trigger check when phone reconnects to internet
+      window.addEventListener('online', () => {
+        setTimeout(() => checkForUpdatesSilently(false), 1500);
+      });
+    }
+
+    return { init, checkNow: () => checkForUpdatesSilently(true) };
+  })();
+
+  // Initialize Silent OTA Sync Worker
+  SilentOTASyncWorker.init();
 
 });

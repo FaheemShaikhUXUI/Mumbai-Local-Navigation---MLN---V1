@@ -1609,5 +1609,14 @@
     "origin_station_id": "stn_mae",
     "destination_station_id": "stn_nrl",
     "description": "Matheran to Neral Toy Train"
+  },
+  {
+    "id": "route_cr_main_csmt_abh_dn_fast",
+    "line_id": "line_cr_main",
+    "name": "CSMT to ABH (DN FAST)",
+    "direction": "DN",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_abh",
+    "description": "Central Main Line CSMT to ABH FAST"
   }
 ]

@@ -1715,6 +1715,15 @@
       "origin_station_id": "stn_mae",
       "destination_station_id": "stn_nrl",
       "description": "Matheran to Neral Toy Train"
+    },
+    {
+      "id": "route_cr_main_csmt_abh_dn_fast",
+      "line_id": "line_cr_main",
+      "name": "CSMT to ABH (DN FAST)",
+      "direction": "DN",
+      "origin_station_id": "stn_csmt",
+      "destination_station_id": "stn_abh",
+      "description": "Central Main Line CSMT to ABH FAST"
     }
   ],
   "stations": [
@@ -31561,7 +31570,7 @@
       "line_id": "line_cr_main",
       "route_id": "route_cr_main_csmt_abh_dn",
       "cars": 12,
-      "status": "ACTIVE"
+      "status": "CANCELLED"
     },
     {
       "id": "train_cr_97601",
@@ -43625,6 +43634,19 @@
       "line_id": "line_cr_neral_matheran",
       "route_id": "route_cr_matheran_mae_nrl_up",
       "cars": 6,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "train_cr_95337",
+      "train_number": "95337",
+      "train_code": "A-1",
+      "train_name": "ABH FAST 15-CAR",
+      "train_type": "FAST",
+      "origin_station_id": "stn_csmt",
+      "destination_station_id": "stn_abh",
+      "line_id": "line_cr_main",
+      "route_id": "route_cr_main_csmt_abh_dn",
+      "cars": 15,
       "status": "ACTIVE"
     }
   ],
@@ -495482,6 +495504,116 @@
       "arrival_time": "20:20:00",
       "departure_time": "20:20:00",
       "day_pattern": "DAILY"
+    },
+    {
+      "id": "stop_train_cr_95337_1",
+      "train_id": "train_cr_95337",
+      "station_id": "stn_csmt",
+      "sequence": 1,
+      "arrival_time": "00:05:00",
+      "departure_time": "00:05:00",
+      "day_pattern": "DAILY",
+      "platform": "05"
+    },
+    {
+      "id": "stop_train_cr_95337_2",
+      "train_id": "train_cr_95337",
+      "station_id": "stn_by",
+      "sequence": 2,
+      "arrival_time": "00:13:00",
+      "departure_time": "00:14:00",
+      "day_pattern": "DAILY",
+      "platform": "03"
+    },
+    {
+      "id": "stop_train_cr_95337_3",
+      "train_id": "train_cr_95337",
+      "station_id": "stn_dr",
+      "sequence": 3,
+      "arrival_time": "00:20:00",
+      "departure_time": "00:21:00",
+      "day_pattern": "DAILY",
+      "platform": "05"
+    },
+    {
+      "id": "stop_train_cr_95337_4",
+      "train_id": "train_cr_95337",
+      "station_id": "stn_cla",
+      "sequence": 4,
+      "arrival_time": "00:28:00",
+      "departure_time": "00:29:00",
+      "day_pattern": "DAILY",
+      "platform": "05"
+    },
+    {
+      "id": "stop_train_cr_95337_5",
+      "train_id": "train_cr_95337",
+      "station_id": "stn_gc",
+      "sequence": 5,
+      "arrival_time": "00:34:00",
+      "departure_time": "00:35:00",
+      "day_pattern": "DAILY",
+      "platform": "03"
+    },
+    {
+      "id": "stop_train_cr_95337_6",
+      "train_id": "train_cr_95337",
+      "station_id": "stn_tna",
+      "sequence": 6,
+      "arrival_time": "00:48:00",
+      "departure_time": "00:49:00",
+      "day_pattern": "DAILY",
+      "platform": "05"
+    },
+    {
+      "id": "stop_train_cr_95337_7",
+      "train_id": "train_cr_95337",
+      "station_id": "stn_di",
+      "sequence": 7,
+      "arrival_time": "01:05:00",
+      "departure_time": "01:06:00",
+      "day_pattern": "DAILY",
+      "platform": "03"
+    },
+    {
+      "id": "stop_train_cr_95337_8",
+      "train_id": "train_cr_95337",
+      "station_id": "stn_kyn",
+      "sequence": 8,
+      "arrival_time": "01:14:00",
+      "departure_time": "01:15:00",
+      "day_pattern": "DAILY",
+      "platform": "04"
+    },
+    {
+      "id": "stop_train_cr_95337_9",
+      "train_id": "train_cr_95337",
+      "station_id": "stn_vldi",
+      "sequence": 9,
+      "arrival_time": "01:19:00",
+      "departure_time": "01:20:00",
+      "day_pattern": "DAILY",
+      "platform": "01"
+    },
+    {
+      "id": "stop_train_cr_95337_10",
+      "train_id": "train_cr_95337",
+      "station_id": "stn_ulnr",
+      "sequence": 10,
+      "arrival_time": "01:23:00",
+      "departure_time": "01:24:00",
+      "day_pattern": "DAILY",
+      "platform": "01"
+    },
+    {
+      "id": "stop_train_cr_95337_11",
+      "train_id": "train_cr_95337",
+      "station_id": "stn_abh",
+      "sequence": 11,
+      "arrival_time": "01:27:00",
+      "departure_time": "01:27:00",
+      "day_pattern": "DAILY",
+      "platform": "02"
     }
   ],
   "datasetChecksum": "33156cd66c4cb24e68da8204e828cc93ee4bbd0705a8ac202153f88c45930ce3"

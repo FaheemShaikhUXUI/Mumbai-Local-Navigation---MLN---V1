@@ -3,11 +3,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { SyncEngine } from '@mumbai-timetable/sync-engine';
 import { DatabaseManager } from '@mumbai-timetable/database';
-import { createStorageProviderFromEnv } from '@mumbai-timetable/shared';
+import { createStorageProviderFromEnv, CrowdEngine } from '@mumbai-timetable/shared';
 import { StationSearchEngine, TrainSearchEngine, LineExplorer } from '@mumbai-timetable/search';
 
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const syncEngine = new SyncEngine();
+const crowdEngine = new CrowdEngine();
 
 let cachedDb: DatabaseManager | null = null;
 let cachedVersion: string | null = null;
@@ -284,6 +285,79 @@ const server = http.createServer(async (req, res) => {
           res.end(JSON.stringify({ error: 'Invalid JSON' }));
         }
       });
+      return;
+    }
+
+    // 10.6. API: Dynamic GPS-Based Train Crowd Strength Endpoints
+    if (pathname === '/api/crowd/estimate' && req.method === 'GET') {
+      const trainKey = parsedUrl.searchParams.get('trainKey') || 'UNKNOWN';
+      const trainId = parsedUrl.searchParams.get('trainId') || undefined;
+      const trainNumber = parsedUrl.searchParams.get('trainNumber') || undefined;
+      const departureTime = parsedUrl.searchParams.get('departureTime') || '10:18:00';
+      const isFast = parsedUrl.searchParams.get('isFast') === 'true';
+      const isAc = parsedUrl.searchParams.get('isAc') === 'true';
+      const direction = (parsedUrl.searchParams.get('direction') as 'UP' | 'DN') || 'DN';
+
+      const estimate = crowdEngine.getEstimate(trainKey, {
+        trainKey,
+        trainId,
+        trainNumber,
+        departureTime,
+        isFast,
+        isAc,
+        direction
+      });
+
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = 200;
+      res.end(JSON.stringify(estimate));
+      return;
+    }
+
+    if (pathname === '/api/crowd/observe' && req.method === 'POST') {
+      let bodyStr = '';
+      req.on('data', (chunk) => { bodyStr += chunk; });
+      req.on('end', () => {
+        try {
+          const obs = JSON.parse(bodyStr || '{}');
+          const result = crowdEngine.recordObservation(obs);
+
+          if (obs.trainKey && obs.isUserInside) {
+            crowdReportsMap.set(obs.trainKey, {
+              trainKey: obs.trainKey,
+              trainId: obs.trainId,
+              isActive: true,
+              isUserInside: true,
+              delayMinutes: obs.delayMinutes || 0,
+              latitude: obs.latitude,
+              longitude: obs.longitude,
+              speed: obs.speed,
+              updatedAt: Date.now()
+            });
+          }
+
+          res.setHeader('Content-Type', 'application/json');
+          res.statusCode = result.success ? 200 : 400;
+          res.end(JSON.stringify(result));
+        } catch (e: any) {
+          res.statusCode = 400;
+          res.end(JSON.stringify({ error: 'Invalid observation JSON' }));
+        }
+      });
+      return;
+    }
+
+    if (pathname === '/api/crowd/config' && req.method === 'GET') {
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = 200;
+      res.end(JSON.stringify({
+        nominalCapacity12Car: 3500,
+        nominalCapacity15Car: 4500,
+        nominalCapacityAc: 1800,
+        commuterSamplingMultiplier: 35,
+        freshnessWindowMinutes: 15,
+        minContributorsForHighConfidence: 7
+      }));
       return;
     }
 

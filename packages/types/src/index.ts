@@ -252,6 +252,8 @@ export interface TrainSearchResult {
   toStop: TrainStop;
   departureTime: string;
   arrivalTime: string;
+  originDepartureTime?: string;
+  destinationArrivalTime?: string;
   durationMinutes: number;
   stopsCount: number;
   line: Line;
@@ -294,3 +296,100 @@ export interface ValidationReport {
   counts: Record<string, number>;
   validatedAt: string;
 }
+
+/**
+ * Dynamic GPS-Based Train Crowd Strength Models & Central Display Logic
+ */
+export type CrowdState = 'AVAILABLE' | 'INSUFFICIENT' | 'STALE' | 'AMBIGUOUS' | 'GPS_UNAVAILABLE';
+export type CrowdConfidence = 'LOW' | 'MEDIUM' | 'HIGH';
+
+export interface CrowdObservation {
+  contributorId: string;
+  timestamp: number;
+  latitude: number;
+  longitude: number;
+  accuracy?: number;
+  speed?: number;
+  trainKey: string;
+  trainId?: string;
+  isUserInside: boolean;
+}
+
+export interface CrowdEstimate {
+  trainKey: string;
+  trainId?: string;
+  rawScore: number;
+  displayPercentage: string;
+  visualPercentage: number;
+  color: string;
+  state: CrowdState;
+  contributorsCount: number;
+  confidence: CrowdConfidence;
+  baseline: string;
+  lastUpdated: number;
+  isStale: boolean;
+  message?: string;
+}
+
+export interface CrowdBaselineConfig {
+  nominalCapacity: number;
+  commuterSamplingMultiplier: number;
+  freshnessWindowMs: number;
+  minContributorsForHighConfidence: number;
+}
+
+/**
+ * Centrally computes the exact display rules for Crowd Strength:
+ * - 0% -> "0%"
+ * - Below 100% -> actual rounded percentage e.g. "05%", "13%", "25%", "50%", "75%", "86%"
+ * - Exactly 100% -> "100%"
+ * - Above 100% -> "100%+" (Never numerical value like 105% or 125%)
+ * - Progress bar visual percentage capped strictly at 100% (min 0)
+ * - Color scale matching reference image:
+ *   < 20%: Cyan (#38bdf8)
+ *   20% - 49%: Lime Green (#22c55e)
+ *   50% - 74%: Amber Orange (#f97316)
+ *   75% - 99%: Red-Orange (#ef4444)
+ *   >= 100%: Crimson Red (#dc2626)
+ */
+export function formatCrowdDisplay(rawScore: number): {
+  displayPercentage: string;
+  visualPercentage: number;
+  color: string;
+} {
+  const rounded = Math.round(rawScore);
+
+  let displayPercentage: string;
+  let visualPercentage: number;
+  let color: string;
+
+  if (rounded <= 0) {
+    displayPercentage = '0%';
+    visualPercentage = 0;
+    color = '#38bdf8';
+  } else if (rounded < 100) {
+    displayPercentage = rounded < 10 ? `0${rounded}%` : `${rounded}%`;
+    visualPercentage = rounded;
+    if (rounded < 20) {
+      color = '#38bdf8'; // Cyan / Sky Blue
+    } else if (rounded < 50) {
+      color = '#22c55e'; // Lime Green
+    } else if (rounded < 75) {
+      color = '#f97316'; // Amber Orange
+    } else {
+      color = '#ef4444'; // Red-Orange
+    }
+  } else if (rounded === 100) {
+    displayPercentage = '100%';
+    visualPercentage = 100;
+    color = '#dc2626'; // Crimson Red
+  } else {
+    // Greater than 100%
+    displayPercentage = '100%+';
+    visualPercentage = 100; // Never overflow container
+    color = '#dc2626'; // Crimson Red
+  }
+
+  return { displayPercentage, visualPercentage, color };
+}
+

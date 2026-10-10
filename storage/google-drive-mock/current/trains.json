@@ -27687,7 +27687,7 @@
     "line_id": "line_cr_main",
     "route_id": "route_cr_main_csmt_abh_dn",
     "cars": 12,
-    "status": "ACTIVE"
+    "status": "CANCELLED"
   },
   {
     "id": "train_cr_97601",
@@ -39751,6 +39751,19 @@
     "line_id": "line_cr_neral_matheran",
     "route_id": "route_cr_matheran_mae_nrl_up",
     "cars": 6,
+    "status": "ACTIVE"
+  },
+  {
+    "id": "train_cr_95337",
+    "train_number": "95337",
+    "train_code": "A-1",
+    "train_name": "ABH FAST 15-CAR",
+    "train_type": "FAST",
+    "origin_station_id": "stn_csmt",
+    "destination_station_id": "stn_abh",
+    "line_id": "line_cr_main",
+    "route_id": "route_cr_main_csmt_abh_dn",
+    "cars": 15,
     "status": "ACTIVE"
   }
 ]

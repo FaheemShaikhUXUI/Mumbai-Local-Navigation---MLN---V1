@@ -140,12 +140,33 @@ export class TrainSearchEngine {
         destination_station_id: train.destination_station_id,
       };
 
+      // Origin stop and terminus stop for start departure and terminus arrival
+      let originDepartureTime = match.fromStop.departure_time;
+      if (train.origin_station_id !== match.fromStop.station_id) {
+        const oStop = await this.adapter.queryOne<TrainStop>(
+          'SELECT * FROM train_stops WHERE train_id = ? AND station_id = ?',
+          [train.id, train.origin_station_id]
+        );
+        if (oStop) originDepartureTime = oStop.departure_time;
+      }
+
+      let destinationArrivalTime = match.toStop.arrival_time;
+      if (train.destination_station_id !== match.toStop.station_id) {
+        const dStop = await this.adapter.queryOne<TrainStop>(
+          'SELECT * FROM train_stops WHERE train_id = ? AND station_id = ?',
+          [train.id, train.destination_station_id]
+        );
+        if (dStop) destinationArrivalTime = dStop.arrival_time;
+      }
+
       results.push({
         train,
         fromStop: match.fromStop,
         toStop: match.toStop,
         departureTime: match.fromStop.departure_time,
         arrivalTime: match.toStop.arrival_time,
+        originDepartureTime,
+        destinationArrivalTime,
         durationMinutes,
         stopsCount,
         line,
@@ -224,7 +245,11 @@ export class TrainSearchEngine {
       // Filter by lineId if specified
       if (filter.lineId && train.line_id !== filter.lineId) continue;
 
-      const route = routeMap.get(train.route_id);
+      let route = routeMap.get(train.route_id);
+      if (!route && train.route_id) {
+        const baseRouteId = train.route_id.replace(/_(fast|slow)$/i, '');
+        route = routeMap.get(baseRouteId);
+      }
       if (!route) continue;
 
       // Filter by route direction (DN or UP)
@@ -265,7 +290,7 @@ export class TrainSearchEngine {
 
     if (candidates.length === 0) return [];
 
-    // 4. Batch fetch destination stops for distinct destinations (typically ~10 queries total)
+    // 4. Batch fetch destination stops and origin stops
     const destStationIds = new Set(candidates.map((c) => c.train.destination_station_id));
     const destStopsMap = new Map<string, TrainStop>();
     for (const dId of destStationIds) {
@@ -278,6 +303,18 @@ export class TrainSearchEngine {
       }
     }
 
+    const originStationIds = new Set(candidates.map((c) => c.train.origin_station_id));
+    const originStopsMap = new Map<string, TrainStop>();
+    for (const oId of originStationIds) {
+      const oStops = await this.adapter.query<TrainStop>(
+        'SELECT * FROM train_stops WHERE station_id = ?',
+        [oId]
+      );
+      for (const os of oStops) {
+        originStopsMap.set(`${os.train_id}_${os.station_id}`, os);
+      }
+    }
+
     const results: TrainSearchResult[] = [];
 
     // 5. Construct results
@@ -285,6 +322,8 @@ export class TrainSearchEngine {
       const { fs, train, route } = c;
       const toStop = destStopsMap.get(`${train.id}_${train.destination_station_id}`) || fs;
       if (toStop.sequence <= fs.sequence) continue;
+
+      const originStop = originStopsMap.get(`${train.id}_${train.origin_station_id}`) || fs;
 
       const depSec = timeToSeconds(fs.departure_time);
       let arrSec = timeToSeconds(toStop.arrival_time);
@@ -309,6 +348,8 @@ export class TrainSearchEngine {
         toStop: toStop,
         departureTime: fs.departure_time,
         arrivalTime: toStop.arrival_time,
+        originDepartureTime: originStop.departure_time,
+        destinationArrivalTime: toStop.arrival_time,
         durationMinutes,
         stopsCount,
         line,

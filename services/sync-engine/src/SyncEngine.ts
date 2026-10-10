@@ -8,8 +8,13 @@ import {
   AvailablePatch,
 } from '@mumbai-timetable/types';
 import { StorageProvider as IStorageProvider } from '@mumbai-timetable/types';
-import { WesternRailwaySource } from '@mumbai-timetable/data-sources';
-import { CentralRailwaySource } from '@mumbai-timetable/data-sources';
+import {
+  WesternRailwaySource,
+  CentralRailwaySource,
+  NTESSourceProvider,
+  PressCircularSource,
+  MultiSourceReconciler,
+} from '@mumbai-timetable/data-sources';
 import { TimetableParserService } from '@mumbai-timetable/timetable-parser';
 import { validateCanonicalDataset } from '@mumbai-timetable/validation';
 import { DiffEngine } from '@mumbai-timetable/diff-engine';
@@ -24,6 +29,7 @@ export interface SyncEngineConfig {
   storageProvider?: IStorageProvider;
   officialWrUrl?: string;
   officialCrUrl?: string;
+  ntesBaseUrl?: string;
 }
 
 export class SyncEngine {
@@ -31,6 +37,8 @@ export class SyncEngine {
   private storage: IStorageProvider;
   private wrSource: WesternRailwaySource;
   private crSource: CentralRailwaySource;
+  private ntesSource: NTESSourceProvider;
+  private pressCircularSource: PressCircularSource;
   private currentStatus: SyncStatus = 'SYNC_IDLE';
   private logs: SyncLogEntry[] = [];
   private lastCheckedAt?: string;
@@ -47,6 +55,8 @@ export class SyncEngine {
     this.storage = config.storageProvider || createStorageProviderFromEnv();
     this.wrSource = new WesternRailwaySource(config.officialWrUrl);
     this.crSource = new CentralRailwaySource(config.officialCrUrl);
+    this.ntesSource = new NTESSourceProvider(config.ntesBaseUrl);
+    this.pressCircularSource = new PressCircularSource();
   }
 
   private addLog(status: SyncStatus, source: string, message: string, details?: any) {
@@ -95,41 +105,58 @@ export class SyncEngine {
     this.addLog('SYNC_CHECKING', 'Official Sources', 'Checking Western and Central Railway timetable sources');
 
     try {
-      // 1. Check sources
+      // 1. Check sources (Primary: NTES, Secondary: Press Circulars & Official Websites)
       const wrCheck = await this.wrSource.checkSource(this.lastSourceHash);
       const crCheck = await this.crSource.checkSource();
+      const ntesCheck = await this.ntesSource.checkOperationalStream();
+      const pressCheck = await this.pressCircularSource.checkCirculars();
 
-      const combinedHash = computeSha256(wrCheck.contentHash + ':' + crCheck.contentHash);
+      const combinedHash = computeSha256(
+        wrCheck.contentHash + ':' + crCheck.contentHash + ':' + ntesCheck.contentHash + ':' + pressCheck.contentHash
+      );
       const hasChanged = force || combinedHash !== this.lastSourceHash || !this.currentVersion;
 
       if (!hasChanged) {
         this.currentStatus = 'SYNC_NO_CHANGE';
         this.addLog(
           'SYNC_NO_CHANGE',
-          'Official Sources',
-          'Official railway timetables unchanged. No diff or update needed.'
+          'Multi-Source Ingestion',
+          'Official railway timetables and NTES stream unchanged. No diff or update needed.'
         );
         return { status: 'SYNC_NO_CHANGE', version: this.currentVersion };
       }
 
       this.currentStatus = 'SOURCE_CHANGED';
-      this.addLog('SOURCE_CHANGED', 'Official Sources', 'Detected new or modified official timetable schedule');
+      this.addLog(
+        'SOURCE_CHANGED',
+        'Multi-Source Ingestion',
+        `Detected operational updates (NTES: ${ntesCheck.activeDeparturesCount} active overrides, Press Notices: ${pressCheck.suburbanNoticesCount})`
+      );
 
-      // 2. Parse & Normalize
+      // 2. Parse Baseline Schedule
       this.currentStatus = 'PARSING';
       const existingManifest = await this.storage.getManifest();
       const previousVersion = existingManifest?.latestVersion || this.currentVersion;
       const nextVersion = generateNextVersion(previousVersion);
 
-      this.addLog('PARSING', 'Timetable Parser', `Parsing official schedule for new version ${nextVersion}`);
-      const newDataset = TimetableParserService.parseSuburbanNetwork(
+      this.addLog('PARSING', 'Timetable Parser', `Parsing baseline schedule for version ${nextVersion}`);
+      const rawDataset = TimetableParserService.parseSuburbanNetwork(
         nextVersion,
-        wrCheck.effectiveDate || '2026-09-01'
+        wrCheck.effectiveDate || '2026-10-10'
       );
 
-      // 3. Strict Validation (Section 20)
+      // 3. Reconcile with Primary (NTES) & Secondary (Press Circulars) consensus
+      this.addLog('PARSING', 'Consensus Reconciler', 'Synthesizing NTES Primary operational data with baseline');
+      const reconciliation = MultiSourceReconciler.reconcile(rawDataset, ntesCheck, pressCheck);
+      const newDataset = reconciliation.reconciledDataset;
+
+      for (const logMsg of reconciliation.auditLog) {
+        this.addLog('PARSING', 'Consensus Reconciler', logMsg);
+      }
+
+      // 4. Strict Validation (Section 20)
       this.currentStatus = 'VALIDATING';
-      this.addLog('VALIDATING', 'Validation Engine', 'Running strict validation on parsed railway dataset');
+      this.addLog('VALIDATING', 'Validation Engine', 'Running strict validation on reconciled dataset');
       const validationReport = validateCanonicalDataset(newDataset);
 
       if (!validationReport.isValid) {
